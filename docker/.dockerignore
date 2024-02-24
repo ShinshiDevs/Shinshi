@@ -1,0 +1,26 @@
+### Shinshi
+assets/*.png
+assets/**/*.png
+*.example
+### Docker
+Dockerfile
+.dockerignore
+### IDEs
+.idea
+.vscode
+.editorconfig
+### Github
+.github
+.git
+.gitignore
+### Python
+__pycache__/
+*$py.class
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+.pylint
+.mypy

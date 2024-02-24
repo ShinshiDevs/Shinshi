@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "alterstein"
+version = "0.0.0"
+description = "Shinshi is a modern and user-friendly Discord bot designed to give you and your servers great functionality and stable performance."
+authors = ["stefanlight"]
+maintainers = ["stefanlight", "theroer"]
+readme = "README.md"
+license = "GPL-3.0-only"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+structlog = "^24.1.0"
+cython = "^3.0.8"
+hikari = "^2.0.0.dev122"
+cachetools = "^5.3.2"
+uvloop = "^0.19.0"
+pyyaml = "^6.0.1"
+humanize = "^4.9.0"  # TODO: make replacement for this
+
+
+[tool.poetry.group.dev.dependencies]
+memray = "^1.11.0"
+ruff = "^0.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

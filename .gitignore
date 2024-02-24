@@ -1,0 +1,10 @@
+### Environment
+*.env
+### JetBrains
+.idea
+### Visual Studio Code
+.vscode
+### Python
+__pycache__/
+### Poetry
+*.lock

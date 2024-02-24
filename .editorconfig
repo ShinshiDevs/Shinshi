@@ -1,0 +1,20 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 120
+
+[{*.example,*.yaml,*.toml}]
+max_line_length = off
+indent_size = 2
+
+[{*.md,*.lock}]
+max_line_length = off
+
+[{*.pyw, *.py}]
+tab_width = 4
