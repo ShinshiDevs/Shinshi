@@ -9,13 +9,11 @@ license = "GPL-3.0-only"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-structlog = "^24.1.0"
-cython = "^3.0.8"
-hikari = "^2.0.0.dev122"
 cachetools = "^5.3.2"
 uvloop = "^0.19.0"
+structlog = "^24.1.0"
+hikari = "^2.0.0.dev122"
 pyyaml = "^6.0.1"
-humanize = "^4.9.0"  # TODO: make replacement for this
 
 
 [tool.poetry.group.dev.dependencies]

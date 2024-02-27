@@ -1,2 +1,0 @@
-from .external_log_formatter import DefaultInstance as DefaultExternalLogFormatterInstance
-from .external_log_formatter import ExternalLogFormatter

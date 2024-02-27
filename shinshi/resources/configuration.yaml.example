@@ -1,0 +1,7 @@
+webhooks:
+  errors: <fill this>
+
+api:
+  kawaii_api: <fill this>
+  wakatime_api: <fill this>
+  open_weather_map: <fill this>
