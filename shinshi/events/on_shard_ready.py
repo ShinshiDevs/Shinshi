@@ -1,7 +1,7 @@
 from hikari import ActivityType
 from hikari.events import ShardReadyEvent
 
-from shinshi.bot import bot
+from shinshi.framework.bot import bot
 
 
 @bot.listen(ShardReadyEvent)

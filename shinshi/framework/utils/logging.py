@@ -3,7 +3,7 @@ import logging
 import structlog
 from structlog import BoundLogger
 
-from shinshi.lib.logging import LoggerFactory
+from shinshi.framework.logging import LoggerFactory
 
 
 def configure_logging(log_level: int) -> (BoundLogger, LoggerFactory):
