@@ -1,2 +1,0 @@
-class InfoWorkflow:
-    ...  # TODO: Yes.
