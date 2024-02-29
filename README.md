@@ -1,4 +1,4 @@
-<img src="assets/banner.png">
+<img src="resources/assets/banner.png">
 <h1 align="center">Shinshi Alterstein</h1>
 <h4 align="center">
     <a href="https://discord.gg/3bXW7an2ke">Discord server</a>
@@ -13,8 +13,8 @@
 
 Starting in 2021, the Shinshi project was launched, but it was halted due to lack of resources and motivation. However, in 2023, the project was revived and is being actively promoted. Over the years, the concept of Shinshi has remained unchanged - to create a stable and modern Discord bot that stands out from others with its unique approach.
 
-# Technical Details
-|         |            Language             |         Dependencies Manager         |              Framework               |                                       Deployment                                       |
-|:--------|:-------------------------------:|:------------------------------------:|:------------------------------------:|:--------------------------------------------------------------------------------------:|
-| Name    | [Python](<https://python.org/>) | [Poetry](https://python-poetry.org/) | [Hikari](https://www.hikari-py.dev/) | [Docker](https://www.docker.com/) ([Docker Compose](https://docs.docker.com/compose/)) |
-| Version |              >3.10              |                                      |                                      |                                                                                        |
+# Contributors
+
+<a href="https://github.com/ShinshiDevs/Shinshi/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ShinshiDevs/Shinshi" />
+</a>
