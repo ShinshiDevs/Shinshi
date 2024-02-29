@@ -5,7 +5,7 @@ description = "Shinshi is a modern and user-friendly Discord bot designed to giv
 authors = ["stefanlight"]
 maintainers = ["stefanlight", "theroer"]
 readme = "README.md"
-license = "GPL-3.0-only"
+license = "GPL-3.0"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"

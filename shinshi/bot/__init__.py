@@ -1,0 +1,1 @@
+"""Shinshi entry point"""
