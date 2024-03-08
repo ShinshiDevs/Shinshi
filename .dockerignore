@@ -1,7 +1,6 @@
 ### Shinshi
-assets/*.png
-assets/**/*.png
-*.example
+assets/banner.png
+secrets/*.example
 ### Docker
 Dockerfile
 .dockerignore

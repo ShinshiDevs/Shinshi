@@ -8,24 +8,17 @@ networks:
   default:
 
 services:
-  shinshi:
+
+  discord:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
+      - db
       - redis
-      - database
     networks:
       - default
-    env_file: ../app.env
-
-  redis:
-    image: redis
-    restart: unless-stopped
-    networks:
-      - default
-    volumes:
-      - redis:/data
+    env_file: secrets/app.env
 
   db:
     image: postgres
@@ -34,4 +27,12 @@ services:
       - database:/var/lib/postgresql/data
     networks:
       - default
-    env_file: ../database.env
+    env_file: secrets/database.env
+
+  redis:
+    image: redis
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - redis:/data
