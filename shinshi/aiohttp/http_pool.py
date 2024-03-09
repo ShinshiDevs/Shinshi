@@ -1,0 +1,42 @@
+from asyncio import AbstractEventLoop
+
+from aiohttp import TCPConnector
+from aiohttp.client import ClientResponse
+from aiohttp.client import ClientSession
+from aiohttp.typedefs import StrOrURL
+
+from shinshi.logging import LoggerFactory
+from shinshi.sdk.lifecycle import IStartable
+from shinshi.utils.orjson import orjson_serialize
+
+
+class HttpPool(IStartable):
+    connector: TCPConnector | None = None
+    session: ClientSession | None = None
+
+    def __init__(self, loop: AbstractEventLoop) -> None:
+        self.__loop = loop
+        self.__logger = LoggerFactory.create(HttpPool)
+
+    async def start(self) -> None:
+        self.connector = TCPConnector(loop=self.__loop)
+        self.session = ClientSession(
+            loop=self.__loop,
+            connector=self.connector,
+            json_serialize=orjson_serialize,
+        )
+        self.__logger.debug("Created new client session")
+
+    async def stop(self) -> None:
+        await self.session.close()
+        await self.connector.close()
+        self.__logger.debug("Stopped")
+
+    async def request(
+        self, method: str, url: StrOrURL, **kwargs
+    ) -> ClientResponse | None:
+        response: ClientResponse = await self.session.request(method, url, **kwargs)
+        if response.status not in (200, 201):
+            self.__logger.warning(f"Invalid response with code {response.status}")
+            return None
+        return response
