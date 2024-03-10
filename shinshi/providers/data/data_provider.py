@@ -18,7 +18,6 @@ class DataProvider(IStartable):
         self.__path: os.PathLike = path
         self.files: Dict[str, Dict[str, Any]] = {}
 
-    # TODO: Check
     async def start(self) -> None:
         files: Dict[str, Dict[str, Any]] = {}
         directory: str = str(self.__path)
