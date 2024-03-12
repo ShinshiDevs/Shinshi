@@ -11,7 +11,7 @@ def parse_dotenv_file(file_path: os.PathLike) -> Dict[str, Any]:
     try:
         with open(file_path, "r", encoding="UTF-8") as file:
             for line in file:
-                match = DOTENV_REGEX.match(line)
+                match: re.Match[str] | None = DOTENV_REGEX.match(line)
                 if not match:
                     continue
                 os.environ[match.group("identifier")] = match.group("value").strip()

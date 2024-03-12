@@ -8,13 +8,12 @@ from hikari.impl import GatewayShardImpl
 from hikari.impl.gateway_bot import GatewayBot
 
 from shinshi.discord.bot.cache import Cache
-from shinshi.logging import LoggerFactory
 from shinshi.providers.data.data_provider import DataProvider
 
 
 class DiscordBot(GatewayBot):
     def __init__(self, data_provider: DataProvider, **kwargs) -> None:
-        self.__logger: logging.Logger = LoggerFactory.create(DiscordBot)
+        self.__logger: logging.Logger = logging.getLogger("shinshi.discord.bot")
         self._cache: Cache = Cache(self)
         self.data_provider: DataProvider = data_provider
         super().__init__(**kwargs, cache_settings=self._cache.settings)

@@ -3,7 +3,6 @@ from asyncio import AbstractEventLoop, Task
 from typing import Sequence
 
 from shinshi.discord.bot import DiscordBot
-from shinshi.logging import LoggerFactory
 from shinshi.sdk.lifecycle import IStartable
 from shinshi.utils.dotenv import dotenv_get_boolean
 
@@ -16,7 +15,7 @@ class BotService(IStartable):
         loop: AbstractEventLoop,
         bot: DiscordBot,
     ) -> None:
-        self.__logger: logging.Logger = LoggerFactory.create(BotService)
+        self.__logger: logging.Logger = logging.getLogger("shinshi.bot_service")
         self.__loop: AbstractEventLoop = loop
 
         self.bot: DiscordBot = bot

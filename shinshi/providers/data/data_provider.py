@@ -5,7 +5,6 @@ from typing import Any, Dict
 
 from yaml import CLoader, load
 
-from shinshi.logging import LoggerFactory
 from shinshi.sdk.lifecycle import IStartable
 
 
@@ -14,7 +13,7 @@ class DataProvider(IStartable):
         self,
         path: os.PathLike,
     ) -> None:
-        self.__logger: logging.Logger = LoggerFactory.create(DataProvider)
+        self.__logger: logging.Logger = logging.getLogger("shinshi.data_provider")
         self.__path: os.PathLike = path
         self.files: Dict[str, Dict[str, Any]] = {}
 

@@ -15,6 +15,3 @@ indent_size = 2
 
 [{*.md,*.lock}]
 max_line_length = off
-
-[{*.pyw, *.py}]
-tab_width = 4

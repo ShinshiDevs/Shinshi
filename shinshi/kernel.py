@@ -1,7 +1,7 @@
 import asyncio
+import logging
 from typing import Sequence
 
-from shinshi.logging import LoggerFactory
 from shinshi.sdk.lifecycle import IStartable
 
 
@@ -13,9 +13,9 @@ class Kernel:
         loop: asyncio.AbstractEventLoop,
         services: Sequence[IStartable],
     ) -> None:
-        self.__loop = loop
-        self.__logger = LoggerFactory.create(Kernel)
-        self.services = services
+        self.__loop: asyncio.AbstractEventLoop = loop
+        self.__logger: logging.Logger = logging.getLogger("shinshi.kernel")
+        self.services: Sequence[IStartable] = services
 
     def run(self):
         try:

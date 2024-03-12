@@ -5,7 +5,6 @@ from typing import Dict, Sequence, Any, Tuple, List
 
 from yaml import CLoader, load
 
-from shinshi.logging import LoggerFactory
 from shinshi.providers.i18n import I18nGroup
 from shinshi.sdk.lifecycle import IStartable
 
@@ -16,7 +15,7 @@ class I18nProvider(IStartable):
     __slots__: Sequence[str] = ("__logger", "__path", "languages")
 
     def __init__(self, path: os.PathLike) -> None:
-        self.__logger: logging.Logger = LoggerFactory.create(I18nProvider)
+        self.__logger: logging.Logger = logging.getLogger("shinshi.i18n")
         self.__path: os.PathLike = path
         self.languages: Dict[str, I18nGroup] = {}
 
@@ -29,9 +28,6 @@ class I18nProvider(IStartable):
             languages[name] = self.__build_map(os.path.join(directory, file_name), name)
         self.languages = languages
         self.__logger.info(f"Loaded {", ".join(list(self.languages.keys()))} languages")
-
-    def get_language(self, language: str) -> I18nGroup:
-        return self.languages.get(language, self.languages.get(_DEFAULT_LANGUAGE))
 
     @staticmethod
     def __build_map(file_path: str, name: str) -> I18nGroup:
@@ -57,3 +53,6 @@ class I18nProvider(IStartable):
                         )
                     )
         return root_group
+
+    def get_language(self, language: str) -> I18nGroup:
+        return self.languages.get(language, self.languages.get(_DEFAULT_LANGUAGE))

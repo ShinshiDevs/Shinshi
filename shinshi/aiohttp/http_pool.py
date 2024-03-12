@@ -1,11 +1,10 @@
-from asyncio import AbstractEventLoop
+import asyncio
+import logging
 
-from aiohttp import TCPConnector
-from aiohttp.client import ClientResponse
-from aiohttp.client import ClientSession
+from aiohttp.client import ClientResponse, ClientSession
+from aiohttp.connector import TCPConnector
 from aiohttp.typedefs import StrOrURL
 
-from shinshi.logging import LoggerFactory
 from shinshi.sdk.lifecycle import IStartable
 from shinshi.utils.orjson import orjson_serialize
 
@@ -14,9 +13,9 @@ class HttpPool(IStartable):
     connector: TCPConnector | None = None
     session: ClientSession | None = None
 
-    def __init__(self, loop: AbstractEventLoop) -> None:
-        self.__loop = loop
-        self.__logger = LoggerFactory.create(HttpPool)
+    def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
+        self.__loop: asyncio.AbstractEventLoop = loop
+        self.__logger: logging.Logger = logging.getLogger("shinshi.http_pool")
 
     async def start(self) -> None:
         self.connector = TCPConnector(loop=self.__loop)
