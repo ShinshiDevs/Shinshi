@@ -2,7 +2,7 @@ import logging
 from asyncio import AbstractEventLoop, Task
 from typing import Sequence
 
-from shinshi.bot import DiscordBot
+from shinshi.discord.bot import DiscordBot
 from shinshi.logging import LoggerFactory
 from shinshi.sdk.lifecycle import IStartable
 from shinshi.utils.dotenv import dotenv_get_boolean

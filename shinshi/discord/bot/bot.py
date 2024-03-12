@@ -7,7 +7,7 @@ from hikari import OwnUser, KnownCustomEmoji, Activity, Status, ActivityType
 from hikari.impl import GatewayShardImpl
 from hikari.impl.gateway_bot import GatewayBot
 
-from shinshi.bot.cache import Cache
+from shinshi.discord.bot.cache import Cache
 from shinshi.logging import LoggerFactory
 from shinshi.providers.data.data_provider import DataProvider
 

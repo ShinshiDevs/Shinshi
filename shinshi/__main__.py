@@ -11,7 +11,7 @@ from hikari.intents import Intents
 
 from shinshi.aiohttp.http_pool import HttpPool
 from shinshi.asyncio import setup_event_policy, create_loop
-from shinshi.bot import BotService, DiscordBot
+from shinshi.discord.bot import BotService, DiscordBot
 from shinshi.dotenv import load_dotenv
 from shinshi.environment import Environment
 from shinshi.kernel import Kernel
