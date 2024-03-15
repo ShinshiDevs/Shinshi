@@ -24,6 +24,7 @@ i18n_provider: I18nProvider = I18nProvider(resources_dir / "i18n")
 data_provider: DataProvider = DataProvider(resources_dir)
 bot: Bot = Bot(
     token=environ.get("SHINSHI_DISCORD_TOKEN"),
+    data_provider=data_provider,
     banner_extras={
         "shinshi_copyright": __copyright__,
         "shinshi_license": __license__,
@@ -35,8 +36,7 @@ bot: Bot = Bot(
     intents=Intents.GUILDS
             | Intents.GUILD_EMOJIS
             | Intents.GUILD_MESSAGES
-            | Intents.GUILD_MODERATION,
-    data_provider=data_provider,
+            | Intents.GUILD_MODERATION
 )
 
 

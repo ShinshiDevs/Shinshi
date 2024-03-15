@@ -18,6 +18,7 @@ class Bot(GatewayBot):
     def __init__(
         self,
         token: str,
+        data_provider: DataProvider,
         *,
         allow_color: bool = True,
         banner: str | None = "shinshi",
@@ -26,7 +27,6 @@ class Bot(GatewayBot):
         force_color: bool = False,
         http_settings: config.HTTPSettings | None = None,
         intents: Intents = Intents.ALL_UNPRIVILEGED,
-        data_provider: DataProvider,
     ) -> None:
         self.__logger: logging.Logger = logging.getLogger("shinshi.gateway")
         self._cache: Cache = Cache(self)

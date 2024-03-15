@@ -3,7 +3,8 @@ from glob import glob
 from pathlib import Path
 from typing import Dict, Any, List, Tuple, Sequence
 
-from shinshi.data import DataProvider
+import yaml
+
 from shinshi.i18n.constants import DEFAULT_LANGUAGE
 from shinshi.i18n.types import I18nGroup
 
@@ -29,7 +30,10 @@ class I18nProvider:
 
     @staticmethod
     def __build_map(file_path: Path) -> I18nGroup:
-        data: Dict[str, Any] = DataProvider.load_file(file_path)
+        with open(file_path, "rb") as stream:
+            data: dict[str, Any] = yaml.load(stream, Loader=yaml.CLoader)
+            if not isinstance(data, dict):
+                data = {}
         root_group: I18nGroup = I18nGroup(name="root")
         nodes: List[Tuple[I18nGroup, Dict[str, str | I18nGroup | Tuple[str, ...]]]] = [(root_group, data)]
         while nodes:
