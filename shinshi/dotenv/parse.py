@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Any, Dict
+from typing import Dict, Any
 
 DOTENV_REGEX: re.Pattern = re.compile(
     r"^(?P<identifier>[A-Za-z_]+\w*)=(?P<value>[^#]+)(#.*)?$"

@@ -1,0 +1,26 @@
+version: 1
+formatters:
+  standard:
+    format: "%(asctime)s %(name)-20s %(levelname)-20s %(message)s"
+  colored:
+    '()': shinshi.logging.formatters.ColoredFormatter
+    format: "%(asctime)s %(name)-20s %(levelname)-20s %(message)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: colored
+    level: DEBUG
+  file:
+    class: logging.FileHandler
+    formatter: standard
+    level: DEBUG
+    filename: ./logging/logs/.log
+loggers:
+  '':
+    handlers: [ file, console ]
+    level: DEBUG
+    propagate: yes
+  'hikari-rest':
+    handlers: [ console ]
+    level: INFO
+

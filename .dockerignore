@@ -1,5 +1,5 @@
 ### Shinshi
-assets/banner.png
+resources/images/banner.png
 secrets/*.example
 ### Docker
 Dockerfile

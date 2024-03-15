@@ -8,19 +8,20 @@ readme = "README.md"
 license = "GPL-3.0"
 
 [tool.poetry.dependencies]
+# Runtime
 python = ">=3.12,<3.13"
-cachetools = "^5.3.2"
 uvloop = "^0.19.0"
+# Cache & Data
+cachetools = "^5.3.2"
 pyyaml = "^6.0.1"
 orjson = "^3.9.15"
+# Discord
+hikari = { version = "^2.0.0.dev122", extras = ["speedups"] }
 
 
 [tool.poetry.group.dev.dependencies]
 memray = "^1.11.0"
 
-
-[tool.poetry.group.discord.dependencies]
-hikari = { version = "^2.0.0.dev122", extras = ["speedups"] }
 
 [build-system]
 requires = ["poetry-core"]

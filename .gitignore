@@ -1,5 +1,8 @@
 ### Shinshi
-logs
+docker/data
+secrets/*.env
+logging/logs
+resources/icons/**/*.webp
 ### Environment
 *.env
 ### JetBrains

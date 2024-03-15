@@ -1,1 +1,1 @@
-from .console_formatter import ConsoleFormatter
+from .colored_formatter import ColoredFormatter
