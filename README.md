@@ -1,4 +1,4 @@
-<img src="resources/assets/banner.png">
+<img src="resources/images/banner.png">
 <h1 align="center">Shinshi Alterstein</h1>
 <h4 align="center">
     <a href="https://discord.gg/3bXW7an2ke">Discord server</a>
