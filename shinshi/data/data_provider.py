@@ -16,11 +16,13 @@ class DataProvider:
         self.files: Dict[str, Dict[str, Any]] = {}
 
     async def start(self) -> None:
-        self.__logger.debug(f"Loading files from {self.__data_dir}")
+        self.__logger.debug("loading files from %s", self.__data_dir)
         for file_name in glob("*.yaml", root_dir=self.__data_dir):
             file: Path = self.__data_dir / file_name
-            self.files[file.name] = DataProvider.load_file(file)
-        self.__logger.info(f"Loaded {", ".join(list(self.files.keys()))} files")
+            self.files[
+                file.name.replace(file.suffix, "")
+            ] = DataProvider.load_file(file)
+        self.__logger.info("loaded %s files", ", ".join(list(self.files.keys())))
 
     def get_file(self, file_name: str) -> Dict[str, Any] | None:
         return self.files.get(file_name)

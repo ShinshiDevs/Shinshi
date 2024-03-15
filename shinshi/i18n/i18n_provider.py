@@ -3,7 +3,7 @@ from glob import glob
 from pathlib import Path
 from typing import Dict, Any, List, Tuple, Sequence
 
-from shinshi.data.data_provider import DataProvider
+from shinshi.data import DataProvider
 from shinshi.i18n.constants import DEFAULT_LANGUAGE
 from shinshi.i18n.types import I18nGroup
 
@@ -19,11 +19,13 @@ class I18nProvider:
     async def start(self) -> None:
         if not self.__locales_dir.exists():
             raise RuntimeError("Locales directory doesn't exist or not detected.")
-        self.__logger.debug(f"Loading localization files from {self.__locales_dir}")
+        self.__logger.debug("loading localization files from %s", self.__locales_dir)
         for file_name in glob("*.yaml", root_dir=self.__locales_dir):
             file: Path = self.__locales_dir / file_name
-            self.locales[file.name] = self.__build_map(file)
-        self.__logger.info(f"Loaded {", ".join(list(self.locales.keys()))} languages")
+            self.locales[
+                file.name.replace(file.suffix, "")
+            ] = self.__build_map(file)
+        self.__logger.info("loaded %s languages", ", ".join(list(self.locales.keys())))
 
     @staticmethod
     def __build_map(file_path: Path) -> I18nGroup:

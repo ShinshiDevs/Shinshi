@@ -1,7 +1,7 @@
 import logging
 from typing import Dict
 
-from shinshi.logging.ext.console_colors import ConsoleColors
+from shinshi.logging.console_colors import ConsoleColors
 
 
 class ColoredFormatter(logging.Formatter):

@@ -1,8 +1,0 @@
-class ConsoleColors:
-    GREY: str = '\033[90m'
-    RED: str = '\033[91m'
-    YELLOW: str = '\033[93m'
-    CYAN: str = '\033[96m'
-    BLUE: str = '\033[94m'
-    BOLD: str = '\033[1m'
-    RESET: str = '\033[0m'
