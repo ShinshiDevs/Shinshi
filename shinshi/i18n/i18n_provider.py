@@ -5,6 +5,8 @@ from typing import Dict, Any, List, Tuple, Sequence
 
 import yaml
 
+from shinshi import LOGGER
+from shinshi.events import event_manager, StartingEvent
 from shinshi.i18n.constants import DEFAULT_LANGUAGE
 from shinshi.i18n.types import I18nGroup
 
@@ -13,9 +15,11 @@ _ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 class I18nProvider:
     def __init__(self, locales_dir: Path) -> None:
-        self.__logger: logging.Logger = logging.getLogger("shinshi.i18n")
+        self.__logger: logging.Logger = LOGGER.getChild("i18n")
         self.__locales_dir: Path = locales_dir
         self.locales: Dict[str, I18nGroup] = {}
+
+        event_manager.subscribe(StartingEvent, self.start)
 
     async def start(self) -> None:
         if not self.__locales_dir.exists():

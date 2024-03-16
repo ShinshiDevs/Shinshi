@@ -1,23 +1,17 @@
 import asyncio
-import logging
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
-from typing import Tuple
 
 from hikari.impl import config
 from hikari.intents import Intents
 
 from shinshi import __copyright__, __license__, __support__, __github__
 from shinshi.bot import Bot
-from shinshi.constants import logging_dir, dotenv_file, resources_dir
+from shinshi.constants import resources_dir
 from shinshi.data import DataProvider
-from shinshi.dotenv import load_dotenv
+from shinshi.events import StoppingEvent, StartingEvent, event_manager
 from shinshi.http import HttpPoolClient
 from shinshi.i18n import I18nProvider
-from shinshi.logging.utils import setup_logging
-
-setup_logging(logging_dir / "configuration.yaml")
-load_dotenv(dotenv_file) if environ.get("SHINSHI_ENVIRONMENT", "SYSTEM").upper != "DOCKER" else None
 
 http_pool_client: HttpPoolClient = HttpPoolClient()
 i18n_provider: I18nProvider = I18nProvider(resources_dir / "i18n")
@@ -41,18 +35,8 @@ bot: Bot = Bot(
 
 
 def run(loop: asyncio.AbstractEventLoop) -> None:
-    logger: logging.Logger = logging.getLogger("shinshi.runtime")
-    services: Tuple[HttpPoolClient, I18nProvider, DataProvider] = (http_pool_client, i18n_provider, data_provider)
     try:
-        logger.debug("starting services")
-        for service in services:
-            loop.run_until_complete(service.start())
-        loop.create_task(bot.start())
+        loop.run_until_complete(event_manager.send(StartingEvent))
         loop.run_forever()
     except KeyboardInterrupt:
-        logger.debug("stopping")
-        for service in services:
-            if "stop" in service.__dir__():
-                loop.run_until_complete(service.stop())
-        loop.run_until_complete(bot.close())
-        loop.stop()
+        loop.run_until_complete(event_manager.send(StoppingEvent))

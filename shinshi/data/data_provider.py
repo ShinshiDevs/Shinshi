@@ -5,15 +5,20 @@ from typing import Any, Dict
 
 import yaml
 
+from shinshi import LOGGER
+from shinshi.events import StartingEvent, event_manager
+
 
 class DataProvider:
     def __init__(
         self,
         data_dir: Path,
     ) -> None:
-        self.__logger: logging.Logger = logging.getLogger("shinshi.data_provider")
+        self.__logger: logging.Logger = LOGGER.getChild("data_provider")
         self.__data_dir: Path = data_dir
         self.files: Dict[str, Dict[str, Any]] = {}
+
+        event_manager.subscribe(StartingEvent, self.start)
 
     async def start(self) -> None:
         self.__logger.debug("loading files from %s", self.__data_dir)
