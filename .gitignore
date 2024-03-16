@@ -2,7 +2,7 @@
 docker/data
 secrets/*.env
 logging/logs
-resources/icons/**/*.webp
+resources/images/icons/**/*.webp
 ### Environment
 *.env
 ### JetBrains

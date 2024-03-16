@@ -1,13 +1,13 @@
 import concurrent.futures
-import datetime
 import logging
 from typing import Dict, Any
 
+import hikari
 import orjson
 from hikari.emojis import KnownCustomEmoji
-from hikari.impl import GatewayBot, GatewayShardImpl, config
+from hikari.impl import GatewayBot, config
 from hikari.intents import Intents
-from hikari.presences import Activity, ActivityType, Status
+from hikari.presences import Activity, ActivityType
 from hikari.users import OwnUser
 
 from shinshi import LOGGER
@@ -47,53 +47,16 @@ class Bot(GatewayBot):
 
         event_manager.subscribe(StartingEvent, self.start)
         event_manager.subscribe(StoppingEvent, self.stop)
+        self.event_manager.subscribe(hikari.StartedEvent, self._set_shards_activities)
 
-    async def _start_one_shard(
-        self,
-        activity: Activity | None,
-        afk: bool,
-        idle_since: datetime.datetime | None,
-        status: Status,
-        large_threshold: int,
-        shard_id: int,
-        shard_count: int,
-        url: str,
-    ) -> None:
-        logger: logging.Logger = self.__logger.getChild(str(shard_id))
-        if activity is None:
-            activity: Activity | None = Activity(
-                type=ActivityType.WATCHING,
-                name=f"Shard #{shard_id + 1} / {shard_count}"
+    async def _set_shards_activities(self, _) -> None:
+        for _, shard in self.shards.items():
+            await shard.update_presence(
+                activity=Activity(
+                    type=ActivityType.WATCHING,
+                    name=f"Shard #{shard.id + 1} / {self.shard_count}"
+                )
             )
-        new_shard: GatewayShardImpl = GatewayShardImpl(
-            http_settings=self._http_settings,
-            proxy_settings=self._proxy_settings,
-            event_manager=self._event_manager,
-            event_factory=self._event_factory,
-            intents=self._intents,
-            dumps=self._dumps,
-            loads=self._loads,
-            initial_activity=activity,
-            initial_is_afk=afk,
-            initial_idle_since=idle_since,
-            initial_status=status,
-            large_threshold=large_threshold,
-            shard_id=shard_id,
-            shard_count=shard_count,
-            token=self._token,
-            url=url,
-        )
-        try:
-            await new_shard.start()
-            if new_shard.is_alive:
-                logger.debug("shard %s started successfully", shard_id)
-                self._shards[shard_id] = new_shard
-                return
-            raise RuntimeError(f"shard {shard_id} shut down immediately when starting")
-        except Exception:
-            if new_shard.is_alive:
-                await new_shard.close()
-            raise
 
     @property
     def me(self) -> OwnUser:
