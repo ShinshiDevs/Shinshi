@@ -23,7 +23,7 @@ class EventManager:
 event_manager: EventManager = EventManager()
 
 
-def subscribe_event(event_type: Type[BaseEvent]):
+def event_listener(event_type: Type[BaseEvent]):
     def decorator(func: EventListenerCallback) -> EventListener:
         return EventListener(event_type, func)
 

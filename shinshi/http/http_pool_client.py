@@ -5,7 +5,7 @@ from aiohttp.client import ClientSession
 from aiohttp.connector import BaseConnector, TCPConnector
 
 from shinshi import LOGGER
-from shinshi.events import RegisterEventsMeta, StartingEvent, StoppingEvent, subscribe_event
+from shinshi.events import RegisterEventsMeta, StartingEvent, StoppingEvent, event_listener
 from shinshi.http.constants import DEFAULT_TIMEOUT
 from shinshi.http.utils.orjson import orjson_serialize
 
@@ -16,7 +16,7 @@ class HttpPoolClient(metaclass=RegisterEventsMeta):
         self.connector: BaseConnector | None = None
         self.session: ClientSession | None = None
 
-    @subscribe_event(StartingEvent)
+    @event_listener(StartingEvent)
     async def start(self) -> None:
         self.connector: BaseConnector | None = TCPConnector()
         self.session: ClientSession | None = ClientSession(
@@ -26,7 +26,7 @@ class HttpPoolClient(metaclass=RegisterEventsMeta):
         )
         self.__logger.info("created new client session")
 
-    @subscribe_event(StoppingEvent)
+    @event_listener(StoppingEvent)
     async def stop(self) -> None:
         self.__logger.debug("closing session...")
         await self.session.close()

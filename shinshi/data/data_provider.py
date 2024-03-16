@@ -6,7 +6,7 @@ from typing import Any, Dict
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import StartingEvent, RegisterEventsMeta, subscribe_event
+from shinshi.events import StartingEvent, RegisterEventsMeta, event_listener
 
 
 class DataProvider(metaclass=RegisterEventsMeta):
@@ -18,7 +18,7 @@ class DataProvider(metaclass=RegisterEventsMeta):
         self.__data_dir: Path = data_dir
         self.files: Dict[str, Dict[str, Any]] = {}
 
-    @subscribe_event(StartingEvent)
+    @event_listener(StartingEvent)
     async def start(self) -> None:
         self.__logger.debug("loading files from %s", self.__data_dir)
         for file_name in glob("*.yaml", root_dir=self.__data_dir):

@@ -11,13 +11,10 @@ from hikari.presences import Activity, ActivityType
 from hikari.users import OwnUser
 
 from shinshi import LOGGER
+from shinshi.bot.bot_meta import BotMeta
 from shinshi.bot.cache import Cache
 from shinshi.data import DataProvider
-from shinshi.events import RegisterEventsMeta, StartingEvent, StoppingEvent, subscribe_event
-
-
-class BotMeta(type(GatewayBot), RegisterEventsMeta):
-    ...
+from shinshi.events import StartingEvent, StoppingEvent, event_listener
 
 
 class Bot(GatewayBot, metaclass=BotMeta):
@@ -74,10 +71,10 @@ class Bot(GatewayBot, metaclass=BotMeta):
                 return key
         return self.cache.get_emoji(emoji)
 
-    @subscribe_event(StartingEvent)
+    @event_listener(StartingEvent)
     async def start(self, *args, **kwargs) -> None:
         await super().start(*args, **kwargs)
 
-    @subscribe_event(StoppingEvent)
+    @event_listener(StoppingEvent)
     async def stop(self) -> None:
         await self.close()

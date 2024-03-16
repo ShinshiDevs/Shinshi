@@ -6,7 +6,7 @@ from typing import Dict, Any, List, Tuple, Sequence
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import subscribe_event, StartingEvent, RegisterEventsMeta
+from shinshi.events import event_listener, StartingEvent, RegisterEventsMeta
 from shinshi.i18n.constants import DEFAULT_LANGUAGE
 from shinshi.i18n.types import I18nGroup
 
@@ -19,7 +19,7 @@ class I18nProvider(metaclass=RegisterEventsMeta):
         self.__locales_dir: Path = locales_dir
         self.locales: Dict[str, I18nGroup] = {}
 
-    @subscribe_event(StartingEvent)
+    @event_listener(StartingEvent)
     async def start(self) -> None:
         if not self.__locales_dir.exists():
             raise RuntimeError("Locales directory doesn't exist or not detected.")
