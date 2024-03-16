@@ -6,10 +6,10 @@ from typing import Any, Dict
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import StartingEvent, event_manager
+from shinshi.events import StartingEvent, RegisterEventsMeta, subscribe_event
 
 
-class DataProvider:
+class DataProvider(metaclass=RegisterEventsMeta):
     def __init__(
         self,
         data_dir: Path,
@@ -18,15 +18,19 @@ class DataProvider:
         self.__data_dir: Path = data_dir
         self.files: Dict[str, Dict[str, Any]] = {}
 
-        event_manager.subscribe(StartingEvent, self.start)
-
+    @subscribe_event(StartingEvent)
     async def start(self) -> None:
         self.__logger.debug("loading files from %s", self.__data_dir)
         for file_name in glob("*.yaml", root_dir=self.__data_dir):
             file: Path = self.__data_dir / file_name
-            self.files[
-                file.name.replace(file.suffix, "")
-            ] = DataProvider.load_file(file)
+            with open(file, "rb") as stream:
+                data: dict[str, Any] = yaml.load(stream, Loader=yaml.CLoader)
+                if not isinstance(data, dict):
+                    raise ValueError(
+                        "The file at the specified path "
+                        f"'{file.name}' is not a valid file."
+                    )
+            self.files[file.name.replace(file.suffix, "")] = data
         self.__logger.info("loaded %s files", ", ".join(list(self.files.keys())))
 
     def get_file(self, file_name: str) -> Dict[str, Any] | None:

@@ -1,14 +1,18 @@
 import logging
 import logging.config
 from pathlib import Path
+from typing import Any
 
-from shinshi.data import DataProvider
+import yaml
+
 from shinshi.exceptions.typing import AnyException
 
 
-def configure_logging(file_path: Path, name: str) -> logging.Logger:
+def configure_logging(file: Path, name: str) -> logging.Logger:
     try:
-        logging.config.dictConfig(DataProvider.load_file(file_path))
+        with open(file, "rb") as stream:
+            data: dict[str, Any] = yaml.load(stream, Loader=yaml.CLoader)
+            logging.config.dictConfig(data)
     except AnyException:
         logging.basicConfig(level=logging.DEBUG)
     return logging.getLogger(name)

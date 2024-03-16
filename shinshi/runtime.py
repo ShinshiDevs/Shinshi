@@ -36,7 +36,7 @@ bot: Bot = Bot(
 
 def run(loop: asyncio.AbstractEventLoop) -> None:
     try:
-        loop.run_until_complete(event_manager.send(StartingEvent))
+        loop.run_until_complete(event_manager.emit(StartingEvent))
         loop.run_forever()
     except KeyboardInterrupt:
-        loop.run_until_complete(event_manager.send(StoppingEvent))
+        loop.run_until_complete(event_manager.emit(StoppingEvent))

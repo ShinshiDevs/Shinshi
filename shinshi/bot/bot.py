@@ -13,10 +13,14 @@ from hikari.users import OwnUser
 from shinshi import LOGGER
 from shinshi.bot.cache import Cache
 from shinshi.data import DataProvider
-from shinshi.events import event_manager, StartingEvent, StoppingEvent
+from shinshi.events import RegisterEventsMeta, StartingEvent, StoppingEvent, subscribe_event
 
 
-class Bot(GatewayBot):
+class BotMeta(type(GatewayBot), RegisterEventsMeta):
+    ...
+
+
+class Bot(GatewayBot, metaclass=BotMeta):
     def __init__(
         self,
         token: str,
@@ -44,9 +48,6 @@ class Bot(GatewayBot):
             intents=intents,
         )
         self.__emojis: Dict[str, Any] = data_provider.get_file("emojis")
-
-        event_manager.subscribe(StartingEvent, self.start)
-        event_manager.subscribe(StoppingEvent, self.stop)
         self.event_manager.subscribe(hikari.StartedEvent, self._set_shards_activities)
 
     async def _set_shards_activities(self, _) -> None:
@@ -73,8 +74,10 @@ class Bot(GatewayBot):
                 return key
         return self.cache.get_emoji(emoji)
 
+    @subscribe_event(StartingEvent)
     async def start(self, *args, **kwargs) -> None:
         await super().start(*args, **kwargs)
 
+    @subscribe_event(StoppingEvent)
     async def stop(self) -> None:
         await self.close()

@@ -5,20 +5,18 @@ from aiohttp.client import ClientSession
 from aiohttp.connector import BaseConnector, TCPConnector
 
 from shinshi import LOGGER
-from shinshi.events import event_manager, StartingEvent, StoppingEvent
+from shinshi.events import RegisterEventsMeta, StartingEvent, StoppingEvent, subscribe_event
 from shinshi.http.constants import DEFAULT_TIMEOUT
 from shinshi.http.utils.orjson import orjson_serialize
 
 
-class HttpPoolClient:
+class HttpPoolClient(metaclass=RegisterEventsMeta):
     def __init__(self) -> None:
         self.__logger: logging.Logger = LOGGER.getChild("http")
         self.connector: BaseConnector | None = None
         self.session: ClientSession | None = None
 
-        event_manager.subscribe(StartingEvent, self.start)
-        event_manager.subscribe(StoppingEvent, self.stop)
-
+    @subscribe_event(StartingEvent)
     async def start(self) -> None:
         self.connector: BaseConnector | None = TCPConnector()
         self.session: ClientSession | None = ClientSession(
@@ -28,6 +26,7 @@ class HttpPoolClient:
         )
         self.__logger.info("created new client session")
 
+    @subscribe_event(StoppingEvent)
     async def stop(self) -> None:
         self.__logger.debug("closing session...")
         await self.session.close()
