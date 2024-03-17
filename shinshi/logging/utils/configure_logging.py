@@ -8,11 +8,10 @@ import yaml
 from shinshi.exceptions.typing import AnyException
 
 
-def configure_logging(file: Path, name: str) -> logging.Logger:
+def configure_logging(file: Path) -> None:
     try:
         with open(file, "rb") as stream:
             data: dict[str, Any] = yaml.load(stream, Loader=yaml.CLoader)
             logging.config.dictConfig(data)
     except AnyException:
         logging.basicConfig(level=logging.DEBUG)
-    return logging.getLogger(name)

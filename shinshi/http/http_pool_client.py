@@ -18,8 +18,8 @@ class HttpPoolClient(metaclass=EventsMeta):
 
     @event_listener(StartingEvent)
     async def start(self) -> None:
-        self.connector: BaseConnector | None = TCPConnector()
-        self.session: ClientSession | None = ClientSession(
+        self.connector = TCPConnector()
+        self.session = ClientSession(
             connector=self.connector,
             json_serialize=orjson_serialize,
             timeout=DEFAULT_TIMEOUT,
@@ -32,6 +32,11 @@ class HttpPoolClient(metaclass=EventsMeta):
         await self.session.close()
         self.__logger.debug("successfully closed session")
 
+    # TODO:
+    #  something with this function in future for responding to functionality of bot.
+    #  idk is it normal solution or not.
     async def get(self, url: str, query_parameters: Dict[str, Any] | None = None) -> Any:
-        async with self.session.get(url, params=query_parameters, timeout=DEFAULT_TIMEOUT) as response:
+        async with self.session.get(
+            url, params=query_parameters, timeout=DEFAULT_TIMEOUT
+        ) as response:
             return await response.json()

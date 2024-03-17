@@ -3,7 +3,9 @@ from typing import Coroutine, Callable, Any, TypeVar, Type
 from shinshi.events.base_event import BaseEvent
 
 InstanceT = TypeVar("InstanceT")
-EventListenerCallback = TypeVar("EventListenerCallback", bound=Callable[[...], Coroutine[Any, Any, None]])
+EventListenerCallback = TypeVar(
+    "EventListenerCallback", bound=Callable[[...], Coroutine[Any, Any, None]]
+)
 
 
 class EventListener:

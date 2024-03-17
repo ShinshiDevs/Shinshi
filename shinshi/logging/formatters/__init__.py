@@ -1,1 +1,1 @@
-from .colored_formatter import ColoredFormatter
+from .colored_formatter import ColoredFormatter  # noqa: F401

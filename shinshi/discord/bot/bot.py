@@ -1,16 +1,13 @@
 import concurrent.futures
-import logging
 from typing import Dict, Any
 
 import hikari
 import orjson
-from hikari.emojis import KnownCustomEmoji
 from hikari.impl import GatewayBot, config
 from hikari.intents import Intents
 from hikari.presences import Activity, ActivityType
 from hikari.users import OwnUser
 
-from shinshi import LOGGER
 from shinshi.data import DataProvider
 from shinshi.discord.bot.bot_meta import BotMeta
 from shinshi.discord.bot.cache import Cache
@@ -31,7 +28,6 @@ class Bot(GatewayBot, metaclass=BotMeta):
         http_settings: config.HTTPSettings | None = None,
         intents: Intents = Intents.ALL_UNPRIVILEGED,
     ) -> None:
-        self.__logger: logging.Logger = LOGGER.getChild("gateway")
         self.__cache: Cache = Cache(self)
         self.print_banner(banner, allow_color, force_color, banner_extras)
         super().__init__(
@@ -73,7 +69,7 @@ class Bot(GatewayBot, metaclass=BotMeta):
     def _cache(self, ot: Any) -> None:
         pass
 
-    def get_emoji(self, *keys: str) -> KnownCustomEmoji | str:
+    def get_emoji(self, *keys: str) -> hikari.KnownCustomEmoji | str:
         emoji: Dict[str, Any] | int = self.__emojis
         for key in keys:
             if isinstance(emoji, dict) and key in emoji:

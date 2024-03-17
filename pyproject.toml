@@ -23,6 +23,10 @@ hikari = { version = "^2.0.0.dev122", extras = ["speedups"] }
 memray = "^1.11.0"
 
 
+
+[tool.poetry.group.ruff.dependencies]
+pylint = "^3.1.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

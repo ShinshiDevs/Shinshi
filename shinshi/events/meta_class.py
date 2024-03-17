@@ -6,9 +6,9 @@ from shinshi.events.event_listener import EventListener
 
 class EventsMeta(type):
     def __new__(
-        cls, name: str, bases: Tuple[type, ...], namespace: Dict[str, Any]
+        mcs, name: str, bases: Tuple[type, ...], namespace: Dict[str, Any]
     ):
-        new_cls = super().__new__(cls, name, bases, namespace)
+        new_cls = super().__new__(mcs, name, bases, namespace)
         new_cls._event_methods = {
             attr_name: attr_value
             for attr_name, attr_value in namespace.items()

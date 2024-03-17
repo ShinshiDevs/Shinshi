@@ -1,19 +1,19 @@
 import logging
 from typing import Dict
 
-from shinshi.logging.console_colors import ConsoleColors
+from shinshi.logging.constants import RED, YELLOW, BLUE, CYAN, GREY, BOLD, RESET
 
 
 class ColoredFormatter(logging.Formatter):
     LEVELS: Dict[int, str] = {
-        logging.INFO: ConsoleColors.BLUE,
-        logging.DEBUG: ConsoleColors.GREY,
-        logging.WARNING: ConsoleColors.YELLOW,
-        logging.ERROR: ConsoleColors.RED,
-        logging.CRITICAL: ConsoleColors.RED,
+        logging.INFO: BLUE,
+        logging.DEBUG: GREY,
+        logging.WARNING: YELLOW,
+        logging.ERROR: RED,
+        logging.CRITICAL: RED,
     }
 
     def format(self, record: logging.LogRecord) -> str:
-        record.levelname = f"{self.LEVELS.get(record.levelno, '')}{record.levelname}{ConsoleColors.RESET}"
-        record.name = f"{ConsoleColors.CYAN}{ConsoleColors.BOLD}{record.name}{ConsoleColors.RESET}"
+        record.levelname = f"{self.LEVELS.get(record.levelno, '')}{record.levelname}{RESET}"
+        record.name = f"{CYAN}{BOLD}{record.name}{RESET}"
         return super().format(record)

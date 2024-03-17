@@ -2,6 +2,8 @@ import os
 import re
 from typing import Dict, Any
 
+from shinshi.exceptions.typing import AnyException
+
 DOTENV_REGEX: re.Pattern = re.compile(
     r"^(?P<identifier>[A-Za-z_]+\w*)=(?P<value>[^#]+)(#.*)?$"
 )
@@ -16,6 +18,6 @@ def parse_dotenv_file(file_path: os.PathLike) -> Dict[str, Any]:
                     continue
                 os.environ[match.group("identifier")] = match.group("value").strip()
         return dict(os.environ)
-    except Exception as exception:
+    except AnyException as exception:
         print(f"Error while load .env file: {exception}")
         return {}

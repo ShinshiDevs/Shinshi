@@ -7,10 +7,9 @@ import yaml
 
 from shinshi import LOGGER
 from shinshi.events import event_listener, StartingEvent, EventsMeta
-from shinshi.i18n.constants import DEFAULT_LANGUAGE
+from shinshi.exceptions.typing import AnyException
+from shinshi.i18n.constants import DEFAULT_LANGUAGE, ARGUMENTS_SENTINEL
 from shinshi.i18n.types import I18nGroup
-
-_ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 
 class I18nProvider(metaclass=EventsMeta):
@@ -31,6 +30,39 @@ class I18nProvider(metaclass=EventsMeta):
             ] = self.__build_map(file)
         self.__logger.info("loaded %s languages", ", ".join(list(self.locales.keys())))
 
+    def get(
+        self,
+        key: str,
+        arguments: Dict[str, Any] | None = None,
+        language: str | None = None
+    ) -> str:
+        if arguments is None:
+            arguments = ARGUMENTS_SENTINEL
+        try:
+            value: str | Any = self.__resolve_key(key, arguments, language)
+            return value if isinstance(value, str) else key
+        except AnyException as exception:
+            self.__logger.error(
+                f"Failed to resolve i18n-key {key} in {language}",
+                exc_info=exception
+            )
+            return key
+
+    def get_list(
+        self,
+        key: str,
+        language: str | None = None,
+    ) -> Tuple[str, ...]:
+        try:
+            value: Tuple[str, ...] | Any = self.__resolve_key(key, ARGUMENTS_SENTINEL, language)
+            return value if isinstance(value, tuple) else ()
+        except AnyException as exception:
+            self.__logger.error(
+                f"Failed to resolve list-type i18n-key {key} in {language}",
+                exc_info=exception
+            )
+            return ()
+
     @staticmethod
     def __build_map(file_path: Path) -> I18nGroup:
         with open(file_path, "rb") as stream:
@@ -38,7 +70,9 @@ class I18nProvider(metaclass=EventsMeta):
             if not isinstance(data, dict):
                 data = {}
         root_group: I18nGroup = I18nGroup(name="root")
-        nodes: List[Tuple[I18nGroup, Dict[str, str | I18nGroup | Tuple[str, ...]]]] = [(root_group, data)]
+        nodes: List[Tuple[I18nGroup, Dict[str, str | I18nGroup | Tuple[str, ...]]]] = [
+            (root_group, data)
+        ]
         while nodes:
             parent_group, data = nodes.pop(0)
             for name, value in data.items():
@@ -53,39 +87,6 @@ class I18nProvider(metaclass=EventsMeta):
                         )
                     )
         return root_group
-
-    def get(
-        self,
-        key: str,
-        arguments: Dict[str, Any] | None = None,
-        language: str | None = None
-    ) -> str:
-        if arguments is None:
-            arguments = _ARGUMENTS_SENTINEL
-        try:
-            value: str | Any = self.__resolve_key(key, arguments, language)
-            return value if isinstance(value, str) else key
-        except Exception as exception:
-            self.__logger.error(
-                f"Failed to resolve i18n-key {key} in {language}",
-                exc_info=exception
-            )
-            return key
-
-    def get_list(
-        self,
-        key: str,
-        language: str | None = None,
-    ) -> Tuple[str, ...]:
-        try:
-            value: Tuple[str, ...] | Any = self.__resolve_key(key, _ARGUMENTS_SENTINEL, language)
-            return value if isinstance(value, tuple) else ()
-        except Exception as exception:
-            self.__logger.error(
-                f"Failed to resolve list-type i18n-key {key} in {language}",
-                exc_info=exception
-            )
-            return ()
 
     @staticmethod
     def __find_value_in_group(

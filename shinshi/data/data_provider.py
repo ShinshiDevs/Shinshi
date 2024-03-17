@@ -9,6 +9,9 @@ from shinshi import LOGGER
 from shinshi.events import StartingEvent, EventsMeta, event_listener
 
 
+# TODO: it need to be more simple. It's just a loader for emojis.yaml.
+#   Maybe we can load emojis.yaml in bot, instead of a big class `DataProvider`.
+#   Like this is made in configure_logging.
 class DataProvider(metaclass=EventsMeta):
     def __init__(
         self,

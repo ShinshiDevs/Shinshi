@@ -1,1 +1,1 @@
-from .load import load_dotenv
+from .load import load_dotenv  # noqa: F401
