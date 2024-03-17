@@ -6,10 +6,10 @@ from typing import Any, Dict
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import StartingEvent, RegisterEventsMeta, event_listener
+from shinshi.events import StartingEvent, EventsMeta, event_listener
 
 
-class DataProvider(metaclass=RegisterEventsMeta):
+class DataProvider(metaclass=EventsMeta):
     def __init__(
         self,
         data_dir: Path,

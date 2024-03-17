@@ -5,7 +5,7 @@ from hikari.guilds import Member
 from hikari.impl import CacheComponents, CacheSettings, CacheImpl
 from hikari.impl import GatewayBot
 
-from shinshi.bot.constants import (
+from shinshi.discord.bot.constants import (
     MESSAGE_CACHE_SIZE,
     DM_CHANNEL_CACHE_SIZE,
     MESSAGE_NULL_CACHE_SIZE,

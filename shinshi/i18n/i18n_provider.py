@@ -6,14 +6,14 @@ from typing import Dict, Any, List, Tuple, Sequence
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import event_listener, StartingEvent, RegisterEventsMeta
+from shinshi.events import event_listener, StartingEvent, EventsMeta
 from shinshi.i18n.constants import DEFAULT_LANGUAGE
 from shinshi.i18n.types import I18nGroup
 
 _ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 
-class I18nProvider(metaclass=RegisterEventsMeta):
+class I18nProvider(metaclass=EventsMeta):
     def __init__(self, locales_dir: Path) -> None:
         self.__logger: logging.Logger = LOGGER.getChild("i18n")
         self.__locales_dir: Path = locales_dir

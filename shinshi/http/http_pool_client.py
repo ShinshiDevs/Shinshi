@@ -5,12 +5,12 @@ from aiohttp.client import ClientSession
 from aiohttp.connector import BaseConnector, TCPConnector
 
 from shinshi import LOGGER
-from shinshi.events import RegisterEventsMeta, StartingEvent, StoppingEvent, event_listener
+from shinshi.events import EventsMeta, StartingEvent, StoppingEvent, event_listener
 from shinshi.http.constants import DEFAULT_TIMEOUT
 from shinshi.http.utils.orjson import orjson_serialize
 
 
-class HttpPoolClient(metaclass=RegisterEventsMeta):
+class HttpPoolClient(metaclass=EventsMeta):
     def __init__(self) -> None:
         self.__logger: logging.Logger = LOGGER.getChild("http")
         self.connector: BaseConnector | None = None
