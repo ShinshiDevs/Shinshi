@@ -9,9 +9,7 @@ from shinshi.discord.interactables.interactable import Interactable
 @dataclass
 class Group:
     name: str
-    children: List[Interactable, ...] = field(default_factory=list)
-
-    sub_group: Group | None = None
+    children: List[Group | Interactable, ...] = field(default_factory=list)
 
     def child(self) -> Callable[[Interactable], None]:
         def decorator(interactable: Interactable) -> None:
