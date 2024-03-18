@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import Callable, Awaitable, Any
 
-from shinshi.discord.context.typing import ContextT
+from shinshi.discord.interactables.typing.interactable_callback import InteractableCallbackT
 
 
 @dataclass(kw_only=True)
 class Interactable:
-    callback: Callable[[ContextT, ...], Awaitable[Any]]
+    callback: InteractableCallbackT
 
     defer: bool = False
     bound: bool = False

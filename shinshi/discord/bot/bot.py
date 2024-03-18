@@ -69,6 +69,13 @@ class Bot(GatewayBot, metaclass=BotMeta):
     def _cache(self, ot: Any) -> None:
         pass
 
+    def get_guild_count(self) -> int:
+        return len(self.cache.get_guilds_view())
+
+    def get_member_count(self) -> int:
+        # TODO: put this in cache, because this construction so heavy.
+        return sum(self.cache.get_guild(guild).member_count for guild in self.cache.get_guilds_view())
+
     def get_emoji(self, *keys: str) -> hikari.KnownCustomEmoji | str:
         emoji: Dict[str, Any] | int = self.__emojis
         for key in keys:

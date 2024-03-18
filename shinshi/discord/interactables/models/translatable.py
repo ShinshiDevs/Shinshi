@@ -9,6 +9,7 @@ from shinshi.i18n import I18nProvider
 @dataclass
 class Translatable:
     i18n_key: str
+    fallback: str | None = None
 
     def translate(self, i18n_provider: I18nProvider) -> Dict[Locale, str]:
         translated: Dict[Locale, str] = {}

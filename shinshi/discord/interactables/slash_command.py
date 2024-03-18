@@ -10,4 +10,7 @@ from shinshi.discord.interactables.models.translatable import Translatable
 class SlashCommand(Command):
     description: Translatable
 
+    group: str | None = None
+    sub_group: str | None = None
+
     options: Tuple[Option, ...] = field(default_factory=tuple)

@@ -1,25 +1,25 @@
-from typing import Tuple, Callable, Awaitable, Any
+from typing import Tuple, Callable
 
 from hikari import Permissions
 
-from shinshi.discord.context.typing import ContextT
 from shinshi.discord.interactables.enum.command_type import CommandType
 from shinshi.discord.interactables.models.option import Option
 from shinshi.discord.interactables.models.translatable import Translatable
 from shinshi.discord.interactables.slash_command import SlashCommand
 from shinshi.discord.interactables.typing.hook import HookT
+from shinshi.discord.interactables.typing.interactable_callback import InteractableCallbackT
 
 
 def slash_command(
-    name: str,
-    description: Translatable,
+    name: str | None = None,
+    description: Translatable = Translatable("commands.no_description", "No description"),
     options: Tuple[Option, ...] | None = None,
     hooks: Tuple[HookT, ...] | None = None,
     default_member_permissions: Permissions | None = None,
     dm_enabled: bool | None = None,
     is_nsfw: bool | None = None,
-) -> Callable[[Callable[[ContextT, ...], Awaitable[Any]]], SlashCommand]:
-    def decorator(func: Callable[[ContextT, ...], Awaitable[Any]]) -> SlashCommand:
+) -> Callable[[InteractableCallbackT], SlashCommand]:
+    def decorator(func: InteractableCallbackT) -> SlashCommand:
         return SlashCommand(
             command_type=CommandType.SLASH,
             callback=func,
