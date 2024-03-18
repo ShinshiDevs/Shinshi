@@ -29,7 +29,7 @@ class Bot(GatewayBot, metaclass=BotMeta):
         intents: Intents = Intents.ALL_UNPRIVILEGED,
     ) -> None:
         self.__cache: Cache = Cache(self)
-        self.print_banner(banner, allow_color, force_color, banner_extras)
+        self.__emojis: Dict[str, Any] = data_provider.get_file("emojis")
         super().__init__(
             token=token,
             banner=None,
@@ -40,7 +40,7 @@ class Bot(GatewayBot, metaclass=BotMeta):
             loads=orjson.loads,
             intents=intents,
         )
-        self.__emojis: Dict[str, Any] = data_provider.get_file("emojis")
+        self.print_banner(banner, allow_color, force_color, banner_extras)
         self.event_manager.subscribe(hikari.StartedEvent, self._set_shards_activities)
 
     @event_listener(StartingEvent)

@@ -1,12 +1,11 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from os import environ
 from typing import Sequence
 
 from hikari.impl import config
 from hikari.intents import Intents
 
-from shinshi import __copyright__, __license__, __support__, __github__
+import shinshi
 from shinshi.constants import resources_dir
 from shinshi.data import DataProvider
 from shinshi.discord.bot import Bot
@@ -19,19 +18,16 @@ __all__: Sequence[str] = ("http_pool_client", "i18n_provider", "data_provider")
 http_pool_client: HttpPoolClient = HttpPoolClient()
 i18n_provider: I18nProvider = I18nProvider(resources_dir / "i18n")
 data_provider: DataProvider = DataProvider(resources_dir)
-# I think accessing bot from runtime isn't good idea.
-# In command handler & component handler InteractionContext will
-# have a bot, rest, etc. attributes.
+
 Bot(
     token=environ.get("SHINSHI_DISCORD_TOKEN"),
     data_provider=data_provider,
     banner_extras={
-        "shinshi_copyright": __copyright__,
-        "shinshi_license": __license__,
-        "shinshi_discord_invite": __support__,
-        "shinshi_github_url": __github__,
+        "shinshi_copyright": shinshi.__copyright__,
+        "shinshi_license": shinshi.__license__,
+        "shinshi_discord_invite": shinshi.__support__,
+        "shinshi_github_url": shinshi.__github__,
     },
-    executor=ThreadPoolExecutor(),
     http_settings=config.HTTPSettings(enable_cleanup_closed=False),
     intents=Intents.GUILDS
             | Intents.GUILD_EMOJIS
