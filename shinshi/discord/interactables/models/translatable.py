@@ -14,5 +14,5 @@ class Translatable:
     def translate(self, i18n_provider: I18nProvider) -> Dict[Locale, str]:
         translated: Dict[Locale, str] = {}
         for name in i18n_provider.locales.keys():
-            i18n_provider.get(self.i18n_key, language=name)
+            i18n_provider.get(self.i18n_key, locale=name)
         return translated

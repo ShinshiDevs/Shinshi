@@ -34,16 +34,16 @@ class I18nProvider(metaclass=EventsMeta):
         self,
         key: str,
         arguments: Dict[str, Any] | None = None,
-        language: str | None = None
+        locale: str | None = None
     ) -> str:
         if arguments is None:
             arguments = ARGUMENTS_SENTINEL
         try:
-            value: str | Any = self.__resolve_key(key, arguments, language)
+            value: str | Any = self.__resolve_key(key, arguments, locale)
             return value if isinstance(value, str) else key
         except AnyException as exception:
             self.__logger.error(
-                f"Failed to resolve i18n-key {key} in {language}",
+                f"Failed to resolve i18n-key {key} in {locale}",
                 exc_info=exception
             )
             return key
@@ -51,14 +51,14 @@ class I18nProvider(metaclass=EventsMeta):
     def get_list(
         self,
         key: str,
-        language: str | None = None,
+        locale: str | None = None,
     ) -> Tuple[str, ...]:
         try:
-            value: Tuple[str, ...] | Any = self.__resolve_key(key, ARGUMENTS_SENTINEL, language)
+            value: Tuple[str, ...] | Any = self.__resolve_key(key, ARGUMENTS_SENTINEL, locale)
             return value if isinstance(value, tuple) else ()
         except AnyException as exception:
             self.__logger.error(
-                f"Failed to resolve list-type i18n-key {key} in {language}",
+                f"Failed to resolve list-type i18n-key {key} in {locale}",
                 exc_info=exception
             )
             return ()

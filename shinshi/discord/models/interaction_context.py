@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Sequence, Tuple, Dict
 
+from hikari import Locale
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed
 from hikari.files import Resourceish
@@ -115,9 +116,9 @@ class InteractionContext:
         *,
         translation_type: TranslationType = TranslationType.TEXT,
     ) -> str | Tuple[str, ...] | None:
-        if translation_type is TranslationType.LIST:
-            if arguments:
-                raise ValueError("Arguments is not compatible with list-type translation")
-            return i18n_provider.get_list(key, language=self.interaction.locale)
-        if translation_type is TranslationType.TEXT:
-            return i18n_provider.get(key, arguments, language=self.interaction.locale)
+        locale: Locale = self.interaction.locale or self.interaction.guild_locale
+        match translation_type:
+            case TranslationType.TEXT:
+                return i18n_provider.get(key, arguments, locale=locale)
+            case TranslationType.LIST:
+                return i18n_provider.get_list(key, locale=locale)
