@@ -18,5 +18,5 @@ class Option:
 
     choices: Tuple[Choice, ...] = field(default_factory=tuple)
 
-    required: bool = True
-    is_autocomplete: bool = False
+    is_required: bool = True
+    autocomplete: bool = False
