@@ -5,4 +5,4 @@ from shinshi.discord.interactables.models.option import Option
 
 @dataclass
 class AutocompleteOption(Option):
-    autocomplete = True
+    is_autocomplete = True

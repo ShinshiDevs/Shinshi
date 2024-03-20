@@ -16,13 +16,15 @@ from hikari.users import PartialUser
 from shinshi.discord.bot import Bot
 from shinshi.discord.enum.translation_type import TranslationType
 from shinshi.discord.interactables.interactable import Interactable
-from shinshi.runtime import i18n_provider
+from shinshi.i18n import I18nProvider
 
 
 @dataclass(kw_only=True)
 class InteractionContext:
     bot: Bot
+    i18n_provider: I18nProvider
     interaction: CommandInteraction | ComponentInteraction
+
     interactable: Interactable
 
     _has_created_response: bool = False
@@ -119,6 +121,6 @@ class InteractionContext:
         locale: Locale = self.interaction.locale or self.interaction.guild_locale
         match translation_type:
             case TranslationType.TEXT:
-                return i18n_provider.get(key, arguments, locale=locale)
+                return self.i18n_provider.get(key, arguments, locale=locale)
             case TranslationType.LIST:
-                return i18n_provider.get_list(key, locale=locale)
+                return self.i18n_provider.get_list(key, locale=locale)

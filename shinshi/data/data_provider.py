@@ -6,7 +6,8 @@ from typing import Any, Dict
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import StartingEvent, EventsMeta, event_listener
+from shinshi.events import EventsMeta, event_listener
+from shinshi.events.lifetime_events import StartingEvent
 
 
 # TODO: it need to be more simple. It's just a loader for emojis.yaml.

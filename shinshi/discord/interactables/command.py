@@ -15,7 +15,7 @@ class Command(Interactable):
     name: str
 
     default_member_permissions: Permissions = Permissions.NONE
-    dm_enabled: bool = False
+    is_dm_enabled: bool = False
     guild: SnowflakeishOr[PartialGuild] | None = None
     is_nsfw: bool = False
 

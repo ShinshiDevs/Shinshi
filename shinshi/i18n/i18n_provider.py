@@ -6,7 +6,8 @@ from typing import Dict, Any, List, Tuple, Sequence
 import yaml
 
 from shinshi import LOGGER
-from shinshi.events import event_listener, StartingEvent, EventsMeta
+from shinshi.events import event_listener, EventsMeta
+from shinshi.events.lifetime_events import StartingEvent
 from shinshi.exceptions.typing import AnyException
 from shinshi.i18n.constants import DEFAULT_LANGUAGE, ARGUMENTS_SENTINEL
 from shinshi.i18n.types import I18nGroup

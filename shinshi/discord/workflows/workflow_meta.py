@@ -4,11 +4,15 @@ from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.workflows.constants import WORKFLOW_INTERACTABLES
 
 
-class WorkflowMeta:
-    def __new__(cls, name: str, bases: Tuple[type], attrs: Dict[str, Any], *args, **kwargs):
+class WorkflowMeta(type):
+    def __new__(
+        mcs, name: str, bases: Tuple[type, ...], namespace: Dict[str, Any]
+    ):
+        new_cls = super().__new__(mcs, name, bases, namespace)
         setattr(
-            cls,
+            new_cls,
             WORKFLOW_INTERACTABLES,
-            list(base for base in bases if isinstance(base, Interactable))
+            list(attr_value for _, attr_value in namespace.items()
+                 if isinstance(attr_value, Interactable))
         )
-        return super().__new__(cls, name, bases, attrs, *args, **kwargs)
+        return new_cls

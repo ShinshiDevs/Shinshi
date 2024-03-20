@@ -9,9 +9,11 @@ import shinshi
 from shinshi.constants import resources_dir
 from shinshi.data import DataProvider
 from shinshi.discord.bot import Bot
-from shinshi.events import StoppingEvent, StartingEvent, event_manager
+from shinshi.events import event_manager
+from shinshi.events.lifetime_events import StartingEvent, StoppingEvent, StartingBotEvent
 from shinshi.http import HttpPoolClient
 from shinshi.i18n import I18nProvider
+from shinshi.workflows import general
 
 __all__: Sequence[str] = ("http_pool_client", "i18n_provider", "data_provider")
 
@@ -21,6 +23,10 @@ data_provider: DataProvider = DataProvider(resources_dir)
 
 Bot(
     token=environ.get("SHINSHI_DISCORD_TOKEN"),
+    workflows=(
+        general.workflows,
+    ),
+    i18n_provider=i18n_provider,
     data_provider=data_provider,
     banner_extras={
         "shinshi_copyright": shinshi.__copyright__,
@@ -39,6 +45,7 @@ Bot(
 def run(loop: asyncio.AbstractEventLoop) -> None:
     try:
         loop.run_until_complete(event_manager.emit(StartingEvent))
+        loop.run_until_complete(event_manager.emit(StartingBotEvent))
         loop.run_forever()
     except KeyboardInterrupt:
         loop.run_until_complete(event_manager.emit(StoppingEvent))

@@ -1,8 +1,9 @@
 import concurrent.futures
-from typing import Dict, Any
+from typing import Dict, Any, Sequence
 
 import hikari
 import orjson
+from hikari.applications import Application
 from hikari.impl import GatewayBot, config
 from hikari.intents import Intents
 from hikari.presences import Activity, ActivityType
@@ -11,14 +12,20 @@ from hikari.users import OwnUser
 from shinshi.data import DataProvider
 from shinshi.discord.bot.bot_meta import BotMeta
 from shinshi.discord.bot.cache import Cache
-from shinshi.events import StartingEvent, StoppingEvent, event_listener
+from shinshi.discord.workflows.workflow_group import WorkflowGroup
+from shinshi.discord.workflows.workflow_manager import WorkflowManager
+from shinshi.events import event_listener
+from shinshi.events.lifetime_events import StartingBotEvent, StoppingEvent
+from shinshi.i18n import I18nProvider
 
 
 class Bot(GatewayBot, metaclass=BotMeta):
     def __init__(
         self,
         token: str,
+        i18n_provider: I18nProvider,
         data_provider: DataProvider,
+        workflows: Sequence[WorkflowGroup],
         *,
         allow_color: bool = True,
         banner: str | None = "shinshi",
@@ -28,8 +35,14 @@ class Bot(GatewayBot, metaclass=BotMeta):
         http_settings: config.HTTPSettings | None = None,
         intents: Intents = Intents.ALL_UNPRIVILEGED,
     ) -> None:
+        self.application: Application | None = None
         self.__cache: Cache = Cache(self)
         self.__emojis: Dict[str, Any] = data_provider.get_file("emojis")
+        self.__workflow_manager: WorkflowManager = WorkflowManager(
+            self,
+            i18n_provider,
+            workflows
+        )
         super().__init__(
             token=token,
             banner=None,
@@ -41,10 +54,12 @@ class Bot(GatewayBot, metaclass=BotMeta):
             intents=intents,
         )
         self.print_banner(banner, allow_color, force_color, banner_extras)
-        self.event_manager.subscribe(hikari.StartedEvent, self._set_shards_activities)
+        self.event_manager.subscribe(hikari.ShardReadyEvent, self._set_shard_activity)
+        self.event_manager.subscribe(hikari.StartedEvent, self._sync_commands)
 
-    @event_listener(StartingEvent)
+    @event_listener(StartingBotEvent)
     async def start(self, *args, **kwargs) -> None:
+        self.__workflow_manager.build()
         await super().start(*args, **kwargs)
 
     @event_listener(StoppingEvent)
@@ -85,11 +100,15 @@ class Bot(GatewayBot, metaclass=BotMeta):
                 return key
         return self.cache.get_emoji(emoji)
 
-    async def _set_shards_activities(self, _) -> None:
-        for _, shard in self.shards.items():
-            await shard.update_presence(
-                activity=Activity(
-                    type=ActivityType.WATCHING,
-                    name=f"Shard #{shard.id + 1} / {self.shard_count}"
-                )
+    async def _set_shard_activity(self, event: hikari.ShardReadyEvent) -> None:
+        await event.shard.update_presence(
+            activity=Activity(
+                type=ActivityType.WATCHING,
+                name=f"Shard #{event.shard.id + 1} / {self.shard_count}"
             )
+        )
+
+    async def _sync_commands(self, _: hikari.StartedEvent) -> None:
+        if self.application is None:
+            self.application = await self.rest.fetch_application()
+        await self.__workflow_manager.sync_commands(self.application.id)

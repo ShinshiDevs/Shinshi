@@ -3,8 +3,8 @@ from hikari.embeds import Embed
 import shinshi
 from shinshi.constants import icons_dir
 from shinshi.discord.interactables.decorators.slash_command import slash_command
-from shinshi.discord.interactables.models.translatable import Translatable
 from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.workflow_base import WorkflowBase
 from shinshi.utils.int import get_separated_number
 

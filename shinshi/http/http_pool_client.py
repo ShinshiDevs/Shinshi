@@ -5,7 +5,8 @@ from aiohttp.client import ClientSession
 from aiohttp.connector import BaseConnector, TCPConnector
 
 from shinshi import LOGGER
-from shinshi.events import EventsMeta, StartingEvent, StoppingEvent, event_listener
+from shinshi.events import EventsMeta, event_listener
+from shinshi.events.lifetime_events import StartingEvent, StoppingEvent
 from shinshi.http.constants import DEFAULT_TIMEOUT
 from shinshi.http.utils.orjson import orjson_serialize
 
