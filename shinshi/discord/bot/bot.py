@@ -31,5 +31,3 @@ class Bot(BotBase):
             else:
                 return key
         return self.cache.get_emoji(emoji)
-
-
