@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, Sequence, Tuple, Dict, TypeVar
 
-from hikari import Locale
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed
 from hikari.files import Resourceish
@@ -14,7 +13,7 @@ from hikari.undefined import UNDEFINED, UndefinedOr
 from hikari.users import PartialUser
 
 from shinshi.discord.interactables.interactable import Interactable
-from shinshi.i18n import I18nProvider
+from shinshi.discord.models.interaction_i18n import InteractionLocale
 
 T = TypeVar("T")
 
@@ -22,10 +21,8 @@ T = TypeVar("T")
 @dataclass(kw_only=True)
 class InteractionContext:
     bot: T
-    i18n_provider: I18nProvider
-
     interaction: CommandInteraction | ComponentInteraction
-    locale: Locale
+    i18n: InteractionLocale
 
     interactable: Interactable
 
@@ -109,16 +106,3 @@ class InteractionContext:
         await self.bot.rest.delete_interaction_response(
             application=self.interaction.application_id, token=self.interaction.token
         )
-
-    def translate(
-        self,
-        key: str,
-        arguments: Dict[str, Any] | None = None,
-    ) -> str | Tuple[str, ...] | None:
-        return self.i18n_provider.get(key, arguments, locale=self.locale)
-
-    def translate_list(
-        self,
-        key: str,
-    ) -> str | Tuple[str, ...] | None:
-        return self.i18n_provider.get_list(key, locale=self.locale)

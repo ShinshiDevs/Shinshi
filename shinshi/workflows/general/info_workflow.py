@@ -19,20 +19,20 @@ class InfoWorkflow(WorkflowBase):
             Embed(
                 title=context.bot.me.username,
                 url="https://github.com/ShinshiDevs",
-                description=context.translate(
+                description=context.i18n.get(
                     "commands.info.embed.description",
                     {"shard": context.interaction.get_guild().shard_id}
                 ),
             )
             .set_thumbnail(context.bot.me.avatar_url)
             .set_author(
-                name=context.translate("commands.info.embed.author.name"),
+                name=context.i18n.get("commands.info.embed.author.name"),
                 icon=ICONS_DIR / "information",
             )
             .set_footer(text=f"{shinshi.__copyright__} ({shinshi.__license__})")
             .add_field(
-                name=context.translate("commands.info.embed.fields.information.name"),
-                value=context.translate(
+                name=context.i18n.get("commands.info.embed.fields.information.name"),
+                value=context.i18n.get(
                     "commands.info.embed.fields.information.value",
                     {
                         "guilds": get_separated_number(context.bot.get_guild_count()),
