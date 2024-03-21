@@ -1,4 +1,5 @@
 import logging
+import os.path
 from glob import glob
 from pathlib import Path
 from typing import Dict, Any, List, Tuple, Sequence
@@ -6,39 +7,43 @@ from typing import Dict, Any, List, Tuple, Sequence
 import yaml
 
 from shinshi import LOGGER
+from shinshi.discord.locale import Locale
 from shinshi.events import event_listener, EventsMeta
 from shinshi.events.lifetime_events import StartingEvent
 from shinshi.exceptions.typing import AnyException
-from shinshi.i18n.constants import DEFAULT_LANGUAGE, ARGUMENTS_SENTINEL
 from shinshi.i18n.types import I18nGroup
+
+DEFAULT_LANGUAGE: Locale = Locale.EN_US
+_ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 
 class I18nProvider(metaclass=EventsMeta):
     def __init__(self, locales_dir: Path) -> None:
         self.__logger: logging.Logger = LOGGER.getChild("i18n")
         self.__locales_dir: Path = locales_dir
-        self.locales: Dict[str, I18nGroup] = {}
+        self.locales: Dict[Locale, I18nGroup] = {}
 
     @event_listener(StartingEvent)
     async def start(self) -> None:
-        if not self.__locales_dir.exists():
-            raise RuntimeError("Locales directory doesn't exist or not detected.")
         self.__logger.debug("loading localization files from %s", self.__locales_dir)
         for file_name in glob("*.yaml", root_dir=self.__locales_dir):
             file: Path = self.__locales_dir / file_name
             self.locales[
-                file.name.replace(file.suffix, "")
+                Locale.convert(os.path.splitext(file.name)[0])
             ] = self.__build_map(file)
-        self.__logger.info("loaded %s languages", ", ".join(list(self.locales.keys())))
+        self.__logger.info(
+            "loaded %s languages",
+            ", ".join(locale.name for locale, _ in self.locales.items())
+        )
 
     def get(
         self,
         key: str,
         arguments: Dict[str, Any] | None = None,
-        locale: str | None = None
+        locale: Locale | None = None
     ) -> str:
         if arguments is None:
-            arguments = ARGUMENTS_SENTINEL
+            arguments = _ARGUMENTS_SENTINEL
         try:
             value: str | Any = self.__resolve_key(key, arguments, locale)
             return value if isinstance(value, str) else key
@@ -52,10 +57,10 @@ class I18nProvider(metaclass=EventsMeta):
     def get_list(
         self,
         key: str,
-        locale: str | None = None,
+        locale: Locale | None = None,
     ) -> Tuple[str, ...]:
         try:
-            value: Tuple[str, ...] | Any = self.__resolve_key(key, ARGUMENTS_SENTINEL, locale)
+            value: Tuple[str, ...] | Any = self.__resolve_key(key, _ARGUMENTS_SENTINEL, locale)
             return value if isinstance(value, tuple) else ()
         except AnyException as exception:
             self.__logger.error(
@@ -105,10 +110,10 @@ class I18nProvider(metaclass=EventsMeta):
     def __get_value_by_key(
         self,
         key: str,
-        language: str | None
+        locale: Locale | None
     ) -> str | Tuple[str, ...] | None:
         sub_keys: Sequence[str] = key.split(".")
-        language_map: I18nGroup | None = self.locales.get(language) if language else None
+        language_map: I18nGroup | None = self.locales.get(locale) if locale else None
         has_checked_default: bool = False
         if not language_map:
             language_map = self.locales.get(DEFAULT_LANGUAGE)
@@ -130,9 +135,9 @@ class I18nProvider(metaclass=EventsMeta):
         self,
         key: str,
         arguments: Dict[str, Any],
-        language: str | None = None
+        locale: Locale | None = None
     ) -> str | Tuple[str, ...] | None:
-        value: str | Tuple[str, ...] | None = self.__get_value_by_key(key, language)
+        value: str | Tuple[str, ...] | None = self.__get_value_by_key(key, locale)
         if value is None:
             return key
         return value if isinstance(value, tuple) else value.format(**arguments)

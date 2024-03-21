@@ -11,12 +11,11 @@ from shinshi.discord.interactables.typing.hook import HookT
 @dataclass(kw_only=True)
 class Command(Interactable):
     command_type: CommandType
-
     name: str
 
+    guild: SnowflakeishOr[PartialGuild] | None = None
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False
-    guild: SnowflakeishOr[PartialGuild] | None = None
     is_nsfw: bool = False
 
     hooks: Tuple[HookT, ...] = field(default_factory=tuple)

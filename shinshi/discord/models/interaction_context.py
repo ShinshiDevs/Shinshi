@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import Any, Sequence, Tuple, Dict
+from typing import Any, Sequence, Tuple, Dict, TypeVar
 
 from hikari import Locale
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed
 from hikari.files import Resourceish
-from hikari.guilds import PartialRole, PartialGuild
+from hikari.guilds import PartialRole
 from hikari.interactions import CommandInteraction, ComponentInteraction, ResponseType
 from hikari.messages import Message
 from hikari.messages import MessageFlag
@@ -13,17 +13,19 @@ from hikari.snowflakes import SnowflakeishSequence
 from hikari.undefined import UNDEFINED, UndefinedOr
 from hikari.users import PartialUser
 
-from shinshi.discord.bot import Bot
-from shinshi.discord.enum.translation_type import TranslationType
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.i18n import I18nProvider
+
+T = TypeVar("T")
 
 
 @dataclass(kw_only=True)
 class InteractionContext:
-    bot: Bot
+    bot: T
     i18n_provider: I18nProvider
+
     interaction: CommandInteraction | ComponentInteraction
+    locale: Locale
 
     interactable: Interactable
 
@@ -58,7 +60,7 @@ class InteractionContext:
         if self._has_deferred_response:
             response_type = ResponseType.DEFERRED_MESSAGE_UPDATE
         else:
-            if self.interactable.defer:
+            if self.interactable.is_defer:
                 await self.defer()
         await self.bot.rest.create_interaction_response(
             interaction=self.interaction.id,
@@ -108,19 +110,15 @@ class InteractionContext:
             application=self.interaction.application_id, token=self.interaction.token
         )
 
-    def get_guild(self) -> PartialGuild:
-        return self.interaction.get_guild()
-
     def translate(
         self,
         key: str,
         arguments: Dict[str, Any] | None = None,
-        *,
-        translation_type: TranslationType = TranslationType.TEXT,
     ) -> str | Tuple[str, ...] | None:
-        locale: Locale = self.interaction.locale or self.interaction.guild_locale
-        match translation_type:
-            case TranslationType.TEXT:
-                return self.i18n_provider.get(key, arguments, locale=locale)
-            case TranslationType.LIST:
-                return self.i18n_provider.get_list(key, locale=locale)
+        return self.i18n_provider.get(key, arguments, locale=self.locale)
+
+    def translate_list(
+        self,
+        key: str,
+    ) -> str | Tuple[str, ...] | None:
+        return self.i18n_provider.get_list(key, locale=self.locale)

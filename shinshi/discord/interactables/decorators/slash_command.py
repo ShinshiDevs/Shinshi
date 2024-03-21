@@ -12,7 +12,7 @@ from shinshi.discord.models.translatable import Translatable
 
 def slash_command(
     name: str | None = None,
-    description: Translatable = Translatable("commands.no_description", "No description"),
+    description: Translatable | None = None,
     options: Tuple[Option, ...] | None = None,
     hooks: Tuple[HookT, ...] | None = None,
     default_member_permissions: Permissions | None = None,

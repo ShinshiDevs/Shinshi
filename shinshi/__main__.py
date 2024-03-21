@@ -1,10 +1,10 @@
 from shinshi.aio.loop import create_loop
-from shinshi.constants import dotenv_file, logging_dir
+from shinshi.constants import SECRETS_PATH, LOGGING_DIR
 from shinshi.dotenv import load_dotenv
 from shinshi.logging.utils import configure_logging
 
-load_dotenv(dotenv_file)
-configure_logging(logging_dir / "configuration.yaml")
+load_dotenv(SECRETS_PATH / "app.env")
+configure_logging(LOGGING_DIR / "configuration.yaml")
 
 if __name__ == '__main__':
     from shinshi import runtime

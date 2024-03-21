@@ -7,7 +7,7 @@ from shinshi.discord.interactables.typing.interactable_callback import Interacta
 class Interactable:
     callback: InteractableCallbackT
 
-    defer: bool = False
-    bound: bool = False
-
+    is_defer: bool = False
+    is_bound: bool = False
+    """Is interaction not hidden and only for one user."""
     is_ephemeral: bool = False

@@ -5,13 +5,11 @@ from hikari.guilds import Member
 from hikari.impl import CacheComponents, CacheSettings, CacheImpl
 from hikari.impl import GatewayBot
 
-from shinshi.discord.bot.constants import (
-    MESSAGE_CACHE_SIZE,
-    DM_CHANNEL_CACHE_SIZE,
-    MESSAGE_NULL_CACHE_SIZE,
-    CHANNEL_NULL_CACHE_SIZE,
-    MEMBER_CACHE_SIZE,
-)
+DM_CHANNEL_CACHE_SIZE: int = 0
+MEMBER_CACHE_SIZE: int = 1_000
+MESSAGE_CACHE_SIZE: int = 1_00
+MESSAGE_NULL_CACHE_SIZE: int = 1_000
+CHANNEL_NULL_CACHE_SIZE: int = 1_000
 
 
 class Cache(CacheImpl):

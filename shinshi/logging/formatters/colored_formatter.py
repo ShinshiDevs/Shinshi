@@ -1,7 +1,13 @@
 import logging
 from typing import Dict
 
-from shinshi.logging.constants import RED, YELLOW, BLUE, CYAN, GREY, BOLD, RESET
+GREY: str = "\033[90m"
+RED: str = "\033[91m"
+YELLOW: str = "\033[93m"
+CYAN: str = "\033[96m"
+BLUE: str = "\033[94m"
+BOLD: str = "\033[1m"
+RESET: str = "\033[0m"
 
 
 class ColoredFormatter(logging.Formatter):

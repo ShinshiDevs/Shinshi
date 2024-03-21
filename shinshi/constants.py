@@ -1,8 +1,7 @@
 import os
 from pathlib import Path
 
-root_dir: Path = Path(os.getcwd())
-dotenv_file = root_dir / "secrets" / "app.env"
-logging_dir: Path = root_dir / "logging"
-resources_dir: Path = root_dir / "resources"
-icons_dir: Path = resources_dir / "images" / "icons"
+SECRETS_PATH: Path = Path(os.getcwd(), "secrets")
+LOGGING_DIR: Path = Path(os.getcwd(), "logging")
+RESOURCES_DIR: Path = Path(os.getcwd(), "resources")
+ICONS_DIR: Path = Path(os.getcwd(), "secrets")
