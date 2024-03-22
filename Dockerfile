@@ -1,19 +1,29 @@
-# Specify the required Python version.
+# Python.
 ARG PYTHON_IMAGE=python:3.12-alpine
 FROM ${PYTHON_IMAGE}
-ENV SHINSHI_PYTHON_EXECUTABLE=python3.12
-# Required dependencies for compiling project's packages
-RUN apk add --no-cache --virtual .build gcc libffi-dev musl-dev yaml-dev && \
-    pip install --upgrade pip && \
-    pip install setuptools poetry && \
-    apk del .build
+
+ARG PYTHON_EXECUTABLE=python3.12
+ARG WORKING_DIRECTORY=/usr/shinshi
+ARG VENV_DIRECTORY=${WORKING_DIRECTORY}/.venv
+
 # Create the working directory.
-WORKDIR /usr/Shinshi/
-# Project files copy
+RUN mkdir -p ${WORKING_DIRECTORY}
+WORKDIR ${WORKING_DIRECTORY}
+
+# Make and activate a virtual environment for the dependencies.
+RUN mkdir ${VENV_DIRECTORY}
+RUN ${PYTHON_EXECUTABLE} -m venv ${VENV_DIRECTORY}
+RUN . ${VENV_DIRECTORY}/bin/activate
+
+# Install the bot's dependencies.
+RUN apk add --no-cache --virtual gcc libffi-dev musl-dev yaml-dev
+COPY requirements.txt ${WORKING_DIRECTORY}
+RUN ${PYTHON_EXECUTABLE} -m pip install -r requirements.txt
+
+# Copy the source code.
 COPY . .
-# Install the project's dependencies.
-RUN poetry config virtualenvs.in-project true && \
-    poetry install --quiet --no-interaction --no-root --no-dev --with discord
-# Start
+
+# Yuri Gagarin: "Let’s go!"
+ENV SHINSHI_PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE}
 STOPSIGNAL SIGINT
 ENTRYPOINT ["/bin/sh", "-c", "poetry run ${SHINSHI_PYTHON_EXECUTABLE} -OOm shinshi"]

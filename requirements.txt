@@ -1,0 +1,6 @@
+aiohttp
+uvloop
+cachetools
+hikari
+orjson
+pyyaml

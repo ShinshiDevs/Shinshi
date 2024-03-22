@@ -10,6 +10,9 @@ resources/images/icons/**/*.webp
 ### Visual Studio Code
 .vscode
 ### Python
+.venv
+vevn
 __pycache__/
-### Poetry
-*.lock
+### macOS
+*.Thumbs
+**/.DS_STORE

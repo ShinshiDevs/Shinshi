@@ -1,6 +1,6 @@
 import logging
 import logging.config
-from pathlib import Path
+import os
 from typing import Any
 
 import yaml
@@ -8,7 +8,7 @@ import yaml
 from shinshi.exceptions.typing import AnyException
 
 
-def configure_logging(file: Path) -> None:
+def configure_logging(file: os.PathLike) -> None:
     try:
         with open(file, "rb") as stream:
             data: dict[str, Any] = yaml.load(stream, Loader=yaml.CLoader)

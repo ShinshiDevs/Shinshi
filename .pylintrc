@@ -1,5 +1,5 @@
 [MASTER]
-ignore-paths=.run,docker,lib,logging,resources,secrets
+ignore-paths=docker,logging,resources,secrets
 
 [MESSAGES CONTROL]
 disable=missing-docstring,

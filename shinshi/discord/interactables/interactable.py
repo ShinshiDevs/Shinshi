@@ -9,5 +9,5 @@ class Interactable:
 
     is_defer: bool = False
     is_bound: bool = False
-    """Is interaction not hidden and only for one user."""
+    """Is this interaction is personal for one user and not hidden from other."""
     is_ephemeral: bool = False

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Tuple
 
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.workflows.constants import WORKFLOW_INTERACTABLES
@@ -12,4 +12,4 @@ class WorkflowBase(metaclass=WorkflowMeta):
         name: str | None = None,
     ) -> None:
         self.name: str = name or type(self).__name__
-        self.interactables: List[Interactable, ...] = getattr(self, WORKFLOW_INTERACTABLES, [])
+        self.interactables: Tuple[Interactable, ...] = getattr(self, WORKFLOW_INTERACTABLES, [])

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Sequence, Tuple, Dict, TypeVar
+from typing import Any, Sequence, TypeVar
 
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed

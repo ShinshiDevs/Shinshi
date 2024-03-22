@@ -2,13 +2,13 @@ import logging
 import os.path
 from glob import glob
 from pathlib import Path
-from typing import Dict, Any, List, Tuple, Sequence
+from typing import Any, Dict, List, Sequence, Tuple
 
 import yaml
 
-from shinshi import LOGGER
+from shinshi import logger
 from shinshi.discord.locale import Locale
-from shinshi.events import event_listener, EventsMeta
+from shinshi.events import EventsMeta, event_listener
 from shinshi.events.lifetime_events import StartingEvent
 from shinshi.exceptions.typing import AnyException
 from shinshi.i18n.types import I18nGroup
@@ -19,7 +19,7 @@ _ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 class I18nProvider(metaclass=EventsMeta):
     def __init__(self, locales_dir: Path) -> None:
-        self.__logger: logging.Logger = LOGGER.getChild("i18n")
+        self.__logger: logging.Logger = logger.getChild("i18n")
         self.__locales_dir: Path = locales_dir
         self.locales: Dict[Locale, I18nGroup] = {}
 

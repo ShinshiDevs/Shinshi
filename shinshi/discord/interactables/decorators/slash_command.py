@@ -14,7 +14,7 @@ def slash_command(
     name: str | None = None,
     description: Translatable | None = None,
     options: Tuple[Option, ...] | None = None,
-    hooks: Tuple[HookT, ...] | None = None,
+    hooks: Tuple[HookT, ...] | None = None,  # type: ignore
     default_member_permissions: Permissions | None = None,
     dm_enabled: bool | None = None,
     is_nsfw: bool | None = None,

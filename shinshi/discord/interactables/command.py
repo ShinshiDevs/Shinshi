@@ -18,4 +18,4 @@ class Command(Interactable):
     is_dm_enabled: bool = False
     is_nsfw: bool = False
 
-    hooks: Tuple[HookT, ...] = field(default_factory=tuple)
+    hooks: Tuple[HookT, ...] = field(default_factory=tuple)  # type: ignore

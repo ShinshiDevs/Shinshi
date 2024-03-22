@@ -22,5 +22,5 @@ loggers:
     propagate: yes
   'hikari-rest':
     handlers: [ console ]
-    level: INFO
+    level: TRACE_HIKARI  # Can be INFO, TRACE_HIKARI
 

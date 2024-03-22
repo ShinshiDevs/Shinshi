@@ -4,7 +4,7 @@ from typing import Any, Dict
 from aiohttp.client import ClientSession, ClientTimeout
 from aiohttp.connector import BaseConnector, TCPConnector
 
-from shinshi import LOGGER
+from shinshi import logger
 from shinshi.events import EventsMeta, event_listener
 from shinshi.events.lifetime_events import StartingEvent, StoppingEvent
 from shinshi.http.utils.orjson import orjson_serialize
@@ -14,7 +14,7 @@ DEFAULT_TIMEOUT: ClientTimeout = ClientTimeout(total=5)
 
 class HttpPoolClient(metaclass=EventsMeta):
     def __init__(self) -> None:
-        self.__logger: logging.Logger = LOGGER.getChild("http")
+        self.__logger: logging.Logger = logger.getChild("http")
         self.connector: BaseConnector | None = None
         self.session: ClientSession | None = None
 
