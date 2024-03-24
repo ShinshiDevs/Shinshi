@@ -2,8 +2,8 @@
 from asyncio import iscoroutinefunction
 from typing import Dict, List, Type
 
-from shinshi.events.base_event import BaseEvent
-from shinshi.events.event_listener import EventListener, EventListenerCallback
+from shinshi.framework.events.base_event import BaseEvent
+from shinshi.framework.events.event_listener import EventListener, EventListenerCallback
 
 
 class EventManager:

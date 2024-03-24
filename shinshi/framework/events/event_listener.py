@@ -1,6 +1,6 @@
 from typing import Coroutine, Callable, Any, TypeVar, Type
 
-from shinshi.events.base_event import BaseEvent
+from shinshi.framework.events.base_event import BaseEvent
 
 InstanceT = TypeVar("InstanceT")
 EventListenerCallback = TypeVar(

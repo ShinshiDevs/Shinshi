@@ -1,12 +1,12 @@
 from typing import Any, ClassVar, Dict, Literal, Self, Type, TypeVar, overload
 
-from shinshi.di.exceptions import InjectionError
+from shinshi.framework.di.exceptions import InjectionError
 
 T = TypeVar("T")
 InstanceT = TypeVar("InstanceT")
 
 
-class DependencyInjection:
+class DependencyInjector:
     container: ClassVar[Dict[str | Type, Any]] = dict()
     key: str | Type[T]
 
@@ -46,3 +46,6 @@ class DependencyInjection:
         if value is None:
             raise InjectionError(key)
         return value
+
+
+DI = DependencyInjector

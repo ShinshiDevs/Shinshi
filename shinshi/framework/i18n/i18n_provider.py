@@ -8,10 +8,10 @@ import yaml
 
 from shinshi import logger
 from shinshi.discord.locale import Locale
-from shinshi.events import EventsMeta, event_listener
-from shinshi.events.lifetime_events import StartingEvent
-from shinshi.exceptions.typing import AnyException
-from shinshi.i18n.types import I18nGroup
+from shinshi.framework.events import EventsMeta, event_listener
+from shinshi.framework.events.lifetime_events import StartingEvent
+from shinshi.framework.exceptions.typing import AnyException
+from shinshi.framework.i18n.types import I18nGroup
 
 DEFAULT_LANGUAGE: Locale = Locale.EN_US
 _ARGUMENTS_SENTINEL: Dict[str, Any] = {}

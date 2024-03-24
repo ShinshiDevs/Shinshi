@@ -1,6 +1,6 @@
 import asyncio
 
-from shinshi.aio.event_policy import setup_event_policy
+from shinshi.framework.aio.event_policy import setup_event_policy
 
 
 def create_loop() -> asyncio.AbstractEventLoop:

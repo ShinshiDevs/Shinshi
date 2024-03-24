@@ -6,7 +6,7 @@ from shinshi.discord.interactables.decorators.slash_command import slash_command
 from shinshi.discord.models.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.workflow_base import WorkflowBase
-from shinshi.utils.int import get_separated_number
+from shinshi.framework.utils.int import get_separated_number
 
 
 class InfoWorkflow(WorkflowBase):

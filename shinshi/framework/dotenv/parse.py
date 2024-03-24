@@ -2,7 +2,7 @@ import os
 import re
 from typing import Dict, Any
 
-from shinshi.exceptions.typing import AnyException
+from shinshi.framework.exceptions.typing import AnyException
 
 DOTENV_REGEX: re.Pattern = re.compile(
     r"^(?P<identifier>[A-Za-z_]+\w*)=(?P<value>[^#]+)(#.*)?$"

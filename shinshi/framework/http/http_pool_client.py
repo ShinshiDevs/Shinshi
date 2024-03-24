@@ -5,9 +5,9 @@ from aiohttp.client import ClientSession, ClientTimeout
 from aiohttp.connector import BaseConnector, TCPConnector
 
 from shinshi import logger
-from shinshi.events import EventsMeta, event_listener
-from shinshi.events.lifetime_events import StartingEvent, StoppingEvent
-from shinshi.http.utils.orjson import orjson_serialize
+from shinshi.framework.events import EventsMeta, event_listener
+from shinshi.framework.events.lifetime_events import StartingEvent, StoppingEvent
+from shinshi.framework.http.utils.orjson import orjson_serialize
 
 DEFAULT_TIMEOUT: ClientTimeout = ClientTimeout(total=5)
 

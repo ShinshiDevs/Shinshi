@@ -1,7 +1,7 @@
 from typing import Tuple, Dict, Any
 
-from shinshi.events._event_manager import event_manager
-from shinshi.events.event_listener import EventListener
+from shinshi.framework.events._event_manager import event_manager
+from shinshi.framework.events.event_listener import EventListener
 
 
 class EventsMeta(type):
