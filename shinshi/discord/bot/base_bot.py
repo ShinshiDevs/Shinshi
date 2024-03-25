@@ -36,7 +36,7 @@ class BaseBot(GatewayBot):
         token: str,
         *,
         allow_color: bool = True,
-        banner: str = "hikari",
+        banner: pathlib.Path | None = None,
         banner_extras: Dict[str, Any] | None = None,
         suppress_optimization_warning: bool = False,
         executor: concurrent.futures.Executor | None = None,
@@ -53,7 +53,10 @@ class BaseBot(GatewayBot):
         proxy_settings: config.ProxySettings | None = None,
         rest_url: str | None = None,
     ) -> None:
-        self.__print_banner(banner, allow_color, force_color, extra_args=banner_extras)
+        if banner:
+            self.__print_banner(
+                banner, allow_color, force_color, extra_args=banner_extras
+            )
         self.__cache = Cache(self, cache_settings)
         super().__init__(
             token=token,
@@ -90,8 +93,8 @@ class BaseBot(GatewayBot):
                 args[code] = ""
 
         with open(banner_file, "r", encoding="UTF-8") as stream:
-            banner: str = string.Template(stream).safe_substitute(args)
-            sys.stdout.buffer.write(banner)
+            banner: str = string.Template(stream.read()).safe_substitute(args)
+            sys.stdout.buffer.write(banner.encode("utf-8"))
             sys.stdout.flush()
 
     @property

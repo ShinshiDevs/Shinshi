@@ -19,9 +19,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, Sequence, Tuple
 
-import shinshi
+from shinshi.logs.logger import logger
 
-logger = shinshi.logger.getChild("i18n")
+_LOGGER = logger.getChild("i18n")
 _ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 
@@ -70,7 +70,7 @@ class I18nGroup:
             value: str = self.__resolve_key(key, arguments)
             return value if isinstance(value, str) else key
         except Exception as exception:
-            logger.error(
+            _LOGGER.error(
                 "Failed to resolve i18n-key %s in %s", key, self, exc_info=exception
             )
             return key
@@ -83,7 +83,7 @@ class I18nGroup:
             value: Tuple[str, ...] = self.__resolve_key(key, _ARGUMENTS_SENTINEL)
             return value if isinstance(value, tuple) else ()
         except Exception as exception:
-            logger.error(
+            _LOGGER.error(
                 "Failed to resolve list-type i18n-key %s in %s",
                 key,
                 self,

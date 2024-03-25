@@ -19,27 +19,27 @@ from collections import deque
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
+import orjson
 
-import shinshi
 from shinshi.i18n.i18n_group import I18nGroup
+from shinshi.logs.logger import logger
 
-logger = shinshi.logger.getChild("i18n")
+_LOGGER = logger.getChild("i18n")
 
 
 class I18nProvider:
     def __init__(self) -> None:
-        self.base_path = Path(os.getcwd())
+        self.base_path = Path(os.getcwd(), "resources", "i18n")
         self.languages: Dict[str, I18nGroup] = {}
 
     def __build_map(self, file: Path) -> I18nGroup | None:
         with open(file, "rb") as stream:
             try:
-                data: Dict[str, Any] | Any = yaml.load(stream, Loader=yaml.CLoader)
+                data: Dict[str, Any] | Any = orjson.loads(stream.read()) or {}
                 if not isinstance(data, dict):
                     raise ValueError("Not valid localization file")
             except Exception as exception:
-                logger.error(
+                _LOGGER.error(
                     "Cannot load localization file: %s", file, exc_info=exception
                 )
                 return
@@ -61,12 +61,12 @@ class I18nProvider:
         return root
 
     async def start(self) -> None:
-        logger.debug("Starting...")
+        _LOGGER.debug("Starting...")
         if self.base_path.exists():
-            self.logger.debug("Loading languages from %s", self.base_path)
+            _LOGGER.debug("Loading languages from %s", self.base_path)
         else:
             raise RuntimeError(f"Cannot access {self.base_path}")
-        for file in self.base_path.glob("*.yaml"):
+        for file in self.base_path.glob("*.json"):
             language = self.__build_map(file)
-            self.languages[os.path.splitext(file)[0]] = language
-        logger.info("Loaded %s languages", self.languages.keys())
+            self.languages[os.path.splitext(file.name)[0]] = language
+        _LOGGER.info("Loaded %s languages", ", ".join(self.languages.keys()))

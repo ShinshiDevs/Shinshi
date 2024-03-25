@@ -6,7 +6,10 @@
             "request": "launch",
             "module": "shinshi",
             "console": "integratedTerminal",
-            "pythonArgs": ["-OO"]
+            "pythonArgs": [
+                "-OO"
+            ],
+            "envFile": "${workspaceFolder}/secrets/app.env"
         }
     ]
 }

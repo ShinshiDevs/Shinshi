@@ -14,11 +14,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+import logging
+from typing import Dict
+
+GREY: str = "\033[90m"
+RED: str = "\033[91m"
+YELLOW: str = "\033[93m"
+CYAN: str = "\033[96m"
+BLUE: str = "\033[94m"
+BOLD: str = "\033[1m"
+RESET: str = "\033[0m"
 
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+class ColoredFormatter(logging.Formatter):
+    LEVELS: Dict[int, str] = {
+        logging.INFO: BLUE,
+        logging.DEBUG: GREY,
+        logging.WARNING: YELLOW,
+        logging.ERROR: RED,
+        logging.CRITICAL: RED,
+    }
+
+    def format(self, record: logging.LogRecord) -> str:
+        record.levelname = (
+            f"{self.LEVELS.get(record.levelno, '')}{record.levelname}{RESET}"
+        )
+        record.name = f"{CYAN}{BOLD}{record.name}{RESET}"
+        return super().format(record)

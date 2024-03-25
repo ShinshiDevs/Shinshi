@@ -6,7 +6,7 @@
 # Docker
 docker/data
 # Logging
-logging/logs
+/logs
 
 
 

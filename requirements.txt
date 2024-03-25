@@ -1,2 +1,3 @@
 hikari
 orjson
+uvloop

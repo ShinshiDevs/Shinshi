@@ -2,12 +2,19 @@
     "licenser.license": "GPLv3",
     "licenser.projectName": "Shinshi",
     "licenser.author": "Shinshi Developers Team",
+    "licenser.excludeFileExtensions": [
+        "txt"
+    ],
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always",
     },
     "cSpell.words": [
+        "asctime",
         "colorlog",
         "hikari",
+        "levelname",
+        "levelno",
+        "orjson",
         "popleft",
         "shinshi",
         "Shinshi"

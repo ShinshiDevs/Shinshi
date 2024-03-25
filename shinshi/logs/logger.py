@@ -14,11 +14,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+import os
+from logging import getLogger
+from logging.config import dictConfig
+from pathlib import Path
 
+import orjson
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+is_configured: bool = False
+
+if is_configured is False:
+    with open(Path(os.getcwd(), "resources", "logging.json"), "rb") as stream:
+        dictConfig(orjson.loads(stream.read()))
+    is_configured = True
+
+logger = getLogger(__package__.split(".")[0])

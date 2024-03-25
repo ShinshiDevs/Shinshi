@@ -1,0 +1,10 @@
+
+${bold} █████   █████    █████          █████   ${reset}
+${bold}░░███   ░░███   ███░░░███      ███░░░███ ${reset}    ${reset}${bold_white}${shinshi_copyright}${thin_white} - ${shinshi_license} license${reset}
+${bold} ░███    ░███  ███   ░░███    ███   ░░███${reset}
+${bold} ░███    ░███ ░███    ░███   ░███    ░███${reset}    ${reset}${bold_white}support: ${thin_white}${shinshi_support_url}${reset}
+${bold} ░░███   ███  ░███    ░███   ░███    ░███${reset}    ${reset}${bold_white}project: ${thin_white}${shinshi_github_url}${reset}
+${bold}  ░░░█████░   ░░███   ███    ░░███   ███ ${reset}    ${reset}${bold_white}current interpreter: ${thin_white}${python_implementation} ${python_version}${reset}
+${bold}    ░░███      ░░░█████░   ██ ░░░█████░  ${reset}
+${bold}     ░░░         ░░░░░░   ░░    ░░░░░░   ${reset}
+

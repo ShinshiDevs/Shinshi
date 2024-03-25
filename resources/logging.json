@@ -1,0 +1,38 @@
+{
+    "version": 1,
+    "disable_existing_loggers": true,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s %(levelname)-20s %(name)s %(message)s"
+        },
+        "colored": {
+            "()": "shinshi.logs.formatters.ColoredFormatter",
+            "format": "%(asctime)s %(levelname)-20s %(name)s %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "colored",
+            "stream": "ext://sys.stdout"
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "formatter": "standard",
+            "filename": "logs/last.log"
+        }
+    },
+    "root": {
+        "handlers": [
+            "console",
+            "file"
+        ],
+        "level": "DEBUG"
+    },
+    "hikari-rest": {
+        "handlers": [
+            "console"
+        ],
+        "level": "DEBUG"
+    }
+}
