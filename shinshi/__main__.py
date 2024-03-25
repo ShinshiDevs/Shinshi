@@ -34,7 +34,7 @@ from shinshi.i18n import I18nProvider
 
 asyncio.set_event_loop_policy(
     uvloop.EventLoopPolicy()
-    if sys.platform == "win32"
+    if not sys.platform == "win32"
     else asyncio.DefaultEventLoopPolicy()
 )
 
