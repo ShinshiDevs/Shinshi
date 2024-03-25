@@ -1,0 +1,16 @@
+{
+    "licenser.license": "GPLv3",
+    "licenser.projectName": "Shinshi",
+    "licenser.author": "Shinshi Developers Team",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+    },
+    "cSpell.words": [
+        "colorlog",
+        "hikari",
+        "popleft",
+        "shinshi",
+        "Shinshi"
+    ],
+    "python.REPL.enableREPLSmartSend": false
+}
