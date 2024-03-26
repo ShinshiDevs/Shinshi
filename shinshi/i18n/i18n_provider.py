@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from logging import getLogger
 import os
 from collections import deque
 from pathlib import Path
@@ -22,13 +23,11 @@ from typing import Any, Dict
 import orjson
 
 from shinshi.i18n.i18n_group import I18nGroup
-from shinshi.logs.logger import logger
-
-_LOGGER = logger.getChild("i18n")
 
 
 class I18nProvider:
     def __init__(self) -> None:
+        self.__logger = getLogger("shinshi.i18n")
         self.base_path = Path(os.getcwd(), "resources", "i18n")
         self.languages: Dict[str, I18nGroup] = {}
 
@@ -39,7 +38,7 @@ class I18nProvider:
                 if not isinstance(data, dict):
                     raise ValueError("Not valid localization file")
             except Exception as exception:
-                _LOGGER.error(
+                self.__logger.error(
                     "Cannot load localization file: %s", file, exc_info=exception
                 )
                 return
@@ -61,12 +60,12 @@ class I18nProvider:
         return root
 
     async def start(self) -> None:
-        _LOGGER.debug("Starting...")
+        self.__logger.debug("Starting...")
         if self.base_path.exists():
-            _LOGGER.debug("Loading languages from %s", self.base_path)
+            self.__logger.debug("Loading languages from %s", self.base_path)
         else:
             raise RuntimeError(f"Cannot access {self.base_path}")
         for file in self.base_path.glob("*.json"):
             language = self.__build_map(file)
             self.languages[os.path.splitext(file.name)[0]] = language
-        _LOGGER.info("Loaded %s languages", ", ".join(self.languages.keys()))
+        self.__logger.info("Loaded %s languages", ", ".join(self.languages.keys()))

@@ -14,10 +14,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+from dataclasses import dataclass
+from typing import Any, Awaitable, Callable
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+
+@dataclass(kw_only=True)
+class Interactable:
+    callback: Callable[[Any], Awaitable[Any]]
+
+    is_defer: bool = False
+    is_bound: bool = False
+    """Is this interaction is personal for one user and not hidden from other."""
+    is_ephemeral: bool = False

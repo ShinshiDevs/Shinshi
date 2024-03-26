@@ -14,5 +14,5 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .i18n_group import I18nGroup
-from .i18n_provider import I18nProvider
+from .i18n_group import I18nGroup  # noqa: F401
+from .i18n_provider import I18nProvider  # noqa: F401

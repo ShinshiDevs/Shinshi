@@ -15,17 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import concurrent.futures
 import os
 import platform
-import sys
 from pathlib import Path
 
 import orjson
 import uvloop
-from aiohttp import ClientTimeout, TCPConnector
-from aiohttp.client import ClientSession
-from hikari import events
+from aiohttp import ClientSession, ClientTimeout, TCPConnector
+from hikari.events import StartingEvent, StoppingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 
 from shinshi import __copyright__, __github_url__, __license__, __support_url__
@@ -34,7 +31,7 @@ from shinshi.i18n import I18nProvider
 
 asyncio.set_event_loop_policy(
     uvloop.EventLoopPolicy()
-    if sys.platform != "win32"
+    if platform.system() != "Windows"
     else asyncio.DefaultEventLoopPolicy()
 )
 
@@ -54,7 +51,6 @@ class Bot(BaseBot):
                 "python_implementation": platform.python_implementation(),
                 "python_version": platform.python_version(),
             },
-            executor=concurrent.futures.ThreadPoolExecutor(),
             cache_settings=CacheSettings(
                 components=CacheComponents.GUILDS,
                 max_messages=100,
@@ -83,6 +79,6 @@ class Bot(BaseBot):
 
 if __name__ == "__main__":
     bot = Bot()
-    bot.event_manager.subscribe(events.StartingEvent, bot.on_starting)
-    bot.event_manager.subscribe(events.StoppingEvent, bot.on_stopping)
+    bot.event_manager.subscribe(StartingEvent, bot.on_starting)
+    bot.event_manager.subscribe(StoppingEvent, bot.on_stopping)
     bot.run()

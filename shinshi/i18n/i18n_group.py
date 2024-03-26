@@ -17,11 +17,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from logging import getLogger
 from typing import Any, Dict, Sequence, Tuple
 
-from shinshi.logs.logger import logger
-
-_LOGGER = logger.getChild("i18n")
+_LOGGER = getLogger("shinshi.i18n")
 _ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 

@@ -14,18 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-import os
-from logging import getLogger
-from logging.config import dictConfig
-from pathlib import Path
+from dataclasses import dataclass
 
-import orjson
+from hikari.permissions import Permissions
 
-is_configured: bool = False
 
-if is_configured is False:
-    with open(Path(os.getcwd(), "resources", "logging.json"), "rb") as stream:
-        dictConfig(orjson.loads(stream.read()))
-    is_configured = True
-
-logger = getLogger(__package__.split(".")[0])
+@dataclass
+class Group:
+    default_member_permissions: Permissions = Permissions.NONE
+    is_dm_enabled: bool = False
+    is_nsfw: bool = False

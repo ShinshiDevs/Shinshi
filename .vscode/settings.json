@@ -12,12 +12,16 @@
         "asctime",
         "colorlog",
         "hikari",
+        "interactable",
+        "INTERACTABLES",
         "levelname",
         "levelno",
         "orjson",
         "popleft",
+        "Resourceish",
         "shinshi",
-        "Shinshi"
+        "Shinshi",
+        "Snowflakeish"
     ],
     "python.REPL.enableREPLSmartSend": false
 }

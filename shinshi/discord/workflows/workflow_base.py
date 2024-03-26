@@ -14,10 +14,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+from typing import Tuple
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+from shinshi.discord.workflows.constants import _WORKFLOW_PREDEFINED_INTERACTABLES
+from shinshi.discord.workflows.interactables.interactable import Interactable
+from shinshi.discord.workflows.workflow_meta import WorkflowMeta
+
+
+class WorkflowBase(metaclass=WorkflowMeta):
+    def __init__(
+        self,
+        *,
+        name: str | None = None,
+    ) -> None:
+        self.name: str = name or type(self).__name__
+        self.interactables: Tuple[Interactable, ...] = getattr(
+            self, _WORKFLOW_PREDEFINED_INTERACTABLES, []
+        )

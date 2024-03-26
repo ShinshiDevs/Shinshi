@@ -14,4 +14,4 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .base_bot import BaseBot
+from .base_bot import BaseBot  # noqa: F401

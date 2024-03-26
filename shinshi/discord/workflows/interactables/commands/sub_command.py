@@ -14,10 +14,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+from dataclasses import dataclass, field
+from typing import Tuple
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+from shinshi.discord.models.translatable import Translatable
+from shinshi.discord.workflows.interactables.group import Group
+from shinshi.discord.workflows.interactables.options.option import Option
+
+
+@dataclass
+class SubCommand:
+    description: Translatable | str = "No description"
+
+    group: Group | None = None
+    sub_group: str | None = None
+
+    options: Tuple[Option, ...] = field(default_factory=tuple)

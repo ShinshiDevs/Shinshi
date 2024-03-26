@@ -14,10 +14,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+from dataclasses import dataclass, field
+from typing import Tuple
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+from hikari.commands import CommandType
+from hikari.snowflakes import Snowflake
+
+from shinshi.discord.workflows.interactables.hook import HookT
+from shinshi.discord.workflows.interactables.interactable import Interactable
+
+
+@dataclass(kw_only=True)
+class Command(Interactable):
+    command_type: CommandType
+    name: str
+
+    guild: Snowflake | str | int | None = None
+
+    hooks: Tuple[HookT, ...] = field(default_factory=tuple)  # type: ignore

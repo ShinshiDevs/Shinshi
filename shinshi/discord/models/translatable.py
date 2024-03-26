@@ -14,10 +14,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
+from dataclasses import dataclass
+from typing import Dict, Tuple
 
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+from hikari.locales import Locale
+
+from shinshi.i18n.i18n_provider import I18nProvider
+
+
+@dataclass
+class Translatable:
+    key: str
+    fallback: str | None = None
+
+    def build(self, i18n_provider: I18nProvider) -> Tuple[str, Dict[str, str]]:
+        languages: Dict[str, str] = {}
+        for name, language in i18n_provider.languages.items():
+            languages[name] = language.get(self.key)
+        self.fallback = languages[Locale.EN_US]
+        return self.fallback, languages

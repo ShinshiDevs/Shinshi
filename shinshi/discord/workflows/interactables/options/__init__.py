@@ -14,10 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Final, Sequence
-
-__all__: Sequence[str] = ()
-__license__: Final[str] = "GPL-3.0"
-__copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
-__github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
-__support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
+from .channel_option import ChannelOption  # noqa: F401
+from .choice import Choice  # noqa: F401
+from .number_option import NumberOption  # noqa: F401
+from .option import Option  # noqa: F401
+from .string_option import StringOption  # noqa: F401
