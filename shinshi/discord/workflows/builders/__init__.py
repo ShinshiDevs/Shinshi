@@ -14,14 +14,3 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from dataclasses import dataclass
-from typing import Sequence
-
-from hikari.channels import ChannelType
-
-from shinshi.discord.workflows.interactables.options.option import Option
-
-
-@dataclass(kw_only=True)
-class ChannelOption(Option):
-    channel_types: Sequence[ChannelType] | None = None

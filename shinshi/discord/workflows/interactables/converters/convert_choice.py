@@ -14,19 +14,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Dict, Tuple
+
+from hikari.commands import CommandChoice
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.group import Group
-from shinshi.discord.workflows.interactables.options.option import Option
+from shinshi.discord.workflows.interactables.options.choice import Choice
+from shinshi.i18n.i18n_provider import I18nProvider
 
 
-@dataclass(kw_only=True)
-class SubCommand:
-    description: Translatable | str = "No description"
-
-    group: Group | None = None
-    sub_group: str | None = None
-
-    options: Tuple[Option, ...] = field(default_factory=tuple)
+def convert_choice(i18n_provider: I18nProvider, choice: Choice) -> CommandChoice:
+    name: str | Tuple[str, Dict[str, str]] | None = None
+    if isinstance(choice.name, Translatable):
+        name = choice.name.build(i18n_provider)
+    return CommandChoice(
+        name=choice.name if not isinstance(name, tuple) else name[0],
+        name_localizations=None if not isinstance(name, tuple) else name[1],
+        value=choice.value,
+    )

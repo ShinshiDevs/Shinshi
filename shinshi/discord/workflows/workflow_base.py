@@ -14,14 +14,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Tuple
+from abc import ABC, abstractmethod
+from typing import Sequence, Tuple
 
 from shinshi.discord.workflows.constants import _WORKFLOW_PREDEFINED_INTERACTABLES
+from shinshi.discord.workflows.interactables.commands.command import Command
 from shinshi.discord.workflows.interactables.interactable import Interactable
 from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 
 
-class WorkflowBase(metaclass=WorkflowMeta):
+class WorkflowBase(ABC, metaclass=WorkflowMeta):
     def __init__(
         self,
         *,
@@ -29,5 +31,16 @@ class WorkflowBase(metaclass=WorkflowMeta):
     ) -> None:
         self.name: str = name or type(self).__name__
         self.interactables: Tuple[Interactable, ...] = getattr(
-            self, _WORKFLOW_PREDEFINED_INTERACTABLES, []
+            self, _WORKFLOW_PREDEFINED_INTERACTABLES, ()
+        )
+
+    @abstractmethod
+    async def start(self) -> None:
+        ...
+
+    def get_commands(self) -> Sequence[Command]:
+        return tuple(
+            interactable
+            for interactable in self.interactables
+            if isinstance(interactable, Command)
         )

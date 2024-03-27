@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from hikari.permissions import Permissions
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Group:
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False

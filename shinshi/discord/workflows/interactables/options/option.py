@@ -25,7 +25,7 @@ from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.options.choice import Choice
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Option:
     option_type: OptionType
 
