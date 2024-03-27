@@ -14,3 +14,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from hikari.commands import OptionType
+from hikari.users import User
+
+from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi.discord.workflows.decorators.slash_command import slash_command
+from shinshi.discord.workflows.interactables.options.option import Option
+from shinshi.discord.workflows.workflow_base import WorkflowBase
+
+
+class TestWorkflow(WorkflowBase):
+    @slash_command(
+        dm_enabled=True,
+        options=(Option(type=OptionType.USER, name="something"),),
+    )
+    async def test(self, context: InteractionContext, something: User) -> None:
+        print(type(something))
+        return await context.create_response(content=something)

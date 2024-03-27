@@ -9,23 +9,5 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always",
     },
-    "cSpell.words": [
-        "asctime",
-        "colorlog",
-        "cooldown",
-        "dremmar",
-        "hikari",
-        "interactable",
-        "INTERACTABLES",
-        "levelname",
-        "levelno",
-        "orjson",
-        "popleft",
-        "Resourceish",
-        "shinshi",
-        "Shinshi",
-        "Snowflakeish",
-        "человек"
-    ],
     "python.REPL.enableREPLSmartSend": false
 }

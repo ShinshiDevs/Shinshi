@@ -43,7 +43,8 @@ class WorkflowManager:
         self.workflows = workflows
 
         self.slash_commands: Dict[
-            str, Tuple[WorkflowBase, SlashCommand, SlashCommandBuilder]
+            Tuple[str, ...] | str,
+            Tuple[WorkflowBase, SlashCommand, SlashCommandBuilder],
         ] = {}
 
     async def build_workflows(self) -> None:

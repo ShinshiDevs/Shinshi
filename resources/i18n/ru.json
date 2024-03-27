@@ -1,1 +1,86 @@
-{}
+{
+    "metadata": {
+        "name": "Русский"
+    },
+    "commands": {
+        "info": {
+            "description": "Информация о Shinshi в данный момент",
+            "embed": {
+                "description": "Вы на **{shard} шарде**.",
+                "author": {
+                    "name": "Привет, я"
+                },
+                "fields": {
+                    "information": {
+                        "name": "Информация",
+                        "value": [
+                            "**Гильдии:** {guilds}",
+                            "**Пользователи:** {users}",
+                            "**Задержка:** {latency}"
+                        ]
+                    }
+                }
+            }
+        },
+        "user": {
+            "arguments": {
+                "target": {
+                    "description": "Пользователь (Выберите из списка или укажите ID)"
+                }
+            },
+            "info": {
+                "description": "Информация о пользователе",
+                "embed": {
+                    "author": {
+                        "name": "Пользователь"
+                    },
+                    "fields": {
+                        "created_at": {
+                            "name": "Зарегистрировался"
+                        },
+                        "joined_at": {
+                            "name": "Присоединился к {guild} в"
+                        },
+                        "roles": {
+                            "name": "Роли",
+                            "value": {
+                                "no_roles": "Нет",
+                                "many_roles": "{roles}... и ещё {count}"
+                            }
+                        }
+                    }
+                },
+                "button": {
+                    "avatar": "Аватар",
+                    "banner": "Баннер"
+                }
+            },
+            "avatar": {
+                "description": "Аватар пользователя",
+                "embed": {
+                    "author": {
+                        "name": "Аватар"
+                    }
+                },
+                "button": {
+                    "global": "Глобальная",
+                    "guild": "Серверная"
+                },
+                "exceptions": {
+                    "no_user_avatar": "У этого пользователя нет аватара"
+                }
+            },
+            "banner": {
+                "description": "Баннер пользователя",
+                "embed": {
+                    "author": {
+                        "name": "Баннер"
+                    }
+                },
+                "exceptions": {
+                    "no_user_avatar": "У этого пользователя нет баннера"
+                }
+            }
+        }
+    }
+}

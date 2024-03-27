@@ -24,11 +24,11 @@ from shinshi.i18n.i18n_provider import I18nProvider
 
 
 def convert_choice(i18n_provider: I18nProvider, choice: Choice) -> CommandChoice:
-    name: str | Tuple[str, Dict[str, str]] | None = None
+    name: str | Tuple[str, Dict[str, str]] | None = choice.name
     if isinstance(choice.name, Translatable):
         name = choice.name.build(i18n_provider)
     return CommandChoice(
-        name=choice.name if not isinstance(name, tuple) else name[0],
-        name_localizations=None if not isinstance(name, tuple) else name[1],
+        name=name[0] if isinstance(name, tuple) else name,
+        name_localizations=name[1] if isinstance(name, tuple) else name,
         value=choice.value,
     )

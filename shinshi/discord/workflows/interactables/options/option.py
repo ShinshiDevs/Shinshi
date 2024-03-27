@@ -27,10 +27,10 @@ from shinshi.discord.workflows.interactables.options.choice import Choice
 
 @dataclass(kw_only=True)
 class Option:
-    option_type: OptionType
+    type: OptionType
 
     name: str
-    description: Translatable | str = "No description"
+    description: Translatable | str | None = None
 
     choices: Tuple[Choice, ...] = field(default_factory=tuple)
 

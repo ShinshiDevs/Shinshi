@@ -1,4 +1,7 @@
 {
+    "metadata": {
+        "name": "English"
+    },
     "commands": {
         "info": {
             "description": "Information about Shinshi at the moment",

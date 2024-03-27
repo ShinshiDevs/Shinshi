@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from dataclasses import dataclass
-from typing import Any, Sequence, TypeVar
+from typing import Any, Sequence
 
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed
@@ -27,17 +27,16 @@ from hikari.snowflakes import SnowflakeishSequence
 from hikari.undefined import UNDEFINED, UndefinedOr
 from hikari.users import PartialUser
 
+from shinshi.discord.bot.base_bot import BaseBot
 from shinshi.discord.workflows.interactables.interactable import Interactable
 from shinshi.i18n.i18n_group import I18nGroup
-
-T = TypeVar("T")
 
 
 @dataclass(kw_only=True)
 class InteractionContext:
     interaction: CommandInteraction | ComponentInteraction
 
-    bot: T
+    bot: BaseBot
     i18n: I18nGroup
 
     interactable: Interactable

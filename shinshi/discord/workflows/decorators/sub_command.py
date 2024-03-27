@@ -17,7 +17,6 @@
 from typing import Any, Awaitable, Callable, Tuple
 
 from hikari.commands import CommandType
-from hikari.permissions import Permissions
 
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
@@ -33,9 +32,6 @@ def sub_command(
     description: Translatable | str | None = None,
     options: Tuple[Option, ...] | None = None,
     hooks: Tuple[Hook, ...] | None = None,
-    default_member_permissions: Permissions | None = None,
-    dm_enabled: bool | None = None,
-    is_nsfw: bool | None = None,
 ) -> Callable[[Callable[[Any], Awaitable[Any]]], SubCommand]:
     def decorator(func: Callable[[Any], Awaitable[Any]]) -> SubCommand:
         return SubCommand(

@@ -21,6 +21,9 @@ from hikari.impl import SlashCommandBuilder as ImplSlashCommandBuilder
 
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
+from shinshi.discord.workflows.interactables.converters.convert_option import (
+    convert_option,
+)
 from shinshi.i18n.i18n_provider import I18nProvider
 
 
@@ -29,7 +32,9 @@ def convert_to_slash_command_builder(
     i18n_provider: I18nProvider,
     command: SlashCommand,
 ) -> ImplSlashCommandBuilder:
-    description: str | Tuple[str, Dict[str, str]] | None = None
+    description: str | Tuple[str, Dict[str, str]] | None = (
+        command.description or "No description"
+    )
     if isinstance(command.description, Translatable):
         description = command.description.build(i18n_provider)
     builder_instance: APISlashCommandBuilder = builder(
@@ -40,4 +45,7 @@ def convert_to_slash_command_builder(
     builder_instance.set_default_member_permissions(command.default_member_permissions)
     builder_instance.set_is_dm_enabled(command.is_dm_enabled)
     builder_instance.set_is_nsfw(command.is_nsfw)
+    if isinstance(command.options, tuple):
+        for option in command.options:
+            builder_instance.add_option(convert_option(i18n_provider, option))
     return builder_instance

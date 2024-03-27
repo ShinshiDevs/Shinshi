@@ -32,7 +32,7 @@ from shinshi.discord.bot import BaseBot
 from shinshi.discord.interaction_processor import InteractionProcessor
 from shinshi.discord.workflows.workflow_manager import WorkflowManager
 from shinshi.i18n import I18nProvider
-from shinshi.workflows.general import InfoWorkflow
+from shinshi.workflows.general import InfoWorkflow, TestWorkflow
 
 asyncio.set_event_loop_policy(
     uvloop.EventLoopPolicy()
@@ -46,7 +46,7 @@ class Bot(BaseBot):
         self.http_session: ClientSession | None = None
         self.i18n = I18nProvider()
         self.workflow_manager = WorkflowManager(
-            bot=self, i18n_provider=self.i18n, workflows=(InfoWorkflow,)
+            bot=self, i18n_provider=self.i18n, workflows=(InfoWorkflow, TestWorkflow)
         )
         self.interaction_processor = InteractionProcessor(
             bot=self, i18n_provider=self.i18n, workflow_manager=self.workflow_manager

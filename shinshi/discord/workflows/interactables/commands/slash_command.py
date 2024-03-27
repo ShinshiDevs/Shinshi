@@ -17,7 +17,7 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 
-from hikari import CommandType, Permissions
+from hikari import Permissions
 
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.commands.command import Command
@@ -26,9 +26,7 @@ from shinshi.discord.workflows.interactables.options.option import Option
 
 @dataclass(kw_only=True)
 class SlashCommand(Command):
-    command_type = CommandType.SLASH
-
-    description: Translatable | str = "No description"
+    description: Translatable | str | None = None
 
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False

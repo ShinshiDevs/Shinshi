@@ -15,9 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from logging import getLogger
-from typing import List, Type
 
-from hikari.commands import CommandType, OptionType
+from hikari.commands import CommandOption, CommandType, OptionType
 from hikari.interactions.base_interactions import PartialInteraction
 from hikari.interactions.command_interactions import CommandInteraction
 
@@ -42,16 +41,42 @@ class InteractionProcessor:
         self.workflow_manager = workflow_manager
 
     async def __proceed_slash_command(self, interaction: CommandInteraction) -> None:
-        options_types: List[Type[OptionType]] = list(
-            option.type for option in interaction.options
+        group_name = None
+        subgroup_name = None
+        command_name = interaction.command_name
+        arguments = {}
+        options: list[CommandOption] = (
+            list(interaction.options) if interaction.options else []
         )
-        if not any(
-            OptionType.SUB_COMMAND in options_types
-            or OptionType.SUB_COMMAND_GROUP in options_types
-        ):
+        while options:
+            option = options.pop(0)
+            match option.type:
+                case OptionType.SUB_COMMAND_GROUP:
+                    group_name = interaction.command_name
+                    subgroup_name = option.name
+                    options = list(option.options) if option.options else []
+                case OptionType.SUB_COMMAND:
+                    group_name = group_name or interaction.command_name
+                    command_name = option.name
+                    options = list(option.options) if option.options else []
+                case _:
+                    arguments[option.name] = option.value
+
+        if group_name:
             workflow, command, _ = self.workflow_manager.slash_commands[
-                interaction.command_name
+                (group_name, command_name)
             ]
+        if subgroup_name:
+            if not group_name:
+                raise Exception(
+                    "To create commands with subgroup you need set parent group"
+                )
+            workflow, command, _ = self.workflow_manager.slash_commands[
+                (group_name, subgroup_name, command_name)
+            ]
+        workflow, command, _ = self.workflow_manager.slash_commands[command_name]
+
+        if not group_name and not subgroup_name:
             context = InteractionContext(
                 interaction=interaction,
                 bot=self.bot,
@@ -70,7 +95,7 @@ class InteractionProcessor:
                 await command.callback(
                     workflow,
                     context,
-                    **{option.name: option.value for option in interaction.options},
+                    **arguments,
                 )
             except Exception as exception:
                 self.__logger.error(

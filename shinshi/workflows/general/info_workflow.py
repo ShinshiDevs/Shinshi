@@ -30,7 +30,7 @@ class InfoWorkflow(WorkflowBase):
         description=Translatable("commands.info.description"), dm_enabled=True
     )
     async def info(self, context: InteractionContext) -> None:
-        embed: Embed = (
+        embed = (
             Embed(
                 title=context.bot.me.username,
                 url="https://github.com/ShinshiDevs",

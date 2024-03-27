@@ -24,7 +24,7 @@ from shinshi.discord.workflows.interactables.options.option import Option
 
 @dataclass(kw_only=True)
 class SubCommand:
-    description: Translatable | str = "No description"
+    description: Translatable | str | None = None
 
     group: Group | None = None
     sub_group: str | None = None

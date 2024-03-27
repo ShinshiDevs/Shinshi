@@ -20,12 +20,13 @@ from dataclasses import dataclass, field
 from logging import getLogger
 from typing import Any, Dict, Sequence, Tuple
 
-_LOGGER = getLogger("shinshi.i18n")
 _ARGUMENTS_SENTINEL: Dict[str, Any] = {}
 
 
 @dataclass
 class I18nGroup:
+    __logger = getLogger("shinshi.i18n")
+
     name: str
     value: Dict[str, str | Tuple[str, ...] | I18nGroup] = field(default_factory=dict)
 
@@ -67,9 +68,12 @@ class I18nGroup:
             arguments = _ARGUMENTS_SENTINEL
         try:
             value: str = self.__resolve_key(key, arguments)
-            return value if isinstance(value, str) else key
+            if not isinstance(value, str):
+                self.__logger.warning("failed to resolve i18n-key %s", key)
+                return key
+            return value
         except Exception as exception:
-            _LOGGER.error(
+            self.__logger.error(
                 "Failed to resolve i18n-key %s in %s", key, self, exc_info=exception
             )
             return key
@@ -82,10 +86,11 @@ class I18nGroup:
         try:
             value: Tuple[str, ...] = self.__get_value_by_key(key)
             if not value:
-                return ()
+                self.__logger.warning("failed to resolve list-type i18n-key %s", key)
+                return (key,)
             return tuple(item.format(**arguments) for item in value)
         except Exception as exception:
-            _LOGGER.error(
+            self.__logger.error(
                 "Failed to resolve list-type i18n-key %s in %s",
                 key,
                 self,
