@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from dataclasses import dataclass
-from typing import Dict, Tuple
+from typing import Dict
 
 from hikari.locales import Locale
 
@@ -27,9 +27,9 @@ class Translatable:
     key: str
     fallback: str | None = None
 
-    def build(self, i18n_provider: I18nProvider) -> Tuple[str, Dict[str, str]]:
+    def build(self, i18n_provider: I18nProvider) -> Dict[str, str]:
         languages: Dict[str, str] = {}
         for name, language in i18n_provider.languages.items():
             languages[name] = language.get(self.key)
         self.fallback = languages[Locale.EN_US]
-        return self.fallback, languages
+        return languages

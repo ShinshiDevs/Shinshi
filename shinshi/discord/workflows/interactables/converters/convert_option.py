@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Dict, Tuple
+from typing import Dict
 
 from hikari.commands import CommandOption
 
@@ -27,18 +27,23 @@ from shinshi.i18n.i18n_provider import I18nProvider
 
 
 def convert_option(i18n_provider: I18nProvider, option: Option) -> CommandOption:
-    description: str | Tuple[str, Dict[str, str]] | None = (
-        option.description or "No description"
-    )
+    description_localizations: Dict[str, str] | None = None
     if isinstance(option.description, Translatable):
-        description = option.description.build(i18n_provider)
+        description_localizations = option.description.build(i18n_provider)
     return CommandOption(
         type=option.type,
         name=option.name,
-        description=description[0] if isinstance(description, tuple) else description,
-        description_localizations=description[1]
-        if isinstance(description, tuple)
-        else None,
+        description=(
+            getattr(option.description, "fallback", option.description)
+            or "No description"
+        ),
+        description_localizations=description_localizations,
         is_required=option.is_required,
+        autocomplete=option.is_autocomplete,
         choices=(convert_choice(i18n_provider, choice) for choice in option.choices),
+        max_length=getattr(option, "max_length", None),
+        min_length=getattr(option, "min_length", None),
+        max_value=getattr(option, "max_value", None),
+        min_value=getattr(option, "min_value", None),
+        channel_types=getattr(option, "channel_types", None),
     )

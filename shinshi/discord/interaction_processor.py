@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from logging import getLogger
+from typing import Any, Dict
 
 from hikari.commands import CommandOption, CommandType, OptionType
 from hikari.interactions.base_interactions import PartialInteraction
@@ -22,6 +23,9 @@ from hikari.interactions.command_interactions import CommandInteraction
 
 from shinshi.discord.bot.base_bot import BaseBot
 from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
+from shinshi.discord.workflows.interactables.interactable import Interactable
+from shinshi.discord.workflows.workflow_base import WorkflowBase
 from shinshi.discord.workflows.workflow_manager import WorkflowManager
 from shinshi.i18n.i18n_provider import I18nProvider
 
@@ -41,10 +45,8 @@ class InteractionProcessor:
         self.workflow_manager = workflow_manager
 
     async def __proceed_slash_command(self, interaction: CommandInteraction) -> None:
-        group_name = None
-        subgroup_name = None
-        command_name = interaction.command_name
-        arguments = {}
+        group_name, subgroup_name, command_name = None, None, interaction.command_name
+        arguments: Dict[str, Any] = {}
         options: list[CommandOption] = (
             list(interaction.options) if interaction.options else []
         )
@@ -62,47 +64,64 @@ class InteractionProcessor:
                 case _:
                     arguments[option.name] = option.value
 
-        if group_name:
-            workflow, command, _ = self.workflow_manager.slash_commands[
-                (group_name, command_name)
-            ]
-        if subgroup_name:
-            if not group_name:
-                raise Exception(
-                    "To create commands with subgroup you need set parent group"
-                )
-            workflow, command, _ = self.workflow_manager.slash_commands[
-                (group_name, subgroup_name, command_name)
-            ]
-        workflow, command, _ = self.workflow_manager.slash_commands[command_name]
+        workflow, command = None, None
+        if group_name is not None:
+            if subgroup_name is not None:
+                workflow, command, _ = self.workflow_manager.sub_groups[group_name][
+                    subgroup_name
+                ][command_name]
+            else:
+                workflow, command, _ = self.workflow_manager.groups[group_name][
+                    command_name
+                ]
+        else:
+            workflow, command, _ = self.workflow_manager.slash_commands[command_name]
+        context = await self.create_interaction_context(interaction, command)
+        await self.__execute_slash_command(context, workflow, command, arguments)
 
-        if not group_name and not subgroup_name:
-            context = InteractionContext(
-                interaction=interaction,
-                bot=self.bot,
-                i18n=self.i18n_provider.languages.get(
-                    str(interaction.locale or interaction.guild_locale),
-                    self.i18n_provider.languages.get(_DEFAULT_LANGUAGE),
-                ),
-                interactable=command,
-            )
-            if command.hooks:
-                for hook in command.hooks:
-                    await hook.callback(context)
-            if command.is_defer:
+    async def __execute_slash_command(
+        self,
+        context: InteractionContext,
+        workflow: WorkflowBase,
+        interactable: SlashCommand,
+        arguments: Dict[str, Any],
+    ) -> None:
+        try:
+            await self.__execute_hooks(context, interactable)
+            if interactable.is_defer:
                 await context.defer()
-            try:
-                await command.callback(
-                    workflow,
-                    context,
-                    **arguments,
+            await interactable.callback(
+                workflow,
+                context,
+                **arguments,
+            )
+        except Exception as exception:
+            self.__logger.error(
+                "error occurred while executing slash-command %s.",
+                interactable.name,
+                exc_info=exception,
+            )
+
+    async def __execute_hooks(
+        self, context: InteractionContext, interactable: SlashCommand
+    ) -> None:
+        for hook in interactable.hooks or ():
+            await hook(context)
+
+    async def create_interaction_context(
+        self, interaction: PartialInteraction, interactable: Interactable
+    ) -> InteractionContext:
+        return InteractionContext(
+            interaction=interaction,
+            bot=self.bot,
+            i18n=(
+                self.i18n_provider.languages.get(
+                    str(interaction.locale or interaction.guild_locale), None
                 )
-            except Exception as exception:
-                self.__logger.error(
-                    "error occurred while executing slash-command %s.",
-                    command.name,
-                    exc_info=exception,
-                )
+                or self.i18n_provider.languages.get(_DEFAULT_LANGUAGE)
+            ),
+            interactable=interactable,
+        )
 
     async def proceed(self, interaction: PartialInteraction) -> None:
         if isinstance(interaction, CommandInteraction):

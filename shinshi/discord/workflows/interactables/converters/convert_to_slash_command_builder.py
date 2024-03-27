@@ -14,8 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Callable, Dict, Tuple
-
+from typing import Callable, Dict
 from hikari.api import SlashCommandBuilder as APISlashCommandBuilder
 from hikari.impl import SlashCommandBuilder as ImplSlashCommandBuilder
 
@@ -32,20 +31,22 @@ def convert_to_slash_command_builder(
     i18n_provider: I18nProvider,
     command: SlashCommand,
 ) -> ImplSlashCommandBuilder:
-    description: str | Tuple[str, Dict[str, str]] | None = (
-        command.description or "No description"
-    )
+    description_localizations: Dict[str, str] | None = None
     if isinstance(command.description, Translatable):
-        description = command.description.build(i18n_provider)
-    builder_instance: APISlashCommandBuilder = builder(
-        command.name, description[0] if isinstance(description, tuple) else description
+        description_localizations = command.description.build(i18n_provider)
+
+    builder_instance: APISlashCommandBuilder = (
+        builder(
+            command.name,
+            getattr(command.description, "fallback", command.description)
+            or "No description",
+        )
+        .set_description_localizations(description_localizations)
+        .set_default_member_permissions(command.default_member_permissions)
+        .set_is_dm_enabled(command.is_dm_enabled)
+        .set_is_nsfw(command.is_nsfw)
     )
-    if isinstance(command.description, Translatable):
-        builder_instance.set_description_localizations(description[1])
-    builder_instance.set_default_member_permissions(command.default_member_permissions)
-    builder_instance.set_is_dm_enabled(command.is_dm_enabled)
-    builder_instance.set_is_nsfw(command.is_nsfw)
-    if isinstance(command.options, tuple):
-        for option in command.options:
-            builder_instance.add_option(convert_option(i18n_provider, option))
+    for option in command.options or ():
+        builder_instance.add_option(convert_option(i18n_provider, option))
+
     return builder_instance

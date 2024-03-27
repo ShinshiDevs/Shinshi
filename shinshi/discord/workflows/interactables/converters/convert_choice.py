@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Dict, Tuple
+from typing import Dict
 
 from hikari.commands import CommandChoice
 
@@ -24,11 +24,11 @@ from shinshi.i18n.i18n_provider import I18nProvider
 
 
 def convert_choice(i18n_provider: I18nProvider, choice: Choice) -> CommandChoice:
-    name: str | Tuple[str, Dict[str, str]] | None = choice.name
+    name_localizations: Dict[str, str] | None = None
     if isinstance(choice.name, Translatable):
-        name = choice.name.build(i18n_provider)
+        name_localizations = choice.name.build(i18n_provider)
     return CommandChoice(
-        name=name[0] if isinstance(name, tuple) else name,
-        name_localizations=name[1] if isinstance(name, tuple) else name,
+        name=getattr(choice.name, "fallback", choice.name),
+        name_localizations=name_localizations,
         value=choice.value,
     )
