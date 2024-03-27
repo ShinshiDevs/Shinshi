@@ -22,8 +22,7 @@ from hikari.embeds import Embed
 from hikari.files import Resourceish
 from hikari.guilds import PartialRole
 from hikari.interactions import CommandInteraction, ComponentInteraction, ResponseType
-from hikari.messages import Message
-from hikari.messages import MessageFlag
+from hikari.messages import Message, MessageFlag
 from hikari.snowflakes import SnowflakeishSequence
 from hikari.undefined import UNDEFINED, UndefinedOr
 from hikari.users import PartialUser
@@ -50,7 +49,9 @@ class InteractionContext:
         await self.bot.rest.create_interaction_response(
             interaction=self.interaction.id,
             token=self.interaction.token,
-            flags=MessageFlag.EPHEMERAL if self.interactable.is_ephemeral else UNDEFINED,
+            flags=MessageFlag.EPHEMERAL
+            if self.interactable.is_ephemeral
+            else UNDEFINED,
             response_type=ResponseType.DEFERRED_MESSAGE_CREATE,
         )
         self._has_deferred_response = True
@@ -66,16 +67,17 @@ class InteractionContext:
         embed: UndefinedOr[Embed] = UNDEFINED,
         embeds: UndefinedOr[Sequence[Embed]] = UNDEFINED,
         mentions_everyone: UndefinedOr[bool] = UNDEFINED,
-        user_mentions: UndefinedOr[SnowflakeishSequence[PartialUser] | bool] = UNDEFINED,
-        role_mentions: UndefinedOr[SnowflakeishSequence[PartialRole] | bool] = UNDEFINED,
+        user_mentions: UndefinedOr[
+            SnowflakeishSequence[PartialUser] | bool
+        ] = UNDEFINED,
+        role_mentions: UndefinedOr[
+            SnowflakeishSequence[PartialRole] | bool
+        ] = UNDEFINED,
         ensure_message: bool = False,
     ) -> Message | None:
         response_type: ResponseType = ResponseType.MESSAGE_CREATE
         if self._has_deferred_response:
             response_type = ResponseType.DEFERRED_MESSAGE_UPDATE
-        else:
-            if self.interactable.is_defer:
-                await self.defer()
         await self.bot.rest.create_interaction_response(
             interaction=self.interaction.id,
             token=self.interaction.token,

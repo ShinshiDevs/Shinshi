@@ -22,12 +22,17 @@ from pathlib import Path
 import orjson
 import uvloop
 from aiohttp import ClientSession, ClientTimeout, TCPConnector
-from hikari.events import StartingEvent, StoppingEvent
+from hikari.applications import Application
+from hikari.events.interaction_events import InteractionCreateEvent
+from hikari.events.lifetime_events import StartedEvent, StartingEvent, StoppingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 
 from shinshi import __copyright__, __github_url__, __license__, __support_url__
 from shinshi.discord.bot import BaseBot
+from shinshi.discord.interaction_processor import InteractionProcessor
+from shinshi.discord.workflows.workflow_manager import WorkflowManager
 from shinshi.i18n import I18nProvider
+from shinshi.workflows.general import InfoWorkflow
 
 asyncio.set_event_loop_policy(
     uvloop.EventLoopPolicy()
@@ -40,6 +45,12 @@ class Bot(BaseBot):
     def __init__(self) -> None:
         self.http_session: ClientSession | None = None
         self.i18n = I18nProvider()
+        self.workflow_manager = WorkflowManager(
+            bot=self, i18n_provider=self.i18n, workflows=(InfoWorkflow,)
+        )
+        self.interaction_processor = InteractionProcessor(
+            bot=self, i18n_provider=self.i18n, workflow_manager=self.workflow_manager
+        )
         super().__init__(
             token=os.environ.get("SHINSHI_DISCORD_TOKEN"),
             banner=Path(os.getcwd(), "resources", "banner.txt"),
@@ -52,7 +63,9 @@ class Bot(BaseBot):
                 "python_version": platform.python_version(),
             },
             cache_settings=CacheSettings(
-                components=CacheComponents.GUILDS,
+                components=CacheComponents.ME
+                | CacheComponents.GUILDS
+                | CacheComponents.MEMBERS,
                 max_messages=100,
                 max_dm_channel_ids=0,
             ),
@@ -65,20 +78,30 @@ class Bot(BaseBot):
     def orjson_serialize(data: bytes) -> str:
         return orjson.dumps(data).decode("UTF-8")
 
-    async def on_starting(self, _) -> None:
+    async def on_starting(self, _: StartingEvent) -> None:
         self.http_session = ClientSession(
             connector=TCPConnector(),
             json_serialize=self.orjson_serialize,
             timeout=ClientTimeout(3),
         )
         await self.i18n.start()
+        await self.workflow_manager.build_workflows()
 
-    async def on_stopping(self, _) -> None:
+    async def on_started(self, _: StartedEvent) -> None:
+        application: Application = await self.rest.fetch_application()
+        await self.workflow_manager.sync_slash_commands(application)
+        self.event_manager.subscribe(InteractionCreateEvent, self.on_interaction)
+
+    async def on_stopping(self, _: StoppingEvent) -> None:
         await self.http_session.close()
+
+    async def on_interaction(self, event: InteractionCreateEvent) -> None:
+        await self.interaction_processor.proceed(event.interaction)
 
 
 if __name__ == "__main__":
     bot = Bot()
     bot.event_manager.subscribe(StartingEvent, bot.on_starting)
+    bot.event_manager.subscribe(StartedEvent, bot.on_started)
     bot.event_manager.subscribe(StoppingEvent, bot.on_stopping)
     bot.run()

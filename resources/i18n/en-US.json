@@ -1,1 +1,23 @@
-{}
+{
+    "commands": {
+        "info": {
+            "description": "Information about Shinshi at the moment",
+            "embed": {
+                "description": "You're on the **{shard} shard**.",
+                "author": {
+                    "name": "Hi, I'm"
+                },
+                "fields": {
+                    "information": {
+                        "name": "Information",
+                        "value": [
+                            "**Guilds:** {guilds}",
+                            "**Users:** {users}",
+                            "**Latency:** {latency}"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

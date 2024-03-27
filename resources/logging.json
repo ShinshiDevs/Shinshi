@@ -27,12 +27,12 @@
             "file",
             "console"
         ],
-        "level": "INFO"
+        "level": "DEBUG"
     },
     "hikari.rest": {
         "handlers": [
             "console"
         ],
-        "level": "TRACE_HIKARI"
+        "level": "DEBUG"
     }
 }

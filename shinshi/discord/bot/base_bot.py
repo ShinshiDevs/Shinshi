@@ -106,3 +106,20 @@ class BaseBot(GatewayBot):
     @property
     def cache(self) -> Cache:
         return self.__cache
+
+    @property
+    def _cache(self) -> Cache:
+        return self.__cache
+
+    @_cache.setter
+    def _cache(self, ot: Any) -> None:
+        pass
+
+    def get_guild_count(self) -> int:
+        return len(self.cache.get_guilds_view())
+
+    def get_member_count(self) -> int:
+        return sum(
+            self.cache.get_guild(guild).member_count
+            for guild in self.cache.get_guilds_view()
+        )

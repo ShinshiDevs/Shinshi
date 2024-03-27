@@ -75,12 +75,15 @@ class I18nGroup:
             return key
 
     def get_list(
-        self,
-        key: str,
+        self, key: str, arguments: Dict[str, Any] | None = None
     ) -> Tuple[str, ...]:
+        if arguments is None:
+            arguments = _ARGUMENTS_SENTINEL
         try:
-            value: Tuple[str, ...] = self.__resolve_key(key, _ARGUMENTS_SENTINEL)
-            return value if isinstance(value, tuple) else ()
+            value: Tuple[str, ...] = self.__get_value_by_key(key)
+            if not value:
+                return ()
+            return tuple(item.format(**arguments) for item in value)
         except Exception as exception:
             _LOGGER.error(
                 "Failed to resolve list-type i18n-key %s in %s",

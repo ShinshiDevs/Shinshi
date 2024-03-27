@@ -31,7 +31,7 @@ def convert_to_slash_command_builder(
 ) -> ImplSlashCommandBuilder:
     description: str | Tuple[str, Dict[str, str]] | None = None
     if isinstance(command.description, Translatable):
-        description = description.build(i18n_provider)
+        description = command.description.build(i18n_provider)
     builder_instance: APISlashCommandBuilder = builder(
         command.name, description[0] if isinstance(description, tuple) else description
     )
