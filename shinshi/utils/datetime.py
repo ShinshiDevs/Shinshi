@@ -14,15 +14,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from dataclasses import dataclass
-
-from hikari.permissions import Permissions
+import datetime
 
 
-@dataclass(kw_only=True)
-class Group:
-    name: str
-
-    default_member_permissions: Permissions = Permissions.NONE
-    is_dm_enabled: bool = False
-    is_nsfw: bool = False
+def format_datetime(time: datetime, style: str | None = None) -> str:
+    valid_styles = ["t", "T", "d", "D", "f", "F", "R"]
+    if style and style not in ["t", "T", "d", "D", "f", "F", "R"]:
+        raise ValueError(
+            f"Invalid style passed. Valid styles: {' '.join(valid_styles)}"
+        )
+    if style:
+        return f"<t:{int(time.timestamp())}:{style}>"
+    return f"<t:{int(time.timestamp())}>"

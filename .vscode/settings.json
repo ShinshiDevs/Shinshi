@@ -13,6 +13,7 @@
         "asctime",
         "colorlog",
         "cooldown",
+        "dremmar",
         "hikari",
         "interactable",
         "INTERACTABLES",
@@ -23,7 +24,8 @@
         "Resourceish",
         "shinshi",
         "Shinshi",
-        "Snowflakeish"
+        "Snowflakeish",
+        "человек"
     ],
     "python.REPL.enableREPLSmartSend": false
 }

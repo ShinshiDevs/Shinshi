@@ -18,6 +18,66 @@
                     }
                 }
             }
+        },
+        "user": {
+            "arguments": {
+                "target": {
+                    "description": "User (Choice from list or provide ID)"
+                }
+            },
+            "info": {
+                "description": "Information about the user",
+                "embed": {
+                    "author": {
+                        "name": "User"
+                    },
+                    "fields": {
+                        "created_at": {
+                            "name": "Created at"
+                        },
+                        "joined_at": {
+                            "name": "Joined to {guild} at"
+                        },
+                        "roles": {
+                            "name": "Roles",
+                            "value": {
+                                "no_roles": "None",
+                                "many_roles": "{roles}... and {count} other"
+                            }
+                        }
+                    }
+                },
+                "button": {
+                    "avatar": "Avatar",
+                    "banner": "Banner"
+                }
+            },
+            "avatar": {
+                "description": "User's avatar",
+                "embed": {
+                    "author": {
+                        "name": "Avatar"
+                    }
+                },
+                "button": {
+                    "global": "Global",
+                    "guild": "Guild"
+                },
+                "exceptions": {
+                    "no_user_avatar": "This user don't have avatar"
+                }
+            },
+            "banner": {
+                "description": "User's banner",
+                "embed": {
+                    "author": {
+                        "name": "Banner"
+                    }
+                },
+                "exceptions": {
+                    "no_user_avatar": "This user don't have banner"
+                }
+            }
         }
     }
 }
