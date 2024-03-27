@@ -3,7 +3,8 @@
     "licenser.projectName": "Shinshi",
     "licenser.author": "Shinshi Developers Team",
     "licenser.excludeFileExtensions": [
-        "txt"
+        "txt",
+        "md"
     ],
     "editor.codeActionsOnSave": {
         "source.organizeImports": "always",
@@ -11,6 +12,7 @@
     "cSpell.words": [
         "asctime",
         "colorlog",
+        "cooldown",
         "hikari",
         "interactable",
         "INTERACTABLES",
