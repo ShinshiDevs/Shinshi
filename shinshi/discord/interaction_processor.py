@@ -114,10 +114,6 @@ class InteractionProcessor:
     def __convert_command_option_value(
         self, interaction: CommandInteraction, option: CommandOption
     ) -> User | InteractionMember | PartialChannel | Role | str | int | float | None:
-        print(interaction.resolved.users)
-        print(interaction.resolved.channels)
-        print(interaction.resolved.roles)
-        print(interaction.resolved.members)
         match option.type:
             case OptionType.STRING:
                 return str(option.value)
