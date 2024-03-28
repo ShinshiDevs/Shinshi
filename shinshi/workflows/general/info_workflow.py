@@ -39,7 +39,7 @@ class InfoWorkflow(WorkflowBase):
                     {"shard": context.interaction.get_guild().shard_id + 1},
                 ),
             )
-            .set_thumbnail(context.bot.me.avatar_url)
+            .set_thumbnail(context.bot.me.make_avatar_url(size=512))
             .set_author(
                 name=context.i18n.get("commands.info.embed.author.name"),
                 icon=get_icon("information"),

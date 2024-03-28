@@ -21,11 +21,16 @@ from hikari.applications import Application
 from hikari.impl import SlashCommandBuilder
 
 from shinshi.discord.bot.base_bot import BaseBot
+from shinshi.discord.workflows.interactables.builders.command_group_builder import (
+    CommandGroupBuilder,
+)
 from shinshi.discord.workflows.interactables.commands.command import Command
 from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
+from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
 from shinshi.discord.workflows.interactables.converters.convert_to_slash_command_builder import (
     convert_to_slash_command_builder,
 )
+from shinshi.discord.workflows.interactables.group import Group
 from shinshi.discord.workflows.workflow_base import WorkflowBase
 from shinshi.i18n.i18n_provider import I18nProvider
 
@@ -43,16 +48,24 @@ class WorkflowManager:
         self.workflows = workflows
 
         self.slash_commands: Dict[
-            Tuple[str, ...] | str,
+            str,
             Tuple[WorkflowBase, SlashCommand, SlashCommandBuilder],
         ] = {}
 
+        self.groups: Dict[
+            str,
+            Tuple[Dict[str, Tuple[WorkflowBase, SlashCommand]], SlashCommandBuilder],
+        ] = {}
+
     async def build_workflows(self) -> None:
+        groups: Dict[str, Group] = {}
+        groups_to_build: Dict[str, List[SlashCommand]] = {}
+
         for workflow_class in self.workflows:
             workflow: WorkflowBase = workflow_class()
             await workflow.start()
 
-            commands: List[Command] = workflow.get_commands()
+            commands: List[Command | SubCommand] = workflow.get_commands()
             for command in commands:
                 if isinstance(command, SlashCommand):
                     self.slash_commands[command.name] = (
@@ -64,11 +77,35 @@ class WorkflowManager:
                             command,
                         ),
                     )
+                if isinstance(command, SubCommand):
+                    if command.group:
+                        if command.sub_group:
+                            ...
+                        else:
+                            groups_to_build.setdefault(command.group.name, []).append(
+                                command
+                            )
+                            groups[command.group.name] = command.group
+
+        for group_name, commands in groups_to_build.items():
+            group: Group = groups[group_name]
+            group_builder = CommandGroupBuilder(
+                self.bot.rest.slash_command_builder,
+                self.i18n_provider,
+                group,
+                commands,
+            )
+            children: Dict[str, Tuple[WorkflowBase, SlashCommand]] = {
+                command.name: (workflow, command) for command in commands
+            }
+            self.groups[group_name] = (children, group_builder.build())
 
     async def sync_slash_commands(self, application: Application) -> None:
         self.__logger.debug("Synchronization of slash commands...")
         slash_command_builders: List[SlashCommandBuilder] = []
         for _, _, builder in self.slash_commands.values():
+            slash_command_builders.append(builder)
+        for _, builder in self.groups.values():
             slash_command_builders.append(builder)
         commands = await self.bot.rest.set_application_commands(
             application, slash_command_builders
@@ -77,3 +114,17 @@ class WorkflowManager:
             "Current commands: %s",
             ", ".join(f"{command.name} ({command.id})" for command in commands),
         )
+
+    def get_command(
+        self, group_name: str | None, subgroup_name: str | None, command_name: str
+    ) -> Tuple[WorkflowBase, SlashCommand] | None:
+        if group_name:
+            if subgroup_name:
+                workflow, command = self.sub_groups[group_name][subgroup_name][0][
+                    command_name
+                ]
+            else:
+                workflow, command = self.groups[group_name][0][command_name]
+        else:
+            workflow, command, _ = self.slash_commands[command_name]
+        return workflow, command

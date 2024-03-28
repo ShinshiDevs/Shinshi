@@ -17,9 +17,13 @@
 from logging import getLogger
 from typing import Any, Dict
 
+from hikari.channels import PartialChannel
 from hikari.commands import CommandOption, CommandType, OptionType
-from hikari.interactions.base_interactions import PartialInteraction
+from hikari.guilds import Role
+from hikari.interactions.base_interactions import InteractionMember, PartialInteraction
 from hikari.interactions.command_interactions import CommandInteraction
+from hikari.locales import Locale
+from hikari.users import User
 
 from shinshi.discord.bot.base_bot import BaseBot
 from shinshi.discord.models.interaction_context import InteractionContext
@@ -29,7 +33,7 @@ from shinshi.discord.workflows.workflow_base import WorkflowBase
 from shinshi.discord.workflows.workflow_manager import WorkflowManager
 from shinshi.i18n.i18n_provider import I18nProvider
 
-_DEFAULT_LANGUAGE: str = "en-US"
+_DEFAULT_LANGUAGE: str = Locale.EN_US
 
 
 class InteractionProcessor:
@@ -62,22 +66,28 @@ class InteractionProcessor:
                     command_name = option.name
                     options = list(option.options) if option.options else []
                 case _:
-                    arguments[option.name] = option.value
-
-        workflow, command = None, None
-        if group_name is not None:
-            if subgroup_name is not None:
-                workflow, command, _ = self.workflow_manager.sub_groups[group_name][
-                    subgroup_name
-                ][command_name]
-            else:
-                workflow, command, _ = self.workflow_manager.groups[group_name][
-                    command_name
-                ]
-        else:
-            workflow, command, _ = self.workflow_manager.slash_commands[command_name]
-        context = await self.create_interaction_context(interaction, command)
-        await self.__execute_slash_command(context, workflow, command, arguments)
+                    arguments[option.name] = self.__convert_command_option_value(
+                        interaction, option
+                    )
+        try:
+            workflow, command = self.workflow_manager.get_command(
+                group_name, subgroup_name, command_name
+            )
+        except KeyError:
+            raise Exception(
+                f"Cannot access command with name {group_name} {subgroup_name} {command_name}"
+            )
+        try:
+            context = await self.create_interaction_context(interaction, command)
+            await self.__execute_slash_command(context, workflow, command, arguments)
+        except Exception as exception:
+            self.__logger.error(
+                "error occurred while executing command %s %s %s.",
+                group_name,
+                subgroup_name,
+                command_name,
+                exc_info=exception,
+            )
 
     async def __execute_slash_command(
         self,
@@ -86,27 +96,56 @@ class InteractionProcessor:
         interactable: SlashCommand,
         arguments: Dict[str, Any],
     ) -> None:
-        try:
-            await self.__execute_hooks(context, interactable)
-            if interactable.is_defer:
-                await context.defer()
-            await interactable.callback(
-                workflow,
-                context,
-                **arguments,
-            )
-        except Exception as exception:
-            self.__logger.error(
-                "error occurred while executing slash-command %s.",
-                interactable.name,
-                exc_info=exception,
-            )
+        await self.__execute_hooks(context, interactable)
+        if interactable.is_defer:
+            await context.defer()
+        await interactable.callback(
+            workflow,
+            context,
+            **arguments,
+        )
 
     async def __execute_hooks(
         self, context: InteractionContext, interactable: SlashCommand
     ) -> None:
         for hook in interactable.hooks or ():
             await hook(context)
+
+    def __convert_command_option_value(
+        self, interaction: CommandInteraction, option: CommandOption
+    ) -> User | InteractionMember | PartialChannel | Role | str | int | float | None:
+        print(interaction.resolved.users)
+        print(interaction.resolved.channels)
+        print(interaction.resolved.roles)
+        print(interaction.resolved.members)
+        match option.type:
+            case OptionType.STRING:
+                return str(option.value)
+            case OptionType.INTEGER:
+                return int(option.value)
+            case OptionType.BOOLEAN:
+                return bool(option.value)
+            case OptionType.USER:
+                return interaction.resolved.members.get(
+                    option.value, interaction.resolved.users.get(option.value)
+                )
+            case OptionType.CHANNEL:
+                return interaction.resolved.channels.get(option.value)
+            case OptionType.ROLE:
+                return interaction.resolved.roles.get(option.value)
+            case OptionType.MENTIONABLE:
+                return (
+                    interaction.resolved.members.get(option.value)
+                    or interaction.resolved.users.get(option.value)
+                    or interaction.resolved.channels.get(option.value)
+                    or interaction.resolved.roles.get(option.value)
+                )
+            case OptionType.FLOAT:
+                return float(option.value)
+            case OptionType.ATTACHMENT:
+                return interaction.resolved.attachments.get(option.value)
+            case _:
+                return
 
     async def create_interaction_context(
         self, interaction: PartialInteraction, interactable: Interactable

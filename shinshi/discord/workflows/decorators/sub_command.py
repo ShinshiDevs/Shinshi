@@ -35,7 +35,6 @@ def sub_command(
 ) -> Callable[[Callable[[Any], Awaitable[Any]]], SubCommand]:
     def decorator(func: Callable[[Any], Awaitable[Any]]) -> SubCommand:
         return SubCommand(
-            command_type=CommandType.SLASH,
             group=group,
             sub_group=sub_group,
             callback=func,

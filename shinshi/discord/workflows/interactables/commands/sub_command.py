@@ -19,14 +19,19 @@ from typing import Tuple
 
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.group import Group
+from shinshi.discord.workflows.interactables.hook import Hook
+from shinshi.discord.workflows.interactables.interactable import Interactable
 from shinshi.discord.workflows.interactables.options.option import Option
 
 
 @dataclass(kw_only=True)
-class SubCommand:
+class SubCommand(Interactable):
+    name: str
     description: Translatable | str | None = None
 
     group: Group | None = None
     sub_group: str | None = None
 
     options: Tuple[Option, ...] = field(default_factory=tuple)
+
+    hooks: Tuple[Hook, ...] = field(default_factory=tuple)

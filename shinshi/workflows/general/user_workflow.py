@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from pathlib import Path
 from typing import Sequence
 
 from hikari.commands import OptionType
@@ -35,23 +34,25 @@ from shinshi.utils.icons import get_icon
 
 
 class UserWorkflow(WorkflowBase):
-    GROUP = Group(name="user", dm_enabled=True)
-    OPTIONS = Option(
-        type=OptionType.USER,
-        name="target",
-        description=Translatable("commands.user.arguments.target.description"),
+    GROUP = Group(name="user", is_dm_enabled=True)
+    OPTIONS = (
+        Option(
+            type=OptionType.USER,
+            name="target",
+            description=Translatable("commands.user.arguments.target.description"),
+            is_required=False,
+        ),
     )
 
     @staticmethod
     def __unwrap_target(
-        context: InteractionContext, target: User | Member | None
-    ) -> User | Member | InteractionMember:
+        context: InteractionContext, target: User | InteractionMember | None
+    ) -> User | InteractionMember:
+        user: User | InteractionMember
         if not target:
-            user: User | InteractionMember = (
-                context.user if not context.member else context.member
-            )
+            user = context.interaction.user or context.interaction.member
         else:
-            user: User | Member = target
+            user = target
         return user
 
     @staticmethod
@@ -63,7 +64,7 @@ class UserWorkflow(WorkflowBase):
             user.get_roles(), key=lambda role: role.position, reverse=True
         )
         roles: Sequence[str] = [
-            role.mention for role in sorted_roles if role.name != "@everyone"
+            role.mention for role in sorted_roles if role.id != user.guild_id
         ]
         if not roles:
             embed.add_field(
@@ -77,8 +78,7 @@ class UserWorkflow(WorkflowBase):
                     name=i18n.get("commands.user.info.embed.fields.roles.name"),
                     value=i18n.get(
                         "commands.user.info.embed.fields.roles.value.many_roles",
-                        roles=", ".join(roles[:5]),
-                        count=int(len(roles) - 5),
+                        {"roles": ", ".join(roles[:5]), "count": int(len(roles) - 5)},
                     ),
                     inline=False,
                 )
@@ -96,63 +96,60 @@ class UserWorkflow(WorkflowBase):
         options=OPTIONS,
     )
     async def user_info(
-        self, context: InteractionContext, target: Member | User | None = None
+        self,
+        context: InteractionContext,
+        target: User | InteractionMember | None = None,
     ) -> None:
+        target: User | InteractionMember = target or context.interaction.member
         i18n: I18nGroup = context.i18n
-        user: User | Member | InteractionMember = self.__unwrap_target(context, target)
-        icon: Path = get_icon("user")
-        if user.is_bot:
-            icon: Path = get_icon(
-                "bot" if UserFlag.VERIFIED_BOT not in user.flags else "bot_verified"
-            )
-
         embed = (
             Embed(
-                title=(
-                    user.global_name
-                    or (
-                        user.display_name
-                        if isinstance(user, Member | InteractionMember)
-                        else None
-                    )
-                    or user.username
+                title=getattr(target, "display_name", target.global_name)
+                or target.username,
+                url=f"https://discordapp.com/users/{target.id}",
+                description=(
+                    f"@{target.username}"
+                    if not target.global_name
+                    or not getattr(target, "display_name", None)
+                    else None
                 ),
-                url=f"https://discordapp.com/users/{user.id}",
-                description=f"@{user.username}",
             )
             .set_thumbnail(
-                (
-                    user.guild_avatar_url
-                    if isinstance(user, Member | InteractionMember)
-                    else None
-                )
-                or user.display_avatar_url
+                getattr(target, "guild_avatar_url", None) or target.display_avatar_url
             )
             .set_author(
                 name=i18n.get("commands.user.info.embed.author.name"),
-                icon=icon,
+                icon=(
+                    get_icon("user")
+                    if not target.is_bot
+                    else get_icon(
+                        "bot"
+                        if UserFlag.VERIFIED_BOT not in target.flags
+                        else "bot_verified"
+                    )
+                ),
             )
-            .set_footer(text=f"ID: {user.id}")
+            .set_footer(text=f"ID: {target.id}")
             .add_field(
                 name=i18n.get("commands.user.info.embed.fields.created_at.name"),
-                value=f"{format_datetime(user.created_at, 'R')}\n"
-                f"{format_datetime(user.created_at, 'D')}",
+                value=f"{format_datetime(target.created_at, 'R')}\n"
+                f"{format_datetime(target.created_at, 'D')}",
                 inline=True,
             )
         )
 
-        if isinstance(user, InteractionMember | Member):
-            embed.color = user.get_top_role().color
+        if isinstance(target, Member):
+            embed.color = getattr(target.get_top_role(), "color", None)
             embed.add_field(
                 name=i18n.get(
                     "commands.user.info.embed.fields.joined_at.name",
-                    guild=user.get_guild().name,
+                    {"guild": target.get_guild().name},
                 ),
-                value=f"{format_datetime(user.joined_at, 'R')}\n"
-                f"{format_datetime(user.joined_at, 'D')}",
+                value=f"{format_datetime(target.joined_at, 'R')}\n"
+                f"{format_datetime(target.joined_at, 'D')}",
                 inline=True,
             )
-            self.__add_roles_field(context, embed, user)
+            self.__add_roles_field(context, embed, target)
 
         return await context.create_response(embed=embed)
 
