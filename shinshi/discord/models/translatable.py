@@ -24,7 +24,7 @@ from shinshi.i18n.i18n_provider import I18nProvider
 
 @dataclass
 class Translatable:
-    key: str
+    key: str | None = None
     fallback: str | None = None
 
     def build(self, i18n_provider: I18nProvider) -> Dict[str, str]:

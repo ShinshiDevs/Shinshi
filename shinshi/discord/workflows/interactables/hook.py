@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from typing import TYPE_CHECKING, Awaitable, Callable
+
+from shinshi.discord.workflows.interactables.models.hook_result import HookResult
 
 if TYPE_CHECKING:
     from shinshi.discord.models.interaction_context import InteractionContext
@@ -23,4 +25,4 @@ if TYPE_CHECKING:
 
 @dataclass
 class Hook:
-    callback: Callable[["InteractionContext"], Awaitable[Any]]
+    callback: Callable[["InteractionContext"], Awaitable[HookResult]]

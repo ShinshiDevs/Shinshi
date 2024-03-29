@@ -14,15 +14,37 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict
 
+from hikari import Snowflake
 from hikari.permissions import Permissions
+
+from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
 
 
 @dataclass(kw_only=True)
 class Group:
     name: str
 
+    guild: Snowflake | str | int | None = None
+
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False
     is_nsfw: bool = False
+
+    commands: Dict[str, SubCommand | Dict[str, SubCommand]] = field(
+        default_factory=dict
+    )
+    # just internal variable to get command without a weird solution
+    # with dict in workflow manager :b
+
+    def get_command(
+        self, subgroup_name: str | None, command_name: str
+    ) -> SubCommand | None:
+        command: SubCommand | Dict[str, SubCommand] | None = self.commands.get(
+            command_name
+        )
+        if (subgroup_commands := self.commands.get(subgroup_name)) is not None:
+            command = subgroup_commands.get(command_name)
+        return command

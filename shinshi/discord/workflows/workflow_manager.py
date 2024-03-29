@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from logging import getLogger
-from typing import Dict, List, Tuple, Type
+from typing import Dict, List, Sequence, Type
 
 from hikari.applications import Application
 from hikari.impl import SlashCommandBuilder
@@ -27,8 +27,14 @@ from shinshi.discord.workflows.interactables.builders.command_group_builder impo
 from shinshi.discord.workflows.interactables.commands.command import Command
 from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
 from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
-from shinshi.discord.workflows.interactables.converters.convert_to_slash_command_builder import (
-    convert_to_slash_command_builder,
+from shinshi.discord.workflows.interactables.converters.option_converter import (
+    OptionConverter,
+)
+from shinshi.discord.workflows.interactables.converters.slash_command_converter import (
+    SlashCommandConverter,
+)
+from shinshi.discord.workflows.interactables.converters.sub_command_converter import (
+    SubCommandConverter,
 )
 from shinshi.discord.workflows.interactables.group import Group
 from shinshi.discord.workflows.workflow_base import WorkflowBase
@@ -47,68 +53,50 @@ class WorkflowManager:
         self.i18n_provider = i18n_provider
         self.workflows = workflows
 
-        self.slash_commands: Dict[
-            str,
-            Tuple[WorkflowBase, SlashCommand, SlashCommandBuilder],
-        ] = {}
+        self._option_converter = OptionConverter(self.i18n_provider)
+        self._slash_command_converter = SlashCommandConverter(
+            self.bot,
+            self.i18n_provider,
+        )
+        self._sub_command_converter = SubCommandConverter(self.bot, self.i18n_provider)
 
-        self.groups: Dict[
-            str,
-            Tuple[Dict[str, Tuple[WorkflowBase, SlashCommand]], SlashCommandBuilder],
-        ] = {}
+        self.slash_commands: Dict[str, SlashCommand] = {}
+        self.groups: Dict[str, Group] = {}
+
+        self.slash_commands_builders: List[SlashCommandBuilder] = []
+
+    def __build_commands(self, commands: Sequence[Command]) -> None:
+        for command in commands:
+            if isinstance(command, SlashCommand):
+                self.slash_commands[command.name] = command
+                self.slash_commands_builders.append(
+                    self._slash_command_converter.get_builder(command)
+                )
+            if isinstance(command, SubCommand):
+                self.groups[command.group.name] = command.group
+
+    def __build_groups(self) -> None:
+        print(self.groups.keys())
+        for group in self.groups.values():
+            group_builder = CommandGroupBuilder(
+                self.bot.rest.slash_command_builder,
+                self._sub_command_converter,
+                group,
+            )
+            self.slash_commands_builders.append(group_builder.build())
 
     async def build_workflows(self) -> None:
-        groups: Dict[str, Group] = {}
-        groups_to_build: Dict[str, List[SlashCommand]] = {}
-
         for workflow_class in self.workflows:
             workflow: WorkflowBase = workflow_class()
             await workflow.start()
 
-            commands: List[Command | SubCommand] = workflow.get_commands()
-            for command in commands:
-                if isinstance(command, SlashCommand):
-                    self.slash_commands[command.name] = (
-                        workflow,
-                        command,
-                        convert_to_slash_command_builder(
-                            self.bot.rest.slash_command_builder,
-                            self.i18n_provider,
-                            command,
-                        ),
-                    )
-                if isinstance(command, SubCommand):
-                    if command.group:
-                        if command.sub_group:
-                            ...
-                        else:
-                            groups_to_build.setdefault(command.group.name, []).append(
-                                command
-                            )
-                            groups[command.group.name] = command.group
-
-        for group_name, commands in groups_to_build.items():
-            group: Group = groups[group_name]
-            group_builder = CommandGroupBuilder(
-                self.bot.rest.slash_command_builder,
-                self.i18n_provider,
-                group,
-                commands,
-            )
-            children: Dict[str, Tuple[WorkflowBase, SlashCommand]] = {
-                command.name: (workflow, command) for command in commands
-            }
-            self.groups[group_name] = (children, group_builder.build())
+            self.__build_commands(workflow.get_commands())
+        self.__build_groups()
 
     async def sync_slash_commands(self, application: Application) -> None:
         self.__logger.debug("Synchronization of slash commands...")
-        slash_command_builders: List[SlashCommandBuilder] = []
-        for _, _, builder in self.slash_commands.values():
-            slash_command_builders.append(builder)
-        for _, builder in self.groups.values():
-            slash_command_builders.append(builder)
         commands = await self.bot.rest.set_application_commands(
-            application, slash_command_builders
+            application, self.slash_commands_builders
         )
         self.__logger.debug(
             "Current commands: %s",
@@ -117,14 +105,7 @@ class WorkflowManager:
 
     def get_command(
         self, group_name: str | None, subgroup_name: str | None, command_name: str
-    ) -> Tuple[WorkflowBase, SlashCommand] | None:
+    ) -> Command | None:
         if group_name:
-            if subgroup_name:
-                workflow, command = self.sub_groups[group_name][subgroup_name][0][
-                    command_name
-                ]
-            else:
-                workflow, command = self.groups[group_name][0][command_name]
-        else:
-            workflow, command, _ = self.slash_commands[command_name]
-        return workflow, command
+            return self.groups[group_name].get_command(subgroup_name, command_name)
+        return self.slash_commands[command_name]

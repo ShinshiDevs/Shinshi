@@ -19,7 +19,6 @@ from typing import Sequence, Tuple
 
 from shinshi.discord.workflows.constants import _WORKFLOW_PREDEFINED_INTERACTABLES
 from shinshi.discord.workflows.interactables.commands.command import Command
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
 from shinshi.discord.workflows.interactables.interactable import Interactable
 from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 
@@ -39,9 +38,9 @@ class WorkflowBase(metaclass=WorkflowMeta):
     async def start(self) -> None:
         ...
 
-    def get_commands(self) -> Sequence[Command | SubCommand]:
+    def get_commands(self) -> Sequence[Command]:
         return tuple(
             interactable
             for interactable in self.interactables
-            if isinstance(interactable, Command | SubCommand)
+            if isinstance(interactable, Command)
         )

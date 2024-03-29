@@ -27,9 +27,9 @@ from hikari.users import User
 
 from shinshi.discord.bot.base_bot import BaseBot
 from shinshi.discord.models.interaction_context import InteractionContext
-from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
+from shinshi.discord.workflows.interactables.commands.command import Command
 from shinshi.discord.workflows.interactables.interactable import Interactable
-from shinshi.discord.workflows.workflow_base import WorkflowBase
+from shinshi.discord.workflows.interactables.models.hook_result import HookResult
 from shinshi.discord.workflows.workflow_manager import WorkflowManager
 from shinshi.i18n.i18n_provider import I18nProvider
 
@@ -70,7 +70,7 @@ class InteractionProcessor:
                         interaction, option
                     )
         try:
-            workflow, command = self.workflow_manager.get_command(
+            command = self.workflow_manager.get_command(
                 group_name, subgroup_name, command_name
             )
         except KeyError:
@@ -79,7 +79,9 @@ class InteractionProcessor:
             )
         try:
             context = await self.create_interaction_context(interaction, command)
-            await self.__execute_slash_command(context, workflow, command, arguments)
+            if await self.__execute_hooks(context, command) is not None:
+                return
+            await self.__execute_slash_command(context, command, arguments)
         except Exception as exception:
             self.__logger.error(
                 "error occurred while executing command %s %s %s.",
@@ -92,24 +94,24 @@ class InteractionProcessor:
     async def __execute_slash_command(
         self,
         context: InteractionContext,
-        workflow: WorkflowBase,
-        interactable: SlashCommand,
+        command: Command,
         arguments: Dict[str, Any],
     ) -> None:
-        await self.__execute_hooks(context, interactable)
-        if interactable.is_defer:
+        if command.is_defer:
             await context.defer()
-        await interactable.callback(
-            workflow,
+        await command.callback(
+            command._workflow,
             context,
             **arguments,
         )
 
     async def __execute_hooks(
-        self, context: InteractionContext, interactable: SlashCommand
-    ) -> None:
-        for hook in interactable.hooks or ():
-            await hook(context)
+        self, context: InteractionContext, command: Command
+    ) -> HookResult:
+        for hook in command.hooks or ():
+            result: HookResult = await hook(context)
+            if result.stop:
+                return result
 
     def __convert_command_option_value(
         self, interaction: CommandInteraction, option: CommandOption

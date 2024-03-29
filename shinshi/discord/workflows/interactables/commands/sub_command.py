@@ -15,23 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.group import Group
-from shinshi.discord.workflows.interactables.hook import Hook
-from shinshi.discord.workflows.interactables.interactable import Interactable
+from shinshi.discord.workflows.interactables.commands.command import Command
 from shinshi.discord.workflows.interactables.options.option import Option
+
+if TYPE_CHECKING:
+    from shinshi.discord.workflows.interactables.group import Group
 
 
 @dataclass(kw_only=True)
-class SubCommand(Interactable):
-    name: str
+class SubCommand(Command):
     description: Translatable | str | None = None
 
-    group: Group | None = None
+    group: "Group" = None
     sub_group: str | None = None
 
     options: Tuple[Option, ...] = field(default_factory=tuple)
 
-    hooks: Tuple[Hook, ...] = field(default_factory=tuple)
+    def __post_init__(self) -> None:
+        if self.sub_group:
+            self.group.commands.setdefault(self.sub_group, {})[self.name] = self
+        else:
+            self.group.commands[self.name] = self

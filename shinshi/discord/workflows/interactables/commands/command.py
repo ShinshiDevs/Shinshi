@@ -18,7 +18,6 @@ from dataclasses import dataclass, field
 from typing import Tuple
 
 from hikari.commands import CommandType
-from hikari.snowflakes import Snowflake
 
 from shinshi.discord.workflows.interactables.hook import Hook
 from shinshi.discord.workflows.interactables.interactable import Interactable
@@ -28,7 +27,5 @@ from shinshi.discord.workflows.interactables.interactable import Interactable
 class Command(Interactable):
     command_type: CommandType
     name: str
-
-    guild: Snowflake | str | int | None = None
 
     hooks: Tuple[Hook, ...] = field(default_factory=tuple)

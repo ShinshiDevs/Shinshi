@@ -27,7 +27,7 @@ from shinshi.utils.number import get_separated_number
 
 class InfoWorkflow(WorkflowBase):
     @slash_command(
-        description=Translatable("commands.info.description"), dm_enabled=True
+        description=Translatable("commands.info.description"), is_dm_enabled=True
     )
     async def info(self, context: InteractionContext) -> None:
         embed = (

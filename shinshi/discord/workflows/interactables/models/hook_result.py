@@ -14,21 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Dict
-
-from hikari.commands import CommandChoice
-
-from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.options.choice import Choice
-from shinshi.i18n.i18n_provider import I18nProvider
+from dataclasses import dataclass
 
 
-def convert_choice(i18n_provider: I18nProvider, choice: Choice) -> CommandChoice:
-    name_localizations: Dict[str, str] | None = None
-    if isinstance(choice.name, Translatable):
-        name_localizations = choice.name.build(i18n_provider)
-    return CommandChoice(
-        name=getattr(choice.name, "fallback", choice.name),
-        name_localizations=name_localizations,
-        value=choice.value,
-    )
+@dataclass(kw_only=True)
+class HookResult:
+    stop: bool

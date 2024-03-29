@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Any, Awaitable, Callable, Tuple
+from typing import Any, Awaitable, Callable, Dict, Tuple
 
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
@@ -32,14 +32,20 @@ def sub_command(
     hooks: Tuple[Hook, ...] | None = None,
 ) -> Callable[[Callable[[Any], Awaitable[Any]]], SubCommand]:
     def decorator(func: Callable[[Any], Awaitable[Any]]) -> SubCommand:
+        kwargs: Dict[str, Any] = {}
+        if description is not None:
+            kwargs["description"] = description
+        if options is not None:
+            kwargs["options"] = options
+        if hooks is not None:
+            kwargs["hooks"] = hooks
         return SubCommand(
+            command_type=None,
             group=group,
             sub_group=sub_group,
             callback=func,
             name=name or func.__name__,
-            description=description,
-            options=options,
-            hooks=hooks,
+            **kwargs,
         )
 
     return decorator

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Any, Awaitable, Callable, Tuple
+from typing import Any, Awaitable, Callable, Dict, Tuple
 
 from hikari.commands import CommandType
 from hikari.permissions import Permissions
@@ -31,20 +31,28 @@ def slash_command(
     options: Tuple[Option, ...] | None = None,
     hooks: Tuple[Hook, ...] | None = None,
     default_member_permissions: Permissions | None = None,
-    dm_enabled: bool | None = None,
+    is_dm_enabled: bool | None = None,
     is_nsfw: bool | None = None,
 ) -> Callable[[Callable[[Any], Awaitable[Any]]], SlashCommand]:
     def decorator(func: Callable[[Any], Awaitable[Any]]) -> SlashCommand:
+        kwargs: Dict[str, Any] = {}
+        if description is not None:
+            kwargs["description"] = description
+        if options is not None:
+            kwargs["options"] = options
+        if hooks is not None:
+            kwargs["hooks"] = hooks
+        if default_member_permissions is not None:
+            kwargs["default_member_permissions"] = default_member_permissions
+        if is_dm_enabled is not None:
+            kwargs["is_dm_enabled"] = is_dm_enabled
+        if is_nsfw is not None:
+            kwargs["is_nsfw"] = is_nsfw
         return SlashCommand(
             command_type=CommandType.SLASH,
             callback=func,
             name=name or func.__name__,
-            description=description,
-            options=options,
-            hooks=hooks,
-            default_member_permissions=default_member_permissions,
-            is_dm_enabled=dm_enabled,
-            is_nsfw=is_nsfw,
+            **kwargs,
         )
 
     return decorator

@@ -14,31 +14,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Callable, List
+from typing import Callable
 
+from hikari import OptionType
 from hikari.api import SlashCommandBuilder as APISlashCommandBuilder
+from hikari.commands import CommandOption
 from hikari.impl import SlashCommandBuilder as ImplSlashCommandBuilder
 
-from shinshi.discord.workflows.interactables.commands.command import Command
-from shinshi.discord.workflows.interactables.converters.convert_sub_command import (
-    convert_sub_command,
+from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
+from shinshi.discord.workflows.interactables.converters.sub_command_converter import (
+    SubCommandConverter,
 )
 from shinshi.discord.workflows.interactables.group import Group
-from shinshi.i18n.i18n_provider import I18nProvider
 
 
 class CommandGroupBuilder:
     def __init__(
         self,
         builder_factory: Callable[[str, str], APISlashCommandBuilder],
-        i18n_provider: I18nProvider,
+        converter: SubCommandConverter,
         group: Group,
-        commands: List[Command],
     ) -> None:
         self.builder_factory = builder_factory
-        self.i18n_provider = i18n_provider
+        self.sub_command_converter = converter
         self.group = group
-        self.commands = commands
 
     def build(self) -> ImplSlashCommandBuilder:
         builder_instance: APISlashCommandBuilder = (
@@ -47,9 +46,18 @@ class CommandGroupBuilder:
             .set_is_dm_enabled(self.group.is_dm_enabled)
             .set_is_nsfw(self.group.is_nsfw)
         )
-        for command in self.commands:
-            builder_instance.add_option(
-                convert_sub_command(self.i18n_provider, command)
-            )
-
+        for name, entity in self.group.commands.items():
+            if isinstance(entity, SubCommand):
+                builder_instance.add_option(self.sub_command_converter.convert(entity))
+            if isinstance(entity, dict):
+                sub_group: CommandOption = CommandOption(
+                    type=OptionType.SUB_COMMAND_GROUP,
+                    name=name,
+                    description=name,
+                    options=(
+                        self.sub_command_converter.convert(sub_command)
+                        for sub_command in entity.values()
+                    ),
+                )
+                builder_instance.add_option(sub_group)
         return builder_instance
