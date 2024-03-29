@@ -16,9 +16,8 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Callable
 
-from hikari import OptionType
 from hikari.api import SlashCommandBuilder as APISlashCommandBuilder
-from hikari.commands import CommandOption
+from hikari.commands import CommandOption, OptionType
 from hikari.impl import SlashCommandBuilder as ImplSlashCommandBuilder
 
 from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
