@@ -76,7 +76,6 @@ class WorkflowManager:
                 self.groups[command.group.name] = command.group
 
     def __build_groups(self) -> None:
-        print(self.groups.keys())
         for group in self.groups.values():
             group_builder = CommandGroupBuilder(
                 self.bot.rest.slash_command_builder,
