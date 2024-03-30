@@ -34,6 +34,19 @@ Starting in 2021, the Shinshi project was launched, but it was halted due to lac
 # Technical information
 Main programming language is [Python]. That's all, but stand with updates on [Shinshi Hub]!
 
+# Run
+> ![NOTE]
+> We're not providing assistance for running this project on your own host machine.
+Before running don't forget to fill `app.env` file.
+### Docker
+- `docker build --tag shinshi .` (Execute this command in the project directory)
+- `docker run --detach --name shinshi-container shinshi`
+### Docker Compose
+Currently not available
+### Python
+- `python3 -m pip install -r requirements.txt` (Install the required packages)
+- `python3 -OO -m shinshi` (Run the project with optimization flags)
+
 # Our contributors
 <a href="https://github.com/ShinshiDevs/Shinshi/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=ShinshiDevs/Shinshi" />

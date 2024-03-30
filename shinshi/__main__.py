@@ -18,6 +18,7 @@ import asyncio
 import os
 import platform
 from pathlib import Path
+from typing import Any, Dict
 
 import orjson
 import uvloop
@@ -31,6 +32,7 @@ from shinshi import __copyright__, __github_url__, __license__, __support_url__
 from shinshi.discord.bot import BaseBot
 from shinshi.discord.interaction_processor import InteractionProcessor
 from shinshi.discord.workflows.workflow_manager import WorkflowManager
+from shinshi.dotenv.load import load_dotenv
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import general
 
@@ -39,6 +41,7 @@ asyncio.set_event_loop_policy(
     if platform.system() != "Windows"
     else asyncio.DefaultEventLoopPolicy()
 )
+env: Dict[str, Any] = load_dotenv(Path(os.getcwd(), "secrets", "app.env"))
 
 
 class Bot(BaseBot):
@@ -58,7 +61,7 @@ class Bot(BaseBot):
             bot=self, i18n_provider=self.i18n, workflow_manager=self.workflow_manager
         )
         super().__init__(
-            token=os.environ.get("SHINSHI_DISCORD_TOKEN"),
+            token=env.get("SHINSHI_DISCORD_TOKEN"),
             banner=Path(os.getcwd(), "resources", "banner.txt"),
             banner_extras={
                 "shinshi_license": __license__,
