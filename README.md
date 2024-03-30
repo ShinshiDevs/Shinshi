@@ -35,8 +35,7 @@ Starting in 2021, the Shinshi project was launched, but it was halted due to lac
 Main programming language is [Python]. That's all, but stand with updates on [Shinshi Hub]!
 
 # Run
-> ![NOTE]
->
+> [!NOTE]
 > We're not providing assistance for running this project on your own host machine.
 Before running don't forget to fill `app.env` file.
 ### Docker
