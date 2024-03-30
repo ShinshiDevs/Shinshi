@@ -36,6 +36,7 @@ Main programming language is [Python]. That's all, but stand with updates on [Sh
 
 # Run
 > ![NOTE]
+>
 > We're not providing assistance for running this project on your own host machine.
 Before running don't forget to fill `app.env` file.
 ### Docker
