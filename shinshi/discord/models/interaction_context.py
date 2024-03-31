@@ -27,9 +27,9 @@ from hikari.snowflakes import SnowflakeishSequence
 from hikari.undefined import UNDEFINED, UndefinedOr
 from hikari.users import PartialUser
 
-from shinshi.discord.bot.base_bot import BaseBot
+from shinshi.discord.bot import BaseBot
 from shinshi.discord.workflows.interactables.interactable import Interactable
-from shinshi.i18n.i18n_group import I18nGroup
+from shinshi.i18n import I18nGroup
 
 
 @dataclass(kw_only=True)

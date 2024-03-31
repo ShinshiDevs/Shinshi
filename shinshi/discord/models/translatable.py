@@ -19,7 +19,7 @@ from typing import Dict
 
 from hikari.locales import Locale
 
-from shinshi.i18n.i18n_provider import I18nProvider
+from shinshi.i18n import I18nProvider
 
 
 @dataclass

@@ -17,10 +17,10 @@
 from dataclasses import dataclass, field
 from typing import Dict
 
-from hikari import Snowflake
 from hikari.permissions import Permissions
+from hikari.snowflakes import Snowflake
 
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
+from shinshi.discord.workflows.interactables.commands import SubCommand
 
 
 @dataclass(kw_only=True)
@@ -36,8 +36,6 @@ class Group:
     commands: Dict[str, SubCommand | Dict[str, SubCommand]] = field(
         default_factory=dict
     )
-    # just internal variable to get command without a weird solution
-    # with dict in workflow manager :b
 
     def get_command(
         self, subgroup_name: str | None, command_name: str

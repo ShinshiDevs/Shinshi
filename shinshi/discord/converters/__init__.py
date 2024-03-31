@@ -14,4 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .command_group_builder import CommandGroupBuilder  # noqa: F401
+from .option_converter import OptionConverter  # noqa: F401
+from .slash_command_converter import SlashCommandConverter  # noqa: F401
+from .sub_command_converter import SubCommandConverter  # noqa: F401

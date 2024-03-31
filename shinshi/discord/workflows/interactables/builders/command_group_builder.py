@@ -20,10 +20,8 @@ from hikari.api import SlashCommandBuilder as APISlashCommandBuilder
 from hikari.commands import CommandOption, OptionType
 from hikari.impl import SlashCommandBuilder as ImplSlashCommandBuilder
 
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
-from shinshi.discord.workflows.interactables.converters.sub_command_converter import (
-    SubCommandConverter,
-)
+from shinshi.discord.converters import SubCommandConverter
+from shinshi.discord.workflows.interactables.commands import SubCommand
 from shinshi.discord.workflows.interactables.group import Group
 
 

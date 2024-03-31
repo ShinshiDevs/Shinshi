@@ -19,9 +19,9 @@ from typing import Dict
 from hikari.commands import CommandChoice, CommandOption
 
 from shinshi.discord.models.translatable import Translatable
+from shinshi.discord.workflows.interactables.models.choice import Choice
 from shinshi.discord.workflows.interactables.options import Option
-from shinshi.discord.workflows.interactables.options.choice import Choice
-from shinshi.i18n.i18n_provider import I18nProvider
+from shinshi.i18n import I18nProvider
 
 
 class OptionConverter:

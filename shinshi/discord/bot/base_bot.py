@@ -21,11 +21,11 @@ import sys
 from typing import Any, Dict
 
 import colorlog
-from hikari import OwnUser
 from hikari.impl import GatewayBot, config
 from hikari.intents import Intents
 from hikari.internal import data_binding
 from hikari.internal.ux import supports_color
+from hikari.users import OwnUser
 
 from shinshi.discord.bot.cache import Cache
 

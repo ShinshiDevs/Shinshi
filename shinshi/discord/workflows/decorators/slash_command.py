@@ -20,9 +20,9 @@ from hikari.commands import CommandType
 from hikari.permissions import Permissions
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
+from shinshi.discord.workflows.interactables.commands import SlashCommand
 from shinshi.discord.workflows.interactables.hook import Hook
-from shinshi.discord.workflows.interactables.options.option import Option
+from shinshi.discord.workflows.interactables.options import Option
 
 
 def slash_command(

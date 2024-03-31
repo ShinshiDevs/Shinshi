@@ -16,18 +16,17 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Dict
 
-from hikari import CommandOption, OptionType
+from hikari.api import SlashCommandBuilder as APISlashCommandBuilder
+from hikari.impl import SlashCommandBuilder as ImplSlashCommandBuilder
 
-from shinshi.discord.bot.base_bot import BaseBot
+from shinshi.discord.bot import BaseBot
+from shinshi.discord.converters import OptionConverter
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
-from shinshi.discord.workflows.interactables.converters.option_converter import (
-    OptionConverter,
-)
-from shinshi.i18n.i18n_provider import I18nProvider
+from shinshi.discord.workflows.interactables.commands import SlashCommand
+from shinshi.i18n import I18nProvider
 
 
-class SubCommandConverter:
+class SlashCommandConverter:
     def __init__(
         self,
         bot: BaseBot,
@@ -37,19 +36,22 @@ class SubCommandConverter:
         self.i18n_provider = i18n_provider
         self.option_converter = OptionConverter(self.i18n_provider)
 
-    def convert(self, command: SubCommand) -> CommandOption:
+    def get_builder(self, command: SlashCommand) -> ImplSlashCommandBuilder:
         description_localizations: Dict[str, str] | None = None
         if isinstance(command.description, Translatable):
             description_localizations = command.description.build(self.i18n_provider)
-        return CommandOption(
-            type=OptionType.SUB_COMMAND,
-            name=command.name,
-            description=(
+        builder_instance: APISlashCommandBuilder = (
+            self.bot.rest.slash_command_builder(
+                command.name,
                 getattr(command.description, "fallback", command.description)
-                or "No description"
-            ),
-            options=(
-                self.option_converter.convert(option) for option in command.options
-            ),
-            description_localizations=description_localizations,
+                or "No description",
+            )
+            .set_description_localizations(description_localizations)
+            .set_default_member_permissions(command.default_member_permissions)
+            .set_is_dm_enabled(command.is_dm_enabled)
+            .set_is_nsfw(command.is_nsfw)
         )
+        for option in command.options:
+            builder_instance.add_option(self.option_converter.convert(option))
+
+        return builder_instance

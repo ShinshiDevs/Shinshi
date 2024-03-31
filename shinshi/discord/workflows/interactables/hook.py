@@ -17,7 +17,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Awaitable, Callable
 
-from shinshi.discord.workflows.interactables.models.hook_result import HookResult
+from shinshi.discord.workflows.interactables.models.hook import HookResult
 
 if TYPE_CHECKING:
     from shinshi.discord.models.interaction_context import InteractionContext

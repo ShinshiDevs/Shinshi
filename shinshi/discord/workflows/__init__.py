@@ -14,3 +14,5 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from .workflow_base import WorkflowBase  # noqa: F401
+from .workflow_manager import WorkflowManager  # noqa: F401

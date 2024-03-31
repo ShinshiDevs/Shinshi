@@ -18,8 +18,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Tuple
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.commands.command import Command
-from shinshi.discord.workflows.interactables.options.option import Option
+from shinshi.discord.workflows.interactables.commands import Command
+from shinshi.discord.workflows.interactables.options import Option
 
 if TYPE_CHECKING:
     from shinshi.discord.workflows.interactables.group import Group

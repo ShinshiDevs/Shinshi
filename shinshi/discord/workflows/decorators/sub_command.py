@@ -17,10 +17,10 @@
 from typing import Any, Awaitable, Callable, Dict, Tuple
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
+from shinshi.discord.workflows.interactables.commands import SubCommand
 from shinshi.discord.workflows.interactables.group import Group
 from shinshi.discord.workflows.interactables.hook import Hook
-from shinshi.discord.workflows.interactables.options.option import Option
+from shinshi.discord.workflows.interactables.options import Option
 
 
 def sub_command(

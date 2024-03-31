@@ -18,7 +18,7 @@ from abc import abstractmethod
 from typing import Sequence, Tuple
 
 from shinshi.discord.workflows.constants import _WORKFLOW_PREDEFINED_INTERACTABLES
-from shinshi.discord.workflows.interactables.commands.command import Command
+from shinshi.discord.workflows.interactables.commands import Command
 from shinshi.discord.workflows.interactables.interactable import Interactable
 from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 

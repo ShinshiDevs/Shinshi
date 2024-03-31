@@ -17,11 +17,11 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 
-from hikari import Permissions
+from hikari.permissions import Permissions
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.commands.command import Command
-from shinshi.discord.workflows.interactables.options.option import Option
+from shinshi.discord.workflows.interactables.commands import Command
+from shinshi.discord.workflows.interactables.options import Option
 
 
 @dataclass(kw_only=True)

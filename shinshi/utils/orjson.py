@@ -14,3 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+import orjson
+
+
+def orjson_serialize(data: bytes) -> str:
+    return orjson.dumps(data).decode("UTF-8")

@@ -14,13 +14,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from hikari.components import ButtonStyle
 from hikari.embeds import Embed
+from hikari.impl import (
+    InteractiveButtonBuilder,
+    LinkButtonBuilder,
+    MessageActionRowBuilder,
+)
 
-from shinshi import __copyright__, __license__
+from shinshi import __copyright__, __github_url__, __license__, __support_url__
 from shinshi.discord.models.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.decorators.slash_command import slash_command
-from shinshi.discord.workflows.workflow_base import WorkflowBase
+from shinshi.discord.workflows import WorkflowBase
+from shinshi.discord.workflows.decorators import slash_command
 from shinshi.utils.icons import get_icon
 from shinshi.utils.number import get_separated_number
 
@@ -63,4 +69,17 @@ class InfoWorkflow(WorkflowBase):
                 ),
             )
         )
-        return await context.create_response(embed=embed)
+        # TEST COMPONENT BUILDER FROM HIKARI
+        # TODO: REMOVE THIS
+        return await context.create_response(
+            embed=embed,
+            component=MessageActionRowBuilder(
+                components=[
+                    LinkButtonBuilder(label="Github", url=__github_url__),
+                    LinkButtonBuilder(label="Support", url=__support_url__),
+                    InteractiveButtonBuilder(
+                        style=ButtonStyle.SECONDARY, custom_id="hi", label="Hi"
+                    ),
+                ]
+            ),
+        )

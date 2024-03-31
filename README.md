@@ -14,17 +14,18 @@
 ![Discord](https://img.shields.io/discord/1130589089658306672.svg)
 ![Commit activity](https://img.shields.io/github/commit-activity/m/ShinshiDevs/Shinshi)
 
-Shinshi is a modern and user-friendly Discord bot designed to provide you and your servers with great features and stable performance. Its main purpose is to assist you in creating your own Discord server, diversify any server, and enhance your everyday experience.
+Shinshi is a modern and user-friendly Discord bot designed to provide you and your servers with great features and stable performance. It
+s main purpose is to assist you in creating your own Discord server, diversify any server, and enhance your everyday experience.
 ### Functionality
-- [ ] General functionality (user, guild, etc. information, settings)
-- [ ] Utilities (calculator, translator, weather, etc.)
-- [ ] Server management functionality (manage emojis, manage banner and etc.)
-- [ ] Moderation. (ban, kick, warns, timeout, cooldown for chats and etc.)
-- [ ] Greetings and farewells.
-- [ ] Suggestions, reports, tickets.
-- [ ] Private rooms.
-- [ ] Music. (Spotify, SoundCloud, Yandex.Music)
-- [ ] Voice and text leveling.
+- [ ] General functionality. (information on users, guilds, settings, etc.)
+- [ ] Utilities. (calculator, translator, weather, etc.)
+- [ ] Server management features.
+- [ ] Moderation. (ban, kick, warnings, timeout, chat cooldowns, etc.)
+- [ ] Welcome and goodbye messages.
+- [ ] Suggestions, reports, support tickets.
+- [ ] Private chat rooms.
+- [ ] Music integration. (Spotify, SoundCloud, Yandex.Music)
+- [ ] Voice and text-based leveling systems.
 
 and many-many other functionality, that'll help you to create a unique server - as our approach.
 
@@ -37,6 +38,7 @@ Main programming language is [Python]. That's all, but stand with updates on [Sh
 # Run
 > [!NOTE]
 > We're not providing assistance for running this project on your own host machine.
+
 Before running don't forget to fill `app.env` file.
 ### Docker
 - `docker build --tag shinshi .` (Execute this command in the project directory)
@@ -54,5 +56,5 @@ Currently not available
 
 # And special thanks
 - All people on [Shinshi Hub] with role `@Special Thanks`!
-- [`человек-чай (@dremmar)`](https://github.com/podlinovvv) for generating a Shinshi character using a neural network.
+- [`человек-чай (@dremmar)`](https://github.com/podlinovvv) for generating a Shinshi character art using a neural network.
 

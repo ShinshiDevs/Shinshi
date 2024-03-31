@@ -22,18 +22,19 @@ from typing import Any, Dict
 
 import orjson
 import uvloop
-from aiohttp import ClientSession, ClientTimeout, TCPConnector
+from aiohttp.client import ClientSession
+from aiohttp.connector import TCPConnector
 from hikari.applications import Application
-from hikari.events.interaction_events import InteractionCreateEvent
 from hikari.events.lifetime_events import StartedEvent, StartingEvent, StoppingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 
 from shinshi import __copyright__, __github_url__, __license__, __support_url__
 from shinshi.discord.bot import BaseBot
 from shinshi.discord.interaction_processor import InteractionProcessor
-from shinshi.discord.workflows.workflow_manager import WorkflowManager
-from shinshi.dotenv.load import load_dotenv
+from shinshi.discord.workflows import WorkflowManager
+from shinshi.dotenv import load_dotenv
 from shinshi.i18n import I18nProvider
+from shinshi.utils.orjson import orjson_serialize
 from shinshi.workflows import general
 
 asyncio.set_event_loop_policy(
@@ -46,6 +47,7 @@ env: Dict[str, Any] = load_dotenv(Path(os.getcwd(), "secrets", "app.env"))
 
 class Bot(BaseBot):
     def __init__(self) -> None:
+        self.application: Application | None = None
         self.http_session: ClientSession | None = None
         self.i18n = I18nProvider()
         self.workflow_manager = WorkflowManager(
@@ -84,29 +86,27 @@ class Bot(BaseBot):
             loads=orjson.loads,
         )
 
-    @staticmethod
-    def orjson_serialize(data: bytes) -> str:
-        return orjson.dumps(data).decode("UTF-8")
+    async def get_application(self) -> Application:
+        if self.application is None:
+            self.application = await self.rest.fetch_application()
+        return self.application
 
     async def on_starting(self, _: StartingEvent) -> None:
         self.http_session = ClientSession(
             connector=TCPConnector(),
-            json_serialize=self.orjson_serialize,
-            timeout=ClientTimeout(3),
+            json_serialize=orjson_serialize,
         )
         await self.i18n.start()
-        await self.workflow_manager.build_workflows()
+        if self.i18n.languages:
+            await self.workflow_manager.build_workflows()
 
     async def on_started(self, _: StartedEvent) -> None:
-        application: Application = await self.rest.fetch_application()
+        application: Application = await self.get_application()
         await self.workflow_manager.sync_slash_commands(application)
-        self.event_manager.subscribe(InteractionCreateEvent, self.on_interaction)
+        self.interaction_processor.install()
 
     async def on_stopping(self, _: StoppingEvent) -> None:
         await self.http_session.close()
-
-    async def on_interaction(self, event: InteractionCreateEvent) -> None:
-        await self.interaction_processor.proceed(event.interaction)
 
 
 if __name__ == "__main__":

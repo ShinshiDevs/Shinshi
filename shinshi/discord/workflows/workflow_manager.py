@@ -20,25 +20,23 @@ from typing import Dict, List, Sequence, Type
 from hikari.applications import Application
 from hikari.impl import SlashCommandBuilder
 
-from shinshi.discord.bot.base_bot import BaseBot
-from shinshi.discord.workflows.interactables.builders.command_group_builder import (
-    CommandGroupBuilder,
-)
-from shinshi.discord.workflows.interactables.commands.command import Command
-from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
-from shinshi.discord.workflows.interactables.converters.option_converter import (
+from shinshi.discord.bot import BaseBot
+from shinshi.discord.converters import (
     OptionConverter,
-)
-from shinshi.discord.workflows.interactables.converters.slash_command_converter import (
     SlashCommandConverter,
-)
-from shinshi.discord.workflows.interactables.converters.sub_command_converter import (
     SubCommandConverter,
 )
+from shinshi.discord.workflows import WorkflowBase
+from shinshi.discord.workflows.interactables.builders import (
+    CommandGroupBuilder,
+)
+from shinshi.discord.workflows.interactables.commands import (
+    Command,
+    SlashCommand,
+    SubCommand,
+)
 from shinshi.discord.workflows.interactables.group import Group
-from shinshi.discord.workflows.workflow_base import WorkflowBase
-from shinshi.i18n.i18n_provider import I18nProvider
+from shinshi.i18n import I18nProvider
 
 
 class WorkflowManager:

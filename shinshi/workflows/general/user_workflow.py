@@ -19,16 +19,16 @@ from typing import Sequence
 from hikari.commands import OptionType
 from hikari.embeds import Embed
 from hikari.guilds import Member, Role
-from hikari.interactions.base_interactions import InteractionMember
+from hikari.interactions import InteractionMember
 from hikari.users import User, UserFlag
 
 from shinshi.discord.models.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.decorators.sub_command import sub_command
+from shinshi.discord.workflows import WorkflowBase
+from shinshi.discord.workflows.decorators import sub_command
 from shinshi.discord.workflows.interactables.group import Group
-from shinshi.discord.workflows.interactables.options.option import Option
-from shinshi.discord.workflows.workflow_base import WorkflowBase
-from shinshi.i18n.i18n_group import I18nGroup
+from shinshi.discord.workflows.interactables.options import Option
+from shinshi.i18n import I18nGroup
 from shinshi.utils.datetime import format_datetime
 from shinshi.utils.icons import get_icon
 

@@ -14,136 +14,32 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from logging import getLogger
-from typing import Any, Dict
-
-from hikari.channels import PartialChannel
-from hikari.commands import CommandOption, CommandType, OptionType
-from hikari.guilds import Role
-from hikari.interactions.base_interactions import InteractionMember, PartialInteraction
+from hikari.commands import CommandType
+from hikari.events import InteractionCreateEvent
+from hikari.interactions.base_interactions import PartialInteraction
 from hikari.interactions.command_interactions import CommandInteraction
 from hikari.locales import Locale
-from hikari.users import User
 
-from shinshi.discord.bot.base_bot import BaseBot
+from shinshi.discord.bot import BaseBot
 from shinshi.discord.models.interaction_context import InteractionContext
-from shinshi.discord.workflows.interactables.commands.command import Command
+from shinshi.discord.processors import SlashCommandProcessor
 from shinshi.discord.workflows.interactables.interactable import Interactable
-from shinshi.discord.workflows.interactables.models.hook_result import HookResult
 from shinshi.discord.workflows.workflow_manager import WorkflowManager
-from shinshi.i18n.i18n_provider import I18nProvider
+from shinshi.i18n import I18nProvider
 
 _DEFAULT_LANGUAGE: str = Locale.EN_US
 
 
-class InteractionProcessor:
+class InteractionProcessor(SlashCommandProcessor):
     def __init__(
         self,
         bot: BaseBot,
         i18n_provider: I18nProvider,
         workflow_manager: WorkflowManager,
     ) -> None:
-        self.__logger = getLogger("shinshi.interactions")
         self.bot = bot
         self.i18n_provider = i18n_provider
         self.workflow_manager = workflow_manager
-
-    async def __proceed_slash_command(self, interaction: CommandInteraction) -> None:
-        group_name, subgroup_name, command_name = None, None, interaction.command_name
-        arguments: Dict[str, Any] = {}
-        options: list[CommandOption] = (
-            list(interaction.options) if interaction.options else []
-        )
-        while options:
-            option = options.pop(0)
-            match option.type:
-                case OptionType.SUB_COMMAND_GROUP:
-                    group_name = interaction.command_name
-                    subgroup_name = option.name
-                    options = list(option.options) if option.options else []
-                case OptionType.SUB_COMMAND:
-                    group_name = group_name or interaction.command_name
-                    command_name = option.name
-                    options = list(option.options) if option.options else []
-                case _:
-                    arguments[option.name] = self.__convert_command_option_value(
-                        interaction, option
-                    )
-        try:
-            command = self.workflow_manager.get_command(
-                group_name, subgroup_name, command_name
-            )
-        except KeyError:
-            raise Exception(
-                f"Cannot access command with name {group_name} {subgroup_name} {command_name}"
-            )
-        try:
-            context = await self.create_interaction_context(interaction, command)
-            if await self.__execute_hooks(context, command) is not None:
-                return
-            await self.__execute_slash_command(context, command, arguments)
-        except Exception as exception:
-            self.__logger.error(
-                "error occurred while executing command %s %s %s.",
-                group_name,
-                subgroup_name,
-                command_name,
-                exc_info=exception,
-            )
-
-    async def __execute_slash_command(
-        self,
-        context: InteractionContext,
-        command: Command,
-        arguments: Dict[str, Any],
-    ) -> None:
-        if command.is_defer:
-            await context.defer()
-        await command.callback(
-            command._workflow,
-            context,
-            **arguments,
-        )
-
-    async def __execute_hooks(
-        self, context: InteractionContext, command: Command
-    ) -> HookResult:
-        for hook in command.hooks or ():
-            result: HookResult = await hook(context)
-            if result.stop:
-                return result
-
-    def __convert_command_option_value(
-        self, interaction: CommandInteraction, option: CommandOption
-    ) -> User | InteractionMember | PartialChannel | Role | str | int | float | None:
-        match option.type:
-            case OptionType.STRING:
-                return str(option.value)
-            case OptionType.INTEGER:
-                return int(option.value)
-            case OptionType.BOOLEAN:
-                return bool(option.value)
-            case OptionType.USER:
-                return interaction.resolved.members.get(
-                    option.value, interaction.resolved.users.get(option.value)
-                )
-            case OptionType.CHANNEL:
-                return interaction.resolved.channels.get(option.value)
-            case OptionType.ROLE:
-                return interaction.resolved.roles.get(option.value)
-            case OptionType.MENTIONABLE:
-                return (
-                    interaction.resolved.members.get(option.value)
-                    or interaction.resolved.users.get(option.value)
-                    or interaction.resolved.channels.get(option.value)
-                    or interaction.resolved.roles.get(option.value)
-                )
-            case OptionType.FLOAT:
-                return float(option.value)
-            case OptionType.ATTACHMENT:
-                return interaction.resolved.attachments.get(option.value)
-            case _:
-                return
 
     async def create_interaction_context(
         self, interaction: PartialInteraction, interactable: Interactable
@@ -160,7 +56,11 @@ class InteractionProcessor:
             interactable=interactable,
         )
 
-    async def proceed(self, interaction: PartialInteraction) -> None:
+    async def proceed(self, event: InteractionCreateEvent) -> None:
+        interaction: PartialInteraction = event.interaction
         if isinstance(interaction, CommandInteraction):
             if interaction.command_type is CommandType.SLASH:
-                await self.__proceed_slash_command(interaction)
+                await self.proceed_slash_command(interaction)
+
+    def install(self) -> None:
+        self.bot.event_manager.subscribe(InteractionCreateEvent, self.proceed)

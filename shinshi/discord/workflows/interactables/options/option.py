@@ -22,7 +22,7 @@ from typing import Tuple
 from hikari.commands import OptionType
 
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows.interactables.options.choice import Choice
+from shinshi.discord.workflows.interactables.models.choice import Choice
 
 
 @dataclass(kw_only=True)
