@@ -18,6 +18,7 @@ from dataclasses import dataclass, field
 from typing import Tuple
 
 from hikari.permissions import Permissions
+from hikari.snowflakes import Snowflakeish
 
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows.interactables.commands import Command
@@ -27,6 +28,8 @@ from shinshi.discord.workflows.interactables.options import Option
 @dataclass(kw_only=True)
 class SlashCommand(Command):
     description: Translatable | str | None = None
+
+    guild: Snowflakeish[int] | None = None
 
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False

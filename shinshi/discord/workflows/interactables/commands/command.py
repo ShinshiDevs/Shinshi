@@ -17,15 +17,12 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 
-from hikari.commands import CommandType
-
 from shinshi.discord.workflows.interactables.hook import Hook
 from shinshi.discord.workflows.interactables.interactable import Interactable
 
 
 @dataclass(kw_only=True)
 class Command(Interactable):
-    command_type: CommandType
     name: str
 
     hooks: Tuple[Hook, ...] = field(default_factory=tuple)

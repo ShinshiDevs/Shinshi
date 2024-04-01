@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any, Dict, Sequence
 
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed
@@ -74,13 +74,7 @@ class InteractionContext:
         ] = UNDEFINED,
         ensure_message: bool = False,
     ) -> Message | None:
-        response_type: ResponseType = ResponseType.MESSAGE_CREATE
-        if self._has_deferred_response:
-            response_type = ResponseType.DEFERRED_MESSAGE_UPDATE
-        await self.bot.rest.create_interaction_response(
-            interaction=self.interaction.id,
-            token=self.interaction.token,
-            response_type=response_type,
+        kwargs: Dict[str, Any] = dict(
             content=content,
             attachment=attachment,
             attachments=attachments,
@@ -92,6 +86,19 @@ class InteractionContext:
             user_mentions=user_mentions,
             role_mentions=role_mentions,
         )
+        if self._has_deferred_response:
+            await self.bot.rest.edit_interaction_response(
+                application=self.interaction.application_id,
+                token=self.interaction.token,
+                **kwargs,
+            )
+        else:
+            await self.bot.rest.create_interaction_response(
+                interaction=self.interaction.id,
+                token=self.interaction.token,
+                response_type=ResponseType.MESSAGE_CREATE,
+                **kwargs,
+            )
         if ensure_message:
             return await self.bot.rest.fetch_interaction_response(
                 self.interaction.id, self.interaction.token

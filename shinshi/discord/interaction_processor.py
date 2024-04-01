@@ -49,9 +49,12 @@ class InteractionProcessor(SlashCommandProcessor):
             bot=self.bot,
             i18n=(
                 self.i18n_provider.languages.get(
-                    str(interaction.locale or interaction.guild_locale), None
+                    str(
+                        interaction.locale
+                        or interaction.guild_locale
+                        or _DEFAULT_LANGUAGE
+                    )
                 )
-                or self.i18n_provider.languages.get(_DEFAULT_LANGUAGE)
             ),
             interactable=interactable,
         )

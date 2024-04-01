@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from typing import Dict
 
 from hikari.permissions import Permissions
-from hikari.snowflakes import Snowflake
+from hikari.snowflakes import Snowflakeish
 
 from shinshi.discord.workflows.interactables.commands import SubCommand
 
@@ -27,7 +27,7 @@ from shinshi.discord.workflows.interactables.commands import SubCommand
 class Group:
     name: str
 
-    guild: Snowflake | str | int | None = None
+    guild: Snowflakeish[int] | None = None
 
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False

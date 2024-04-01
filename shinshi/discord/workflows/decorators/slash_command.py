@@ -28,31 +28,36 @@ from shinshi.discord.workflows.interactables.options import Option
 def slash_command(
     name: str | None = None,
     description: Translatable | str | None = None,
+    *,
     options: Tuple[Option, ...] | None = None,
     hooks: Tuple[Hook, ...] | None = None,
     default_member_permissions: Permissions | None = None,
     is_dm_enabled: bool | None = None,
     is_nsfw: bool | None = None,
+    is_defer: bool | None = None,
+    is_bound: bool | None = None,
+    is_ephemeral: bool | None = None,
 ) -> Callable[[Callable[[Any], Awaitable[Any]]], SlashCommand]:
     def decorator(func: Callable[[Any], Awaitable[Any]]) -> SlashCommand:
-        kwargs: Dict[str, Any] = {}
-        if description is not None:
-            kwargs["description"] = description
-        if options is not None:
-            kwargs["options"] = options
-        if hooks is not None:
-            kwargs["hooks"] = hooks
-        if default_member_permissions is not None:
-            kwargs["default_member_permissions"] = default_member_permissions
-        if is_dm_enabled is not None:
-            kwargs["is_dm_enabled"] = is_dm_enabled
-        if is_nsfw is not None:
-            kwargs["is_nsfw"] = is_nsfw
-        return SlashCommand(
-            command_type=CommandType.SLASH,
-            callback=func,
+        kwargs: Dict[str, Any] = dict(
             name=name or func.__name__,
-            **kwargs,
+            description=description,
+            options=options,
+            hooks=hooks,
+            default_member_permissions=default_member_permissions,
+            is_dm_enabled=is_dm_enabled,
+            is_nsfw=is_nsfw,
+            is_defer=is_defer,
+            is_bound=is_bound,
+            is_ephemeral=is_ephemeral,
+        )
+        return SlashCommand(
+            callback=func,
+            **{
+                name: argument
+                for name, argument in kwargs.items()
+                if argument is not None
+            },
         )
 
     return decorator

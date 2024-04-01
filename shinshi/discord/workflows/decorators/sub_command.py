@@ -24,28 +24,36 @@ from shinshi.discord.workflows.interactables.options import Option
 
 
 def sub_command(
-    group: Group | None = None,
-    sub_group: str | None = None,
     name: str | None = None,
     description: Translatable | str | None = None,
+    group: Group | None = None,
+    sub_group: str | None = None,
+    *,
     options: Tuple[Option, ...] | None = None,
     hooks: Tuple[Hook, ...] | None = None,
+    is_defer: bool | None = None,
+    is_bound: bool | None = None,
+    is_ephemeral: bool | None = None,
 ) -> Callable[[Callable[[Any], Awaitable[Any]]], SubCommand]:
     def decorator(func: Callable[[Any], Awaitable[Any]]) -> SubCommand:
-        kwargs: Dict[str, Any] = {}
-        if description is not None:
-            kwargs["description"] = description
-        if options is not None:
-            kwargs["options"] = options
-        if hooks is not None:
-            kwargs["hooks"] = hooks
-        return SubCommand(
-            command_type=None,
+        kwargs: Dict[str, Any] = dict(
+            name=name or func.__name__,
+            description=description,
             group=group,
             sub_group=sub_group,
+            options=options,
+            hooks=hooks,
+            is_defer=is_defer,
+            is_bound=is_bound,
+            is_ephemeral=is_ephemeral,
+        )
+        return SubCommand(
             callback=func,
-            name=name or func.__name__,
-            **kwargs,
+            **{
+                name: argument
+                for name, argument in kwargs.items()
+                if argument is not None
+            },
         )
 
     return decorator
