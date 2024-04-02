@@ -18,7 +18,10 @@ from typing import Sequence
 
 from hikari.commands import OptionType
 from hikari.embeds import Embed
-from hikari.guilds import Member, Role
+from hikari.impl import (
+    LinkButtonBuilder,
+    MessageActionRowBuilder,
+)
 from hikari.interactions import InteractionMember
 from hikari.users import User, UserFlag
 
@@ -28,7 +31,6 @@ from shinshi.discord.workflows import WorkflowBase
 from shinshi.discord.workflows.decorators import sub_command
 from shinshi.discord.workflows.interactables.group import Group
 from shinshi.discord.workflows.interactables.options import Option
-from shinshi.i18n import I18nGroup
 from shinshi.utils.datetime import format_datetime
 from shinshi.utils.icons import get_icon
 
@@ -45,49 +47,23 @@ class UserWorkflow(WorkflowBase):
     )
 
     @staticmethod
-    def __unwrap_target(
-        context: InteractionContext, target: User | InteractionMember | None
-    ) -> User | InteractionMember:
-        user: User | InteractionMember
-        if not target:
-            user = context.interaction.user or context.interaction.member
-        else:
-            user = target
-        return user
-
-    @staticmethod
-    def __add_roles_field(
-        context: InteractionContext, embed: Embed, user: Member | InteractionMember
-    ) -> None:
-        i18n: I18nGroup = context.i18n
-        sorted_roles: Sequence[Role] = sorted(
-            user.get_roles(), key=lambda role: role.position, reverse=True
-        )
-        roles: Sequence[str] = [
-            role.mention for role in sorted_roles if role.id != user.guild_id
-        ]
-        if not roles:
-            embed.add_field(
-                name=i18n.get("commands.user.info.embed.fields.roles.name"),
-                value=i18n.get("commands.user.info.embed.fields.roles.value.no_roles"),
-                inline=False,
+    def __get_base_embed(target: User | InteractionMember):
+        colour = None
+        if isinstance(target, InteractionMember):
+            colour = next(
+                (role.colour for role in target.get_roles() if role.colour), None
             )
-        else:
-            if len(roles) > 5:
-                embed.add_field(
-                    name=i18n.get("commands.user.info.embed.fields.roles.name"),
-                    value=i18n.get(
-                        "commands.user.info.embed.fields.roles.value.many_roles",
-                        {"roles": ", ".join(roles[:5]), "count": int(len(roles) - 5)},
-                    ),
-                    inline=False,
-                )
-            else:
-                embed.add_field(
-                    name=i18n.get("commands.user.info.embed.fields.roles.name"),
-                    value=", ".join(roles),
-                    inline=False,
-                )
+        title = (
+            target.display_name
+            if hasattr(target, "display_name")
+            else target.global_name or target.username
+        )
+        return Embed(
+            title=title,
+            url=f"https://discordapp.com/users/{target.id}",
+            description=f"@{target.username}" if title != target.username else None,
+            colour=colour,
+        )
 
     @sub_command(
         group=GROUP,
@@ -101,56 +77,81 @@ class UserWorkflow(WorkflowBase):
         target: User | InteractionMember | None = None,
     ) -> None:
         target: User | InteractionMember = target or context.interaction.member
-        i18n: I18nGroup = context.i18n
         embed = (
-            Embed(
-                title=getattr(target, "display_name", target.global_name)
-                or target.username,
-                url=f"https://discordapp.com/users/{target.id}",
-                description=(
-                    f"@{target.username}"
-                    if not target.global_name
-                    or not getattr(target, "display_name", None)
-                    else None
-                ),
-            )
-            .set_thumbnail(
-                getattr(target, "guild_avatar_url", None) or target.display_avatar_url
-            )
+            self.__get_base_embed(target)
+            .set_thumbnail(target.display_avatar_url)
             .set_author(
-                name=i18n.get("commands.user.info.embed.author.name"),
-                icon=(
-                    get_icon("user")
+                name=context.i18n.get("commands.user.info.embed.author.name"),
+                icon=get_icon(
+                    "user"
                     if not target.is_bot
-                    else get_icon(
-                        "bot"
-                        if UserFlag.VERIFIED_BOT not in target.flags
-                        else "bot_verified"
-                    )
+                    else "bot_verified"
+                    if UserFlag.VERIFIED_BOT in target.flags
+                    else "bot"
                 ),
             )
             .set_footer(text=f"ID: {target.id}")
             .add_field(
-                name=i18n.get("commands.user.info.embed.fields.created_at.name"),
-                value=f"{format_datetime(target.created_at, 'R')}\n"
-                f"{format_datetime(target.created_at, 'D')}",
+                name=context.i18n.get(
+                    "commands.user.info.embed.fields.created_at.name"
+                ),
+                value=(
+                    f"{format_datetime(target.created_at, 'R')}\n"
+                    f"{format_datetime(target.created_at, 'D')}"
+                ),
                 inline=True,
             )
         )
-
-        if isinstance(target, Member):
-            embed.color = getattr(target.get_top_role(), "color", None)
+        if isinstance(target, InteractionMember):
             embed.add_field(
-                name=i18n.get(
+                name=context.i18n.get(
                     "commands.user.info.embed.fields.joined_at.name",
                     {"guild": target.get_guild().name},
                 ),
-                value=f"{format_datetime(target.joined_at, 'R')}\n"
-                f"{format_datetime(target.joined_at, 'D')}",
+                value=(
+                    f"{format_datetime(target.joined_at, 'R')}\n"
+                    f"{format_datetime(target.joined_at, 'D')}"
+                ),
                 inline=True,
             )
-            self.__add_roles_field(context, embed, target)
-
+            roles: Sequence[str] = [
+                role.mention
+                for role in sorted(
+                    target.get_roles(), key=lambda role: role.position, reverse=True
+                )
+                if role.id != target.guild_id
+            ]
+            if not roles:
+                embed.add_field(
+                    name=context.i18n.get("commands.user.info.embed.fields.roles.name"),
+                    value=context.i18n.get(
+                        "commands.user.info.embed.fields.roles.value.no_roles"
+                    ),
+                    inline=False,
+                )
+            else:
+                if len(roles) > 5:
+                    embed.add_field(
+                        name=context.i18n.get(
+                            "commands.user.info.embed.fields.roles.name"
+                        ),
+                        value=context.i18n.get(
+                            "commands.user.info.embed.fields.roles.value.many_roles",
+                            {
+                                "roles": ", ".join(roles[:5]),
+                                "count": int(len(roles) - 5),
+                            },
+                        ),
+                        inline=False,
+                    )
+                else:
+                    embed.add_field(
+                        name=context.i18n.get(
+                            "commands.user.info.embed.fields.roles.name"
+                        ),
+                        value=", ".join(roles),
+                        inline=False,
+                    )
         return await context.create_response(embed=embed)
 
     @sub_command(
@@ -160,35 +161,29 @@ class UserWorkflow(WorkflowBase):
         options=OPTIONS,
     )
     async def user_avatar(
-        self, context: InteractionContext, target: Member | User | None = None
+        self,
+        context: InteractionContext,
+        target: User | InteractionMember | None = None,
     ) -> None:
-        i18n: I18nGroup = context.i18n
-        user: User | Member | InteractionMember = self.__unwrap_target(context, target)
-        if user.avatar_url is None:
+        target: User | InteractionMember = target or context.interaction.member
+        if target.avatar_url is None:
             raise Exception(context)
         embed = (
-            Embed(
-                title=(
-                    user.global_name
-                    or (
-                        user.display_name
-                        if isinstance(user, Member | InteractionMember)
-                        else None
-                    )
-                    or user.username
-                ),
-                url=f"https://discordapp.com/users/{user.id}",
-                description=" ".join(
-                    [
-                        f"[`[{resolution}]`]({user.make_avatar_url(size=resolution).url})"
-                        for resolution in (256, 512, 1024)
-                    ]
-                ),
-            )
-            .set_image(user.avatar_url or user.display_avatar_url)
-            .set_author(name=i18n.get("commands.user.avatar.embed.author.name"))
+            self.__get_base_embed(target)
+            .set_image(target.avatar_url)
+            .set_author(name=context.i18n.get("commands.user.avatar.embed.author.name"))
         )
-        return await context.create_response(embed=embed)
+        return await context.create_response(
+            embed=embed,
+            component=MessageActionRowBuilder(
+                components=(
+                    LinkButtonBuilder(
+                        label=f"{res}x{res}", url=target.make_avatar_url(size=res).url
+                    )
+                    for res in (256, 512, 1024)
+                )
+            ),
+        )
 
     @sub_command(
         group=GROUP,
@@ -197,28 +192,21 @@ class UserWorkflow(WorkflowBase):
         options=OPTIONS,
     )
     async def user_banner(
-        self, context: InteractionContext, target: Member | User | None = None
+        self,
+        context: InteractionContext,
+        target: User | InteractionMember | None = None,
     ) -> None:
-        i18n: I18nGroup = context.i18n
-        user: User = await self.__unwrap_target(context, target).fetch_self()
-        if user.banner_url is None:
-            raise Exception(context)
+        target: User = await (target or context.interaction.user).fetch_self()
+        if target.banner_url is None:
+            raise Exception("This user don't have a banner")
         return await context.create_response(
             embed=(
-                Embed(
-                    title=user.global_name or user.username,
-                    url=f"https://discordapp.com/users/{user.id}",
-                    description=" ".join(
-                        [
-                            f"[`[{resolution}]`]({user.make_banner_url(size=resolution).url})"
-                            for resolution in (256, 512, 1024)
-                        ]
-                    ),
-                )
-                .set_image(user.banner_url)
+                self.__get_base_embed(target)
+                .set_image(target.banner_url)
                 .set_author(
-                    name=i18n.get("commands.user.banner.embed.author.name"),
-                    icon=user.display_avatar_url,
+                    name=context.i18n.get("commands.user.banner.embed.author.name"),
+                    icon=target.display_avatar_url,
+                    url=target.banner_url.url,
                 )
-            )
+            ),
         )

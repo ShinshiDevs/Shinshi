@@ -16,7 +16,6 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Any, Awaitable, Callable, Dict, Tuple
 
-from hikari.commands import CommandType
 from hikari.permissions import Permissions
 
 from shinshi.discord.models.translatable import Translatable

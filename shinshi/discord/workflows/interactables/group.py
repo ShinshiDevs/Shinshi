@@ -27,7 +27,7 @@ from shinshi.discord.workflows.interactables.commands import SubCommand
 class Group:
     name: str
 
-    guild: Snowflakeish[int] | None = None
+    guild: Snowflakeish | None = None
 
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False

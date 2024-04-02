@@ -14,10 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari.components import ButtonStyle
 from hikari.embeds import Embed
 from hikari.impl import (
-    InteractiveButtonBuilder,
     LinkButtonBuilder,
     MessageActionRowBuilder,
 )
@@ -45,7 +43,7 @@ class InfoWorkflow(WorkflowBase):
                     {"shard": context.interaction.get_guild().shard_id + 1},
                 ),
             )
-            .set_thumbnail(context.bot.me.make_avatar_url(size=512))
+            .set_thumbnail(context.bot.me.avatar_url)
             .set_author(
                 name=context.i18n.get("commands.info.embed.author.name"),
                 icon=get_icon("information"),
@@ -70,16 +68,12 @@ class InfoWorkflow(WorkflowBase):
             )
         )
         # TEST COMPONENT BUILDER FROM HIKARI
-        # TODO: REMOVE THIS
         return await context.create_response(
             embed=embed,
             component=MessageActionRowBuilder(
                 components=[
                     LinkButtonBuilder(label="Github", url=__github_url__),
                     LinkButtonBuilder(label="Support", url=__support_url__),
-                    InteractiveButtonBuilder(
-                        style=ButtonStyle.SECONDARY, custom_id="hi", label="Hi"
-                    ),
                 ]
             ),
         )

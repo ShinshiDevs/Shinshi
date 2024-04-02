@@ -29,7 +29,7 @@ from shinshi.discord.workflows.interactables.options import Option
 class SlashCommand(Command):
     description: Translatable | str | None = None
 
-    guild: Snowflakeish[int] | None = None
+    guild: Snowflakeish = None
 
     default_member_permissions: Permissions = Permissions.NONE
     is_dm_enabled: bool = False
