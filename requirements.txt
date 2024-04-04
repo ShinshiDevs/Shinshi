@@ -1,3 +1,4 @@
 hikari
 orjson
 uvloop
+cachetools

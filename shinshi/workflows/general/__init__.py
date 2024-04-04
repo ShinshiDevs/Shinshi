@@ -15,4 +15,5 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from .info_workflow import InfoWorkflow  # noqa: F401
+from .say_workflow import SayWorkflow  # noqa: F401
 from .user_workflow import UserWorkflow  # noqa: F401

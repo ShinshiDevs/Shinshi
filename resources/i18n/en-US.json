@@ -89,6 +89,25 @@
                     "no_banner_exception": "{user} don't have banner"
                 }
             }
+        },
+        "say": {
+            "description": "Send a message via webhook",
+            "arguments": {
+                "content": {
+                    "description": "The content of the message"
+                },
+                "attachment": {
+                    "description": "Attachment"
+                },
+                "channel": {
+                    "description": "The channel to send the message to"
+                }
+            },
+            "exceptions": {
+                "insufficient_arguments": "Insufficient arguments. `content` or `attachment` must be provided.",
+                "webhook_creation_exception": "Unable to create webhook. Possible reasons...\n- Shinshi don't permissions to create a webhook.\n- Internal Discord API error.",
+                "webhook_execution_exception": "Failed to send the message using the webhook.\nPossibly, the webhook was not created or is inaccessible."
+            }
         }
     }
 }

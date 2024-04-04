@@ -14,9 +14,24 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from cachetools import LFUCache
 from hikari.impl import CacheImpl, CacheSettings, GatewayBot
+from hikari.snowflakes import Snowflakeish
+from hikari.webhooks import ExecutableWebhook
 
 
 class Cache(CacheImpl):
     def __init__(self, app: GatewayBot, settings: CacheSettings) -> None:
         super().__init__(app, settings)
+        self.__webhooks: LFUCache[Snowflakeish, ExecutableWebhook] = LFUCache(100)
+
+    async def get_webhook(
+        self, webhook: Snowflakeish | ExecutableWebhook
+    ) -> ExecutableWebhook | None:
+        webhook_id = int(webhook)
+        if (webhook := self.__webhooks.get(webhook_id)) is not None:
+            return webhook
+        else:
+            webhook: ExecutableWebhook = await self._app.rest.fetch_webhook(webhook_id)
+            self.__webhooks[webhook_id] = webhook
+            return webhook

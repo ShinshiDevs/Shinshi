@@ -89,6 +89,25 @@
                     "no_banner_exception": "У {user} нет баннера"
                 }
             }
+        },
+        "say": {
+            "description": "Отправить сообщение веб-хуком",
+            "arguments": {
+                "content": {
+                    "description": "Содержание сообщения"
+                },
+                "attachment": {
+                    "description": "Вложения"
+                },
+                "channel": {
+                    "description": "Канал в который надо отправить"
+                }
+            },
+            "exceptions": {
+                "insufficient_arguments": "Недостаточно аргументов. `content` или `attachment` обязаны быть указаны.",
+                "webhook_creation_exception": "Невозможно создать веб-хук. Возможно...\n- Shinshi не хватает прав для создания веб-хука.\n- Внутренняя ошибка Discord API.",
+                "webhook_execution_exception": "Не получилось отправить сообщение с помощью веб-хука.\nВозможно, веб-хук не был создан или недоступен."
+            }
         }
     }
 }

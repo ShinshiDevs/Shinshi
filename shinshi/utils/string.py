@@ -14,12 +14,5 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .insufficient_arguments_exception import (
-    InsufficientArgumentsException,  # noqa: F401
-)
-from .user_no_avatar_exception import UserAvatarAvailabilityException  # noqa: F401
-from .user_no_banner_exception import UserBannerAvailabilityException  # noqa: F401
-from .webhook_exceptions import (
-    WebhookCreationException,  # noqa: F401
-    WebhookExecutionException,  # noqa: F401
-)
+def get_codeblock(language: str, content: str) -> str:
+    return f"```{language}\n{content}\n```"

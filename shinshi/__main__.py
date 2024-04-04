@@ -57,6 +57,7 @@ class Bot(BaseBot):
                 # General
                 general.InfoWorkflow,
                 general.UserWorkflow,
+                general.SayWorkflow,
             ),
         )
         self.interaction_processor = InteractionProcessor(
