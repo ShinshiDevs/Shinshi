@@ -2,6 +2,14 @@
     "metadata": {
         "name": "Русский"
     },
+    "exceptions": {
+        "unknown_exception": "Произошло непредвиденное исключение и я уже доложила об этом разработчикам. Извините за неудобства."
+    },
+    "buttons": {
+        "support": {
+            "label": "Сервер поддержки"
+        }
+    },
     "commands": {
         "info": {
             "description": "Информация о Shinshi в данный момент",
@@ -50,7 +58,7 @@
                         }
                     }
                 },
-                "button": {
+                "buttons": {
                     "avatar": "Аватар",
                     "banner": "Баннер"
                 }
@@ -62,12 +70,12 @@
                         "name": "Аватар"
                     }
                 },
-                "button": {
+                "buttons": {
                     "global": "Глобальная",
                     "guild": "Серверная"
                 },
                 "exceptions": {
-                    "no_user_avatar": "У этого пользователя нет аватара"
+                    "no_avatar_exception": "У {user} нет аватарки"
                 }
             },
             "banner": {
@@ -78,7 +86,7 @@
                     }
                 },
                 "exceptions": {
-                    "no_user_avatar": "У этого пользователя нет баннера"
+                    "no_banner_exception": "У {user} нет баннера"
                 }
             }
         }

@@ -63,11 +63,14 @@ class SlashCommandProcessor(CommandProcessor):
                 return
             if command.is_defer:
                 await context.defer()
-            await command.callback(
-                command._workflow,
-                context,
-                **arguments,
-            )
+            try:
+                await command.callback(
+                    command._workflow,
+                    context,
+                    **arguments,
+                )
+            except Exception as exception:
+                await self.exception_handler.proceed(exception, context)
         except Exception as exception:
             self.__logger.error(
                 "error occurred while executing command %s %s %s.",

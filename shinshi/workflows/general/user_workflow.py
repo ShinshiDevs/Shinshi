@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Sequence
+from typing import Sequence, Tuple
 
 from hikari.commands import OptionType
 from hikari.embeds import Embed
@@ -33,11 +33,15 @@ from shinshi.discord.workflows.interactables.group import Group
 from shinshi.discord.workflows.interactables.options import Option
 from shinshi.utils.datetime import format_datetime
 from shinshi.utils.icons import get_icon
+from shinshi.workflows.general.exceptions import (
+    UserAvatarAvailabilityException,
+    UserBannerAvailabilityException,
+)
 
 
 class UserWorkflow(WorkflowBase):
     GROUP = Group(name="user", is_dm_enabled=True)
-    OPTIONS = (
+    OPTIONS: Tuple[Option, ...] = (
         Option(
             type=OptionType.USER,
             name="target",
@@ -48,12 +52,12 @@ class UserWorkflow(WorkflowBase):
 
     @staticmethod
     def __get_base_embed(target: User | InteractionMember):
-        colour = None
+        colour: int | None = None
         if isinstance(target, InteractionMember):
             colour = next(
                 (role.colour for role in target.get_roles() if role.colour), None
             )
-        title = (
+        title: str = (
             target.display_name
             if hasattr(target, "display_name")
             else target.global_name or target.username
@@ -167,7 +171,7 @@ class UserWorkflow(WorkflowBase):
     ) -> None:
         target: User | InteractionMember = target or context.interaction.member
         if target.avatar_url is None:
-            raise Exception(context)
+            raise UserAvatarAvailabilityException(context, target)
         embed = (
             self.__get_base_embed(target)
             .set_image(target.avatar_url)
@@ -198,7 +202,7 @@ class UserWorkflow(WorkflowBase):
     ) -> None:
         target: User = await (target or context.interaction.user).fetch_self()
         if target.banner_url is None:
-            raise Exception("This user don't have a banner")
+            raise UserBannerAvailabilityException(context, target)
         return await context.create_response(
             embed=(
                 self.__get_base_embed(target)

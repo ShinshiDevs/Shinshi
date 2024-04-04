@@ -21,6 +21,7 @@ from hikari.interactions.command_interactions import CommandInteraction
 from hikari.locales import Locale
 
 from shinshi.discord.bot import BaseBot
+from shinshi.discord.exceptions.exception_handler import ExceptionHandler
 from shinshi.discord.models.interaction_context import InteractionContext
 from shinshi.discord.processors import SlashCommandProcessor
 from shinshi.discord.workflows.interactables.interactable import Interactable
@@ -40,6 +41,7 @@ class InteractionProcessor(SlashCommandProcessor):
         self.bot = bot
         self.i18n_provider = i18n_provider
         self.workflow_manager = workflow_manager
+        self.exception_handler = ExceptionHandler(bot)
 
     async def create_interaction_context(
         self, interaction: PartialInteraction, interactable: Interactable

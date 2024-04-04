@@ -59,6 +59,7 @@ class InteractionContext:
         self,
         content: UndefinedOr[Any] = UNDEFINED,
         *,
+        flags: UndefinedOr[MessageFlag] = UNDEFINED,
         attachment: UndefinedOr[Resourceish] = UNDEFINED,
         attachments: UndefinedOr[Sequence[Resourceish]] = UNDEFINED,
         component: UndefinedOr[ComponentBuilder] = UNDEFINED,
@@ -97,6 +98,7 @@ class InteractionContext:
                 interaction=self.interaction.id,
                 token=self.interaction.token,
                 response_type=ResponseType.MESSAGE_CREATE,
+                flags=flags,
                 **kwargs,
             )
         if ensure_message:

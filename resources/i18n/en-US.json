@@ -2,6 +2,14 @@
     "metadata": {
         "name": "English"
     },
+    "exceptions": {
+        "unknown_exception": "An unexpected exception occurred and I've already reported this to the developers. Sorry for the inconvenience."
+    },
+    "buttons": {
+        "support": {
+            "label": "Support"
+        }
+    },
     "commands": {
         "info": {
             "description": "Information about Shinshi at the moment",
@@ -50,7 +58,7 @@
                         }
                     }
                 },
-                "button": {
+                "buttons": {
                     "avatar": "Avatar",
                     "banner": "Banner"
                 }
@@ -62,12 +70,12 @@
                         "name": "Avatar"
                     }
                 },
-                "button": {
+                "buttons": {
                     "global": "Global",
                     "guild": "Guild"
                 },
                 "exceptions": {
-                    "no_user_avatar": "This user don't have avatar"
+                    "no_avatar_exception": "{user} don't have avatar"
                 }
             },
             "banner": {
@@ -78,7 +86,7 @@
                     }
                 },
                 "exceptions": {
-                    "no_user_avatar": "This user don't have banner"
+                    "no_banner_exception": "{user} don't have banner"
                 }
             }
         }

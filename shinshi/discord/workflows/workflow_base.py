@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from abc import abstractmethod
+import abc
 from typing import Sequence, Tuple
 
 from shinshi.discord.workflows.constants import _WORKFLOW_PREDEFINED_INTERACTABLES
@@ -34,7 +34,7 @@ class WorkflowBase(metaclass=WorkflowMeta):
             self, _WORKFLOW_PREDEFINED_INTERACTABLES, ()
         )
 
-    @abstractmethod
+    @abc.abstractmethod
     async def start(self) -> None:
         ...
 
