@@ -18,7 +18,7 @@ from hikari.messages import MessageFlag
 from hikari.users import User
 
 from shinshi.discord.exceptions import InteractionException
-from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi.discord.interaction.interaction_context import InteractionContext
 
 
 class UserBannerAvailabilityException(InteractionException):

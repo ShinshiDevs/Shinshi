@@ -15,15 +15,27 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import abc
+from typing import List
 
-from shinshi.discord.interaction.interaction_context import InteractionContext
+from shinshi.discord.interactables.command import Command
+from shinshi.discord.interactables.interactable import Interactable
+from shinshi.discord.workflows.constants import WORKFLOW_INTERACTABLES
+from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 
 
-class InteractionException(Exception):
-    def __init__(self, context: InteractionContext, *args) -> None:
-        self.context = context
-        super().__init__(*args)
+class Workflow(metaclass=WorkflowMeta):
+    def __init__(self) -> None:
+        self.interactables: List[Interactable] = getattr(
+            self, WORKFLOW_INTERACTABLES, ()
+        )
+
+    def get_commands(self) -> List[Command]:
+        return [
+            interactable
+            for interactable in self.interactables
+            if isinstance(interactable, Command)
+        ]
 
     @abc.abstractmethod
-    async def callback(self) -> None:
+    async def start(self) -> None:
         ...

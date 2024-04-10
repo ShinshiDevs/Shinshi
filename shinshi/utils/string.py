@@ -14,5 +14,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from datetime import datetime
+
+
 def get_codeblock(language: str, content: str) -> str:
     return f"```{language}\n{content}\n```"
+
+
+def format_datetime(time: datetime, style: str | None = None) -> str:
+    valid_styles = ["t", "T", "d", "D", "f", "F", "R"]
+    if style and style not in ["t", "T", "d", "D", "f", "F", "R"]:
+        raise ValueError(
+            f"Invalid style passed. Valid styles: {' '.join(valid_styles)}"
+        )
+    if style:
+        return f"<t:{int(time.timestamp())}:{style}>"
+    return f"<t:{int(time.timestamp())}>"
+
+
+def get_separated_number(number: int) -> str:
+    return f"{number:,}".replace(",", " ")

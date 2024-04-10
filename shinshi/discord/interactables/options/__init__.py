@@ -14,4 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+from .channel_option import ChannelOption  # noqa: F401
+from .number_option import NumberOption  # noqa: F401
+from .option import Option  # noqa: F401
+from .string_option import StringOption  # noqa: F401

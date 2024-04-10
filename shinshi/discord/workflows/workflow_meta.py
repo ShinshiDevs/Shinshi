@@ -14,16 +14,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from shinshi.discord.workflows.constants import _WORKFLOW_PREDEFINED_INTERACTABLES
-from shinshi.discord.workflows.interactables.interactable import Interactable
+from typing import Self
+
+from shinshi.discord.interactables.interactable import Interactable
+from shinshi.discord.workflows.constants import (
+    INTERACTABLE_WORKFLOW_INSTANCE,
+    WORKFLOW_INTERACTABLES,
+)
 
 
 class WorkflowMeta(type):
-    def __new__(mcs, name, bases, attrs):
+    def __new__(mcs, name, bases, attrs) -> Self:
         cls = super().__new__(mcs, name, bases, attrs)
-        setattr(cls, _WORKFLOW_PREDEFINED_INTERACTABLES, [])
+        setattr(cls, WORKFLOW_INTERACTABLES, [])
         for name, obj in attrs.items():
             if isinstance(obj, Interactable):
-                setattr(obj, "_workflow", cls)
-                getattr(cls, _WORKFLOW_PREDEFINED_INTERACTABLES).append(obj)
+                setattr(obj, INTERACTABLE_WORKFLOW_INSTANCE, cls)
+                getattr(cls, WORKFLOW_INTERACTABLES).append(obj)
         return cls

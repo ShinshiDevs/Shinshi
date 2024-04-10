@@ -16,103 +16,67 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
 import os
-import platform
-from pathlib import Path
-from typing import Any, Dict
+import warnings
 
 import orjson
-import uvloop
-from aiohttp.client import ClientSession
-from aiohttp.connector import TCPConnector
-from hikari.applications import Application
-from hikari.events.lifetime_events import StartedEvent, StartingEvent, StoppingEvent
+from hikari.events import InteractionCreateEvent, StartedEvent, StartingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 
-from shinshi import __copyright__, __github_url__, __license__, __support_url__
-from shinshi.discord.bot import BaseBot
-from shinshi.discord.interaction_processor import InteractionProcessor
+from shinshi import RESOURCES_DIR
+from shinshi.discord.bot import Bot
+from shinshi.discord.interaction.interaction_processor import InteractionProcessor
 from shinshi.discord.workflows import WorkflowManager
-from shinshi.dotenv import load_dotenv
 from shinshi.i18n import I18nProvider
-from shinshi.utils.orjson import orjson_serialize
 from shinshi.workflows import general
 
-asyncio.set_event_loop_policy(
-    uvloop.EventLoopPolicy()
-    if platform.system() != "Windows"
-    else asyncio.DefaultEventLoopPolicy()
+try:
+    import uvloop
+
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+except ImportError:
+    warnings.warn(
+        "Are you on Windows? Bruh. Uvloop has left the chat.."
+        "If not, install uvloop by `poetry install --group unix`"
+    )
+    asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
+
+
+i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
+bot = Bot(
+    token=os.environ.get("SHINSHI_DISCORD_TOKEN"),
+    cache_settings=CacheSettings(
+        components=CacheComponents.ME
+        | CacheComponents.GUILDS
+        | CacheComponents.MEMBERS
+        | CacheComponents.ROLES,
+        max_messages=100,
+        max_dm_channel_ids=0,
+    ),
+    http_settings=HTTPSettings(enable_cleanup_closed=True),
+    dumps=orjson.dumps,
+    loads=orjson.loads,
 )
-env: Dict[str, Any] = load_dotenv(Path(os.getcwd(), "secrets", "app.env"))
+workflow_manager = WorkflowManager(
+    bot,
+    i18n_provider,
+    (general.InfoWorkflow, general.UserWorkflow),
+)
+interaction_processor = InteractionProcessor(bot, i18n_provider, workflow_manager)
 
 
-class Bot(BaseBot):
-    def __init__(self) -> None:
-        self.application: Application | None = None
-        self.http_session: ClientSession | None = None
-        self.i18n = I18nProvider()
-        self.workflow_manager = WorkflowManager(
-            bot=self,
-            i18n_provider=self.i18n,
-            workflows=(
-                # General
-                general.InfoWorkflow,
-                general.UserWorkflow,
-                general.SayWorkflow,
-            ),
-        )
-        self.interaction_processor = InteractionProcessor(
-            bot=self, i18n_provider=self.i18n, workflow_manager=self.workflow_manager
-        )
-        super().__init__(
-            token=env.get("SHINSHI_DISCORD_TOKEN"),
-            banner=Path(os.getcwd(), "resources", "banner.txt"),
-            banner_extras={
-                "shinshi_license": __license__,
-                "shinshi_copyright": __copyright__,
-                "shinshi_github_url": __github_url__,
-                "shinshi_support_url": __support_url__,
-                "python_implementation": platform.python_implementation(),
-                "python_version": platform.python_version(),
-            },
-            cache_settings=CacheSettings(
-                components=CacheComponents.ME
-                | CacheComponents.GUILDS
-                | CacheComponents.MEMBERS
-                | CacheComponents.ROLES,
-                max_messages=100,
-                max_dm_channel_ids=0,
-            ),
-            http_settings=HTTPSettings(enable_cleanup_closed=True),
-            dumps=orjson.dumps,
-            loads=orjson.loads,
-        )
+@bot.listen(StartingEvent)
+async def on_starting(_: StartingEvent) -> None:
+    await i18n_provider.start()
+    await workflow_manager.build_workflows()
 
-    async def get_application(self) -> Application:
-        if self.application is None:
-            self.application = await self.rest.fetch_application()
-        return self.application
 
-    async def on_starting(self, _: StartingEvent) -> None:
-        self.http_session = ClientSession(
-            connector=TCPConnector(),
-            json_serialize=orjson_serialize,
-        )
-        await self.i18n.start()
-        if self.i18n.languages:
-            await self.workflow_manager.build_workflows()
-
-    async def on_started(self, _: StartedEvent) -> None:
-        application: Application = await self.get_application()
-        await self.workflow_manager.sync_slash_commands(application)
-        self.interaction_processor.install()
-
-    async def on_stopping(self, _: StoppingEvent) -> None:
-        await self.http_session.close()
+@bot.listen(StartedEvent)
+async def on_started(_: StartedEvent) -> None:
+    await workflow_manager.sync_slash_commands()
+    bot.event_manager.subscribe(
+        InteractionCreateEvent, interaction_processor.proceed_interaction
+    )
 
 
 if __name__ == "__main__":
-    bot = Bot()
-    bot.event_manager.subscribe(StartingEvent, bot.on_starting)
-    bot.event_manager.subscribe(StartedEvent, bot.on_started)
-    bot.event_manager.subscribe(StoppingEvent, bot.on_stopping)
     bot.run()

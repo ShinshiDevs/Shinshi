@@ -14,4 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+from dataclasses import dataclass
+from typing import Any, Awaitable, Callable
+
+
+@dataclass(kw_only=True)
+class Interactable:
+    callback: Callable[[Any], Awaitable[Any]]
+
+    is_defer: bool = False
+    is_ephemeral: bool = False

@@ -14,9 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from typing import Tuple
+
 from cachetools import LFUCache
+from hikari.channels import PartialChannel
 from hikari.impl import CacheImpl, CacheSettings, GatewayBot
-from hikari.snowflakes import Snowflakeish
+from hikari.snowflakes import Snowflakeish, SnowflakeishOr
 from hikari.webhooks import ExecutableWebhook
 
 
@@ -24,6 +27,9 @@ class Cache(CacheImpl):
     def __init__(self, app: GatewayBot, settings: CacheSettings) -> None:
         super().__init__(app, settings)
         self.__webhooks: LFUCache[Snowflakeish, ExecutableWebhook] = LFUCache(100)
+        self.__channel_webhooks: LFUCache[
+            Snowflakeish, Tuple[ExecutableWebhook, ...]
+        ] = LFUCache(100)
 
     async def get_webhook(
         self, webhook: Snowflakeish | ExecutableWebhook
@@ -35,3 +41,17 @@ class Cache(CacheImpl):
             webhook: ExecutableWebhook = await self._app.rest.fetch_webhook(webhook_id)
             self.__webhooks[webhook_id] = webhook
             return webhook
+
+    async def get_channel_webhooks(
+        self,
+        channel: SnowflakeishOr[PartialChannel],
+    ) -> ExecutableWebhook | None:
+        channel_id: Snowflakeish = int(channel)
+        if (webhooks := self.__channel_webhooks.get(channel_id)) is not None:
+            return webhooks
+        else:
+            webhooks: Tuple[
+                ExecutableWebhook, ...
+            ] = await self._app.rest.fetch_channel_webhooks(channel_id)
+            self.__channel_webhooks[channel_id] = webhooks
+            return webhooks

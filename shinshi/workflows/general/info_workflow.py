@@ -20,19 +20,22 @@ from hikari.impl import (
     MessageActionRowBuilder,
 )
 
-from shinshi import __copyright__, __github_url__, __license__, __support_url__
-from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi import (
+    ICONS_DIR,
+    __copyright__,
+    __github_url__,
+    __license__,
+    __support_url__,
+)
+from shinshi.discord.interaction.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows import WorkflowBase
-from shinshi.discord.workflows.decorators import slash_command
-from shinshi.utils.icons import get_icon
-from shinshi.utils.number import get_separated_number
+from shinshi.discord.workflows import Workflow
+from shinshi.discord.workflows.decorators import command
+from shinshi.utils.string import get_separated_number
 
 
-class InfoWorkflow(WorkflowBase):
-    @slash_command(
-        description=Translatable("commands.info.description"), is_dm_enabled=True
-    )
+class InfoWorkflow(Workflow):
+    @command(description=Translatable("commands.info.description"), is_dm_enabled=True)
     async def info(self, context: InteractionContext) -> None:
         embed = (
             Embed(
@@ -46,7 +49,7 @@ class InfoWorkflow(WorkflowBase):
             .set_thumbnail(context.bot.me.avatar_url)
             .set_author(
                 name=context.i18n.get("commands.info.embed.author.name"),
-                icon=get_icon("information"),
+                icon=ICONS_DIR / "information.webp",
             )
             .set_footer(text=f"{__copyright__} ({__license__})")
             .add_field(
@@ -56,10 +59,7 @@ class InfoWorkflow(WorkflowBase):
                         "commands.info.embed.fields.information.value",
                         {
                             "guilds": get_separated_number(
-                                context.bot.get_guild_count()
-                            ),
-                            "users": get_separated_number(
-                                context.bot.get_member_count()
+                                len(context.bot.cache.get_guilds_view())
                             ),
                             "latency": f"{round(context.bot.heartbeat_latency * 1000, 1)}ms",
                         },
@@ -67,7 +67,6 @@ class InfoWorkflow(WorkflowBase):
                 ),
             )
         )
-        # TEST COMPONENT BUILDER FROM HIKARI
         return await context.create_response(
             embed=embed,
             component=MessageActionRowBuilder(

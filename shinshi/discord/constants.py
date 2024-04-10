@@ -14,4 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+from hikari.locales import Locale
+
+DEFAULT_LANGUAGE: Locale = Locale.EN_US

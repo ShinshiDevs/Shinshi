@@ -14,27 +14,32 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Dict, TypeVar
 
-from shinshi.discord.constants import DEFAULT_LANGUAGE
-from shinshi.i18n import I18nProvider
+from hikari.permissions import Permissions
+
+if TYPE_CHECKING:
+    from shinshi.discord.interactables.command import Command as _Command
+
+Command = TypeVar("Command", bound="_Command")
 
 
-@dataclass
-class Translatable:
-    key: str | None = None
-    fallback: str | None = None
+@dataclass(kw_only=True)
+class Group:
+    name: str
 
-    translates: Dict[str, Any] = field(default_factory=dict)
+    default_member_permissions: Permissions = Permissions.NONE
+    is_dm_enabled: bool = False
+    is_nsfw: bool = False
 
-    def build(self, i18n_provider: I18nProvider) -> None:
-        if self.key:
-            for name, group in i18n_provider.languages.items():
-                self.translates[name] = group.get(self.key)
-            self.fallback = self.translates.get(DEFAULT_LANGUAGE)
-        else:
-            if not self.fallback:
-                raise ValueError(
-                    "Don't have key and fallback. Invalid translatable object."
-                )
+    commands: Dict[str, Command] = field(default_factory=dict)
+    sub_groups: Dict[str, SubGroup] = field(default_factory=dict)
+
+
+@dataclass(kw_only=True)
+class SubGroup:
+    name: str
+    commands: Dict[str, Command] = field(default_factory=dict)

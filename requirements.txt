@@ -1,4 +1,0 @@
-hikari
-orjson
-uvloop
-cachetools

@@ -14,4 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+from dataclasses import dataclass
+
+from shinshi.discord.interactables.options.option import Option
+
+
+@dataclass(kw_only=True)
+class StringOption(Option):
+    min_length: int | None = None
+    max_length: int | None = None

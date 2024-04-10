@@ -14,4 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+from dataclasses import dataclass
+
+
+@dataclass(kw_only=True)
+class HookResult:
+    stop: bool = False

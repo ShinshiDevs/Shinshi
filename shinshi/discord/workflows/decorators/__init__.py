@@ -14,5 +14,4 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .slash_command import slash_command  # noqa: F401
-from .sub_command import sub_command  # noqa: F401
+from .command import command  # noqa: F401

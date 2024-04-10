@@ -3,11 +3,20 @@
     "disable_existing_loggers": true,
     "formatters": {
         "standard": {
-            "format": "%(asctime)s %(levelname)-20s %(name)s %(message)s"
+            "format": "%(asctime)s %(levelname)-8s %(name)s %(message)s"
         },
         "colored": {
-            "()": "shinshi.logging.formatters.ColoredFormatter",
-            "format": "%(asctime)s %(levelname)-20s %(name)s %(message)s"
+            "()": "colorlog.ColoredFormatter",
+            "format": "%(thin)s%(asctime)s%(reset)s %(bold)s%(log_color)s%(levelname)-8s%(reset)s %(light_cyan)s%(name)s%(reset)s %(message)s",
+            "reset": true,
+            "log_colors": {
+                "DEBUG": "purple",
+                "INFO": "cyan",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "white,bg_red"
+            },
+            "datefmt": "(%y-%m-%d) %H:%M:%S"
         }
     },
     "handlers": {

@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "shinshi"
+version = "0.1.0"
+description = "Shinshi is a modern and user-friendly Discord bot designed to provide you and your servers with great features and stable performance."
+authors = ["stefanlight <64615032+stefanlight8@users.noreply.github.com>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+hikari = {version = "^2.0.0.dev124", extras = ["speedups"]}
+colorlog = "^6.8.2"
+cachetools = "^5.3.3"
+orjson = "^3.10.0"
+
+
+[tool.poetry.group.unix.dependencies]
+uvloop = "^0.19.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

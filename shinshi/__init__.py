@@ -14,18 +14,39 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-import os
-import pathlib
+import platform
 from logging.config import dictConfig
-from typing import Final, Sequence
+from pathlib import Path
+from typing import Any, Dict, Final, Sequence
 
 import orjson
 
-__all__: Sequence[str] = ()
+__all__: Sequence[str] = (
+    "__license__",
+    "__copyright__",
+    "__github_url__",
+    "__support_url__",
+    "__banner_extras__",
+    "RESOURCES_DIR",
+    "ICONS_DIR",
+)
+
 __license__: Final[str] = "GPL-3.0"
 __copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
 __github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
 __support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
 
-with open(pathlib.Path(os.getcwd(), "resources", "logging.json")) as stream:
+__banner_extras__: Dict[str, Any] = {
+    "shinshi_license": __license__,
+    "shinshi_copyright": __copyright__,
+    "shinshi_github_url": __github_url__,
+    "shinshi_support_url": __support_url__,
+    "python_implementation": platform.python_implementation(),
+    "python_version": platform.python_version(),
+}
+
+RESOURCES_DIR = Path.cwd() / "resources"
+ICONS_DIR = RESOURCES_DIR / "icons"
+
+with open(RESOURCES_DIR / "logging.json") as stream:
     dictConfig(orjson.loads(stream.read()))

@@ -20,9 +20,8 @@ from typing import Any, Dict, List
 from hikari.commands import CommandOption, OptionType
 from hikari.interactions import CommandInteraction
 
+from shinshi.discord.interactables.command import Command
 from shinshi.discord.processors.command_processor import CommandProcessor
-from shinshi.discord.workflows.interactables.commands.slash_command import SlashCommand
-from shinshi.discord.workflows.interactables.commands.sub_command import SubCommand
 
 
 class SlashCommandProcessor(CommandProcessor):
@@ -50,7 +49,7 @@ class SlashCommandProcessor(CommandProcessor):
                         interaction, option
                     )
         try:
-            command: SlashCommand | SubCommand = self.workflow_manager.get_command(
+            command: Command = self.workflow_manager.get_command(
                 group_name, subgroup_name, command_name
             )
         except KeyError:
@@ -59,8 +58,6 @@ class SlashCommandProcessor(CommandProcessor):
             )
         try:
             context = await self.create_interaction_context(interaction, command)
-            if await self.execute_hooks(context, command.hooks) is not None:
-                return
             if command.is_defer:
                 await context.defer()
             try:
@@ -70,7 +67,7 @@ class SlashCommandProcessor(CommandProcessor):
                     **arguments,
                 )
             except Exception as exception:
-                await self.exception_handler.proceed(exception, context)
+                await self.proceed_exception(context, exception)
         except Exception as exception:
             self.__logger.error(
                 "error occurred while executing command %s %s %s.",

@@ -14,22 +14,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Tuple
-
-from hikari.channels import PartialChannel
 from hikari.commands import CommandOption, OptionType
 from hikari.guilds import Role
-from hikari.interactions import CommandInteraction, InteractionMember
+from hikari.interactions import (
+    CommandInteraction,
+    InteractionChannel,
+    InteractionMember,
+)
 from hikari.users import User
-
-from shinshi.discord.workflows.interactables.hook import Hook
-from shinshi.discord.workflows.interactables.models.hook import HookResult
 
 
 class CommandProcessor:
     def convert_command_option_value(
         self, interaction: CommandInteraction, option: CommandOption
-    ) -> User | InteractionMember | PartialChannel | Role | str | int | float | None:
+    ) -> (
+        User | InteractionMember | InteractionChannel | Role | str | int | float | None
+    ):
         match option.type:
             case OptionType.STRING:
                 return str(option.value)
@@ -58,11 +58,3 @@ class CommandProcessor:
                 return interaction.resolved.attachments.get(option.value)
             case _:
                 return
-
-    async def execute_hooks(
-        self, interaction: CommandInteraction, hooks: Tuple[Hook, ...]
-    ) -> HookResult | None:
-        for hook in hooks or ():
-            result: HookResult | None = await hook.callback(interaction)
-            if result is not None:
-                return result

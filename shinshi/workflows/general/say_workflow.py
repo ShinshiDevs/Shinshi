@@ -22,15 +22,11 @@ from hikari.messages import Attachment
 from hikari.permissions import Permissions
 from hikari.webhooks import ExecutableWebhook
 
-from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi.discord.interactables.options import ChannelOption, Option, StringOption
+from shinshi.discord.interaction.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows import WorkflowBase
-from shinshi.discord.workflows.decorators import slash_command
-from shinshi.discord.workflows.interactables.options import (
-    ChannelOption,
-    Option,
-    StringOption,
-)
+from shinshi.discord.workflows import Workflow
+from shinshi.discord.workflows.decorators import command
 from shinshi.workflows.general.exceptions import (
     InsufficientArgumentsException,
     WebhookCreationException,
@@ -38,8 +34,9 @@ from shinshi.workflows.general.exceptions import (
 )
 
 
-class SayWorkflow(WorkflowBase):
-    @slash_command(
+# TODO: FIX, not working command
+class SayWorkflow(Workflow):
+    @command(
         description=Translatable("commands.say.description"),
         is_defer=True,
         options=(
@@ -82,21 +79,42 @@ class SayWorkflow(WorkflowBase):
         try:
             webhook: ExecutableWebhook = await context.bot.rest.create_webhook(
                 channel=channel or context.interaction.channel_id,
-                name=context.interaction.member.display_name,
-                avatar=await context.interaction.member.display_avatar_url.read(),
-                reason=f"Created webhook for @{context.interaction.member.username}"
-                f" (ID: {context.interaction.member.id})",
+                name=context.interaction.member.id,
+                reason=(
+                    f"Created webhook for @{context.interaction.member.username}"
+                    f" (ID: {context.interaction.member.id})"
+                ),
             )
         except (ForbiddenError, NotFoundError, InternalServerError):
             raise WebhookCreationException(context)
         try:
+            try:
+                webhook: ExecutableWebhook | None = None
+                if (
+                    webhooks := await context.bot.cache.get_channel_webhooks(
+                        context.interaction.channel_id
+                    )
+                ) is not None:
+                    for channel_webhook in webhooks:
+                        if str(context.interaction.member.id) == str(channel_webhook):
+                            webhook = channel_webhook
+                            break
+                else:
+                    webhook = await context.bot.rest.create_webhook(
+                        channel=channel or context.interaction.channel_id,
+                        name=context.member.id,
+                        reason=(
+                            f"Created webhook for @{context.interaction.member.username}"
+                            f" (ID: {context.interaction.member.id})"
+                        ),
+                    )
+            except (ForbiddenError, NotFoundError, InternalServerError):
+                raise WebhookCreationException(context)
             await webhook.execute(
                 content=content,
                 attachment=attachment,
+                username=context.interaction.member.display_name,
+                avatar_url=context.interaction.member.display_avatar_url,
             )
         except ValueError:
             raise WebhookExecutionException(context)
-        finally:
-            if webhook:
-                await context.bot.rest.delete_webhook(webhook)
-            await context.delete_response()

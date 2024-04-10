@@ -25,21 +25,21 @@ from hikari.impl import (
 from hikari.interactions import InteractionMember
 from hikari.users import User, UserFlag
 
-from shinshi.discord.models.interaction_context import InteractionContext
+from shinshi import ICONS_DIR
+from shinshi.discord.interactables.group import Group
+from shinshi.discord.interactables.options import Option
+from shinshi.discord.interaction.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
-from shinshi.discord.workflows import WorkflowBase
-from shinshi.discord.workflows.decorators import sub_command
-from shinshi.discord.workflows.interactables.group import Group
-from shinshi.discord.workflows.interactables.options import Option
-from shinshi.utils.datetime import format_datetime
-from shinshi.utils.icons import get_icon
+from shinshi.discord.workflows import Workflow
+from shinshi.discord.workflows.decorators import command
+from shinshi.utils.string import format_datetime
 from shinshi.workflows.general.exceptions import (
     UserAvatarAvailabilityException,
     UserBannerAvailabilityException,
 )
 
 
-class UserWorkflow(WorkflowBase):
+class UserWorkflow(Workflow):
     GROUP = Group(name="user", is_dm_enabled=True)
     OPTIONS: Tuple[Option, ...] = (
         Option(
@@ -69,7 +69,7 @@ class UserWorkflow(WorkflowBase):
             colour=colour,
         )
 
-    @sub_command(
+    @command(
         group=GROUP,
         name="info",
         description=Translatable("commands.user.info.description"),
@@ -81,18 +81,17 @@ class UserWorkflow(WorkflowBase):
         target: User | InteractionMember | None = None,
     ) -> None:
         target: User | InteractionMember = target or context.interaction.member
+        icon_name = (
+            "user"
+            if not target.is_bot
+            else f"bot{"_verified" if UserFlag.VERIFIED_BOT in target.flags else ""}"
+        ) + ".webp"
         embed = (
             self.__get_base_embed(target)
             .set_thumbnail(target.display_avatar_url)
             .set_author(
                 name=context.i18n.get("commands.user.info.embed.author.name"),
-                icon=get_icon(
-                    "user"
-                    if not target.is_bot
-                    else "bot_verified"
-                    if UserFlag.VERIFIED_BOT in target.flags
-                    else "bot"
-                ),
+                icon=ICONS_DIR / icon_name,
             )
             .set_footer(text=f"ID: {target.id}")
             .add_field(
@@ -158,7 +157,7 @@ class UserWorkflow(WorkflowBase):
                     )
         return await context.create_response(embed=embed)
 
-    @sub_command(
+    @command(
         group=GROUP,
         name="avatar",
         description=Translatable("commands.user.avatar.description"),
@@ -189,7 +188,7 @@ class UserWorkflow(WorkflowBase):
             ),
         )
 
-    @sub_command(
+    @command(
         group=GROUP,
         name="banner",
         description=Translatable("commands.user.banner.description"),

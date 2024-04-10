@@ -14,4 +14,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+import pathlib
+import string
+import sys
+from typing import Any, Dict
+
+import colorlog
+
+
+def print_banner(
+    banner_file: pathlib.Path,
+    extra_args: Dict[str, Any],
+) -> None:
+    args: Dict[str, Any] = extra_args.copy()
+    args.update(colorlog.escape_codes.escape_codes)
+    with open(banner_file, "r", encoding="UTF-8") as stream:
+        banner: str = string.Template(stream.read()).safe_substitute(args)
+        sys.stdout.buffer.write(banner.encode("utf-8"))
+        sys.stdout.flush()

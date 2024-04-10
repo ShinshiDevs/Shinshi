@@ -14,4 +14,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .bot import Bot  # noqa: F401
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Tuple
+
+from hikari.commands import OptionType
+
+from shinshi.discord.interactables.options.models.choice import Choice
+from shinshi.discord.models.translatable import Translatable
+
+
+@dataclass(kw_only=True)
+class Option:
+    type: OptionType
+
+    name: str
+    description: Translatable | str | None = None
+
+    choices: Tuple[Choice, ...] = field(default_factory=tuple)
+
+    is_required: bool = True
+    is_autocomplete: bool = False

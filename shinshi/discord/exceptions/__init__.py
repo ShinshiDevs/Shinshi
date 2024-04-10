@@ -15,4 +15,3 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from .interaction_exception import InteractionException  # noqa: F401
-from .unknown_exception import UnknownException  # noqa: F401

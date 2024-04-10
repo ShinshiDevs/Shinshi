@@ -14,21 +14,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from logging import getLogger
 import os
 from collections import deque
+from logging import getLogger
 from pathlib import Path
 from typing import Any, Dict
 
 import orjson
 
-from shinshi.i18n.i18n_group import I18nGroup
+from shinshi.i18n import I18nGroup
 
 
 class I18nProvider:
-    def __init__(self) -> None:
+    def __init__(self, base_directory: Path) -> None:
         self.__logger = getLogger("shinshi.i18n")
-        self.base_path = Path(os.getcwd(), "resources", "i18n")
+        self.base_directory = base_directory
         self.languages: Dict[str, I18nGroup] = {}
 
     def __build_map(self, file: Path) -> I18nGroup | None:
@@ -61,11 +61,9 @@ class I18nProvider:
 
     async def start(self) -> None:
         self.__logger.debug("Starting...")
-        if self.base_path.exists():
-            self.__logger.debug("Loading languages from %s", self.base_path)
-        else:
-            raise RuntimeError(f"Cannot access {self.base_path}")
-        for file in self.base_path.glob("*.json"):
+        if not self.base_directory.exists():
+            raise RuntimeError(f"Cannot access {self.base_directory}")
+        for file in self.base_directory.glob("*.json"):
             language = self.__build_map(file)
             self.languages[os.path.splitext(file.name)[0]] = language
         self.__logger.info("Loaded %s languages", ", ".join(self.languages.keys()))

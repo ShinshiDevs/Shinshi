@@ -16,8 +16,9 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 FROM python:3.12.2-alpine
 WORKDIR /usr/shinshi
-COPY requirements.txt .
-RUN python3.12 -m pip install --upgrade pip && \
-    python3.12 -m pip install -r requirements.txt
+COPY pyproject.toml .
+COPY poetry.lock .
+RUN python3.12 -m pip install poetry && \
+    python3.12 -m poetry install
 COPY . .
-CMD ["python3.12", "-OO", "-m", "shinshi"]
+CMD ["poetry", "run", "python", "-OO", "-m", "shinshi"]
