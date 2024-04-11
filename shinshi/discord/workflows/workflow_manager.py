@@ -63,7 +63,7 @@ class WorkflowManager:
 
     async def sync_slash_commands(self) -> None:
         await self.bot.rest.set_application_commands(
-            await self.bot.get_application(),
+            self.bot.application,
             self.slash_command_builders,
         )
 

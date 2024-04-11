@@ -19,6 +19,7 @@ import os
 import warnings
 
 import orjson
+import sentry_sdk
 from hikari.events import InteractionCreateEvent, StartedEvent, StartingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 
@@ -28,6 +29,13 @@ from shinshi.discord.interaction.interaction_processor import InteractionProcess
 from shinshi.discord.workflows import WorkflowManager
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import general
+
+sentry_sdk.init(
+    dsn=os.environ.get("SHINSHI_SENTRY_DSN"),
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+    keep_alive=True,
+)
 
 try:
     import uvloop
@@ -39,7 +47,6 @@ except ImportError:
         "If not, install uvloop by `poetry install --group unix`"
     )
     asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
-
 
 i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
 bot = Bot(
@@ -77,6 +84,7 @@ async def on_starting(_: StartingEvent) -> None:
 
 @bot.listen(StartedEvent)
 async def on_started(_: StartedEvent) -> None:
+    await bot.get_application()
     await workflow_manager.sync_slash_commands()
     bot.event_manager.subscribe(
         InteractionCreateEvent, interaction_processor.proceed_interaction
