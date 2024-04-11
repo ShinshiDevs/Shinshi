@@ -107,6 +107,17 @@
                 "webhook_creation_exception": "Невозможно создать веб-хук. Возможно...\n- Shinshi не хватает прав для создания веб-хука.\n- Внутренняя ошибка Discord API.",
                 "webhook_execution_exception": "Не получилось отправить сообщение с помощью веб-хука.\nВозможно, веб-хук не был создан или недоступен."
             }
+        },
+        "invite": {
+            "description": "Пригласить Shinshi",
+            "buttons": {
+                "no_permissions": {
+                    "label": "Без прав"
+                },
+                "administrator": {
+                    "label": "Администратор"
+                }
+            }
         }
     }
 }

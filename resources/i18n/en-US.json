@@ -107,6 +107,17 @@
                 "webhook_creation_exception": "Unable to create webhook. Possible reasons...\n- Shinshi don't permissions to create a webhook.\n- Internal Discord API error.",
                 "webhook_execution_exception": "Failed to send the message using the webhook.\nPossibly, the webhook was not created or is inaccessible."
             }
+        },
+        "invite": {
+            "description": "Invite Shinshi",
+            "buttons": {
+                "no_permissions": {
+                    "label": "Without permissions"
+                },
+                "administrator": {
+                    "label": "Administrator"
+                }
+            }
         }
     }
 }

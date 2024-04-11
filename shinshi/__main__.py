@@ -59,7 +59,12 @@ bot = Bot(
 workflow_manager = WorkflowManager(
     bot,
     i18n_provider,
-    (general.InfoWorkflow, general.UserWorkflow),
+    (
+        general.InfoWorkflow,
+        general.InviteWorkflow,
+        general.SupportWorkflow,
+        general.UserWorkflow,
+    ),
 )
 interaction_processor = InteractionProcessor(bot, i18n_provider, workflow_manager)
 

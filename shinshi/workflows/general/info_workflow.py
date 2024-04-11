@@ -72,7 +72,10 @@ class InfoWorkflow(Workflow):
             component=MessageActionRowBuilder(
                 components=[
                     LinkButtonBuilder(label="Github", url=__github_url__),
-                    LinkButtonBuilder(label="Support", url=__support_url__),
+                    LinkButtonBuilder(
+                        label=context.i18n.get("buttons.support.label"),
+                        url=__support_url__,
+                    ),
                 ]
             ),
         )

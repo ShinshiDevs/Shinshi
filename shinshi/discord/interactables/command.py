@@ -57,6 +57,12 @@ class Command(Interactable):
             else:
                 self.group.commands[self.name] = self
 
+    @property
+    def qualname(self) -> str:
+        return (
+            f"{getattr(self.group, "name", None)} " f"{self.sub_group} " f"{self.name}"
+        ).replace("None ", "")
+
     def autocomplete(self, argument: str) -> None:
         def decorator(func: Callable[[Any], Awaitable[Any]]) -> None:
             self.autocomplete[argument] = func

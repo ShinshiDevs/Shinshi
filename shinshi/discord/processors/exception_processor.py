@@ -45,7 +45,7 @@ class ExceptionProcessor:
         embed = Embed(
             title="Report",
             description=(
-                f"{type(exception).__qualname__} occurred while `{context.interactable}` "
+                f"{type(exception).__qualname__} occurred while `{context.interactable.qualname}` "
                 f"by {context.interaction.user.username} (ID: {context.interaction.user.id})"
             ),
             timestamp=datetime.now().astimezone(),
