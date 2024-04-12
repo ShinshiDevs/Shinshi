@@ -21,7 +21,7 @@ from shinshi.discord.exceptions import InteractionException
 from shinshi.discord.interaction.interaction_context import InteractionContext
 
 
-class UserAvatarAvailabilityException(InteractionException):
+class NoUserAvatarException(InteractionException):
     def __init__(self, context: InteractionContext, user: User, *args) -> None:
         self.user = user
         super().__init__(context, *args)
@@ -39,7 +39,7 @@ class UserAvatarAvailabilityException(InteractionException):
         )
 
 
-class UserBannerAvailabilityException(InteractionException):
+class NoUserBannerException(InteractionException):
     def __init__(self, context: InteractionContext, user: User, *args) -> None:
         self.user = user
         super().__init__(context, *args)

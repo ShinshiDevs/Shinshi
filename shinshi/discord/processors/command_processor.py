@@ -46,12 +46,9 @@ class CommandProcessor:
             case OptionType.ROLE:
                 return interaction.resolved.roles.get(option.value)
             case OptionType.MENTIONABLE:
-                return (
-                    interaction.resolved.members.get(option.value)
-                    or interaction.resolved.users.get(option.value)
-                    or interaction.resolved.channels.get(option.value)
-                    or interaction.resolved.roles.get(option.value)
-                )
+                return interaction.resolved.members.get(
+                    option.value
+                ) or interaction.resolved.roles.get(option.value)
             case OptionType.FLOAT:
                 return float(option.value)
             case OptionType.ATTACHMENT:

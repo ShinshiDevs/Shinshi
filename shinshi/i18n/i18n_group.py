@@ -18,9 +18,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from logging import getLogger
-from typing import Any, Dict, Sequence, Tuple
+from typing import Any
 
-_ARGUMENTS_SENTINEL: Dict[str, Any] = {}
+_ARGUMENTS_SENTINEL: dict[str, Any] = {}
 
 
 @dataclass
@@ -28,17 +28,17 @@ class I18nGroup:
     __logger = getLogger("shinshi.i18n")
 
     name: str
-    value: Dict[str, str | Tuple[str, ...] | I18nGroup] = field(default_factory=dict)
+    value: dict[str, str | tuple[str, ...] | I18nGroup] = field(default_factory=dict)
 
     def __find_value_in_group(
-        self, sub_keys: Sequence[str]
-    ) -> str | Tuple[str, ...] | None:
-        current_group: I18nGroup = self
+        self, sub_keys: list[str]
+    ) -> str | tuple[str, ...] | None:
+        current_group = self
         for sub_key in sub_keys[:-1]:
             current_group = current_group.value.get(sub_key)
             if not isinstance(current_group, I18nGroup):
                 return None
-        value: str | Tuple[str, ...] | I18nGroup | None = current_group.value.get(
+        value: str | tuple[str, ...] | I18nGroup | None = current_group.value.get(
             sub_keys[-1]
         )
         return None if isinstance(value, I18nGroup) else value
@@ -46,14 +46,14 @@ class I18nGroup:
     def __get_value_by_key(
         self,
         key: str,
-    ) -> str | Tuple[str, ...] | None:
+    ) -> str | tuple[str, ...] | None:
         return self.__find_value_in_group(key.split("."))
 
     def __resolve_key(
         self,
         key: str,
-        arguments: Dict[str, Any],
-    ) -> str | Tuple[str, ...] | None:
+        arguments: dict[str, Any],
+    ) -> str | tuple[str, ...] | None:
         value = self.__get_value_by_key(key)
         if value is None:
             return key
@@ -62,7 +62,7 @@ class I18nGroup:
     def get(
         self,
         key: str,
-        arguments: Dict[str, Any] | None = None,
+        arguments: dict[str, Any] | None = None,
     ) -> str:
         if arguments is None:
             arguments = _ARGUMENTS_SENTINEL
@@ -79,12 +79,12 @@ class I18nGroup:
             return key
 
     def get_list(
-        self, key: str, arguments: Dict[str, Any] | None = None
-    ) -> Tuple[str, ...]:
+        self, key: str, arguments: dict[str, Any] | None = None
+    ) -> tuple[str, ...]:
         if arguments is None:
             arguments = _ARGUMENTS_SENTINEL
         try:
-            value: Tuple[str, ...] = self.__get_value_by_key(key)
+            value: tuple[str, ...] = self.__get_value_by_key(key)
             if not value:
                 self.__logger.warning("failed to resolve list-type i18n-key %s", key)
                 return (key,)

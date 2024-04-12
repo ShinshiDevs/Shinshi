@@ -17,16 +17,16 @@
 import pathlib
 import string
 import sys
-from typing import Any, Dict
+from typing import Any
 
 import colorlog
 
 
 def print_banner(
     banner_file: pathlib.Path,
-    extra_args: Dict[str, Any],
+    extra_args: dict[str, Any],
 ) -> None:
-    args: Dict[str, Any] = extra_args.copy()
+    args: dict[str, Any] = extra_args.copy()
     args.update(colorlog.escape_codes.escape_codes)
     with open(banner_file, "r", encoding="UTF-8") as stream:
         banner: str = string.Template(stream.read()).safe_substitute(args)

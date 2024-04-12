@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari import Permissions
+from hikari.permissions import Permissions
 from hikari.impl import LinkButtonBuilder, MessageActionRowBuilder
 
 from shinshi.discord.interaction.interaction_context import InteractionContext

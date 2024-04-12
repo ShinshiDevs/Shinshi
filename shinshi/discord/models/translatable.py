@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any
 
 from shinshi.discord.constants import DEFAULT_LANGUAGE
 from shinshi.i18n import I18nProvider
@@ -26,7 +26,7 @@ class Translatable:
     key: str | None = None
     fallback: str | None = None
 
-    translates: Dict[str, Any] = field(default_factory=dict)
+    translates: dict[str, Any] = field(default_factory=dict)
 
     def build(self, i18n_provider: I18nProvider) -> None:
         if self.key:

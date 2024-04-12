@@ -14,5 +14,5 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-INTERACTABLE_WORKFLOW_INSTANCE: str = "_workflow"
-WORKFLOW_INTERACTABLES: str = "_interactables"
+INTERACTABLE_WORKFLOW_INSTANCE = "_workflow"
+WORKFLOW_INTERACTABLES = "_interactables"

@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Sequence
-
 from hikari.permissions import Permissions
 from hikari.snowflakes import Snowflakeish
 from yarl import URL
@@ -27,7 +25,7 @@ def oauth_url(
     permissions: Permissions | None = None,
     guild: Snowflakeish | None = None,
     redirect_uri: str | None = None,
-    scopes: Sequence[str] | None = None,
+    scopes: list[str] | None = None,
     disable_guild_select: bool = False,
 ) -> str:
     base_url = URL("https://discord.com/oauth2/authorize").with_query(

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Sequence, Tuple
+
 
 from hikari.commands import OptionType
 from hikari.embeds import Embed
@@ -34,14 +34,14 @@ from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
 from shinshi.utils.string import format_datetime
 from shinshi.workflows.general.exceptions import (
-    UserAvatarAvailabilityException,
-    UserBannerAvailabilityException,
+    NoUserAvatarException,
+    NoUserBannerException,
 )
 
 
 class UserWorkflow(Workflow):
     GROUP = Group(name="user", is_dm_enabled=True)
-    OPTIONS: Tuple[Option, ...] = (
+    OPTIONS: tuple[Option, ...] = (
         Option(
             type=OptionType.USER,
             name="target",
@@ -51,7 +51,7 @@ class UserWorkflow(Workflow):
     )
 
     @staticmethod
-    def __get_base_embed(target: User | InteractionMember):
+    def __get_base_embed(target: User | InteractionMember) -> Embed:
         colour: int | None = None
         if isinstance(target, InteractionMember):
             colour = next(
@@ -80,8 +80,8 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: User | InteractionMember | None = None,
     ) -> None:
-        target: User | InteractionMember = target or context.interaction.member
-        icon_name = (
+        target = target or context.interaction.member
+        icon_name: str = (
             "user"
             if not target.is_bot
             else f"bot{"_verified" if UserFlag.VERIFIED_BOT in target.flags else ""}"
@@ -117,13 +117,13 @@ class UserWorkflow(Workflow):
                 ),
                 inline=True,
             )
-            roles: Sequence[str] = [
+            roles: tuple[str, ...] = (
                 role.mention
                 for role in sorted(
                     target.get_roles(), key=lambda role: role.position, reverse=True
                 )
                 if role.id != target.guild_id
-            ]
+            )
             if not roles:
                 embed.add_field(
                     name=context.i18n.get("commands.user.info.embed.fields.roles.name"),
@@ -168,9 +168,9 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: User | InteractionMember | None = None,
     ) -> None:
-        target: User | InteractionMember = target or context.interaction.member
+        target = target or context.interaction.member
         if target.avatar_url is None:
-            raise UserAvatarAvailabilityException(context, target)
+            raise NoUserAvatarException(context, target)
         embed: Embed = (
             self.__get_base_embed(target)
             .set_image(target.avatar_url)
@@ -201,7 +201,7 @@ class UserWorkflow(Workflow):
     ) -> None:
         target: User = await (target or context.interaction.user).fetch_self()
         if target.banner_url is None:
-            raise UserBannerAvailabilityException(context, target)
+            raise NoUserBannerException(context, target)
         return await context.create_response(
             embed=(
                 self.__get_base_embed(target)

@@ -14,14 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from pathlib import Path
 from typing import Any
 
 from hikari.applications import Application
 from hikari.impl import CacheSettings, GatewayBot
 from hikari.users import OwnUser
 
-from shinshi import __banner_extras__
+from shinshi import RESOURCES_DIR, __banner_extras__
 from shinshi.discord.bot.cache import Cache
 from shinshi.discord.bot.ux import print_banner
 
@@ -36,7 +35,7 @@ class Bot(GatewayBot):
             cache_settings=cache_settings,
             **kwargs,
         )
-        print_banner(Path("resources", "banner.txt"), extra_args=__banner_extras__)
+        print_banner(RESOURCES_DIR / "banner.txt", extra_args=__banner_extras__)
 
     async def get_application(self) -> Application:
         if self.__application is not None:

@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Dict, List, Sequence
-
 from hikari.commands import CommandChoice, CommandOption, OptionType
 from hikari.impl import SlashCommandBuilder
 
@@ -33,14 +31,14 @@ class WorkflowManager:
         self,
         bot: Bot,
         i18n_provider: I18nProvider,
-        workflows: Sequence[Workflow],
+        workflows: tuple[Workflow, ...],
     ) -> None:
         self.bot = bot
         self.i18n_provider = i18n_provider
         self.workflows = workflows
 
-        self.commands: Dict[str, Command | Group] = {}
-        self.slash_command_builders: List[SlashCommandBuilder] = []
+        self.commands: dict[str, Command | Group] = {}
+        self.slash_command_builders: list[SlashCommandBuilder] = []
 
     async def build_workflows(self) -> None:
         for workflow_cls in self.workflows:
@@ -114,10 +112,10 @@ class WorkflowManager:
         description: Translatable = self.get_translatable_description(
             option.description
         )
-        choices: List[CommandChoice] = [
+        choices: tuple[CommandChoice, ...] = (
             CommandChoice(name=choice.name, value=choice.value)
             for choice in option.choices
-        ]
+        )
         return CommandOption(
             type=option.type,
             name=option.name,

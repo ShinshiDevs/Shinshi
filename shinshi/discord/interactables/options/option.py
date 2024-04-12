@@ -14,10 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from __future__ import annotations
-
 from dataclasses import dataclass, field
-from typing import Tuple
 
 from hikari.commands import OptionType
 
@@ -32,7 +29,7 @@ class Option:
     name: str
     description: Translatable | str | None = None
 
-    choices: Tuple[Choice, ...] = field(default_factory=tuple)
+    choices: tuple[Choice, ...] = field(default_factory=tuple)
 
     is_required: bool = True
     is_autocomplete: bool = False

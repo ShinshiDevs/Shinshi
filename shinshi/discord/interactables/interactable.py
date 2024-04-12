@@ -14,13 +14,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable
+from typing import Any
 
 
 @dataclass(kw_only=True)
 class Interactable:
-    callback: Callable[[Any], Awaitable[Any]]
+    callback: Callable[..., Awaitable[Any]]
 
     is_defer: bool = False
     is_ephemeral: bool = False

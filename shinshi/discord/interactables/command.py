@@ -14,13 +14,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Dict, Tuple
+from typing import Any
 
 from hikari import Permissions
 
 from shinshi.discord.interactables.group import Group, SubGroup
-from shinshi.discord.interactables.hooks import HookResult
+from shinshi.discord.interactables.hooks.typing import HookT
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.interactables.options.option import Option
 from shinshi.discord.models.translatable import Translatable
@@ -31,19 +32,17 @@ class Command(Interactable):
     name: str
     description: Translatable | str | None = None
 
-    group: Group | None = None
-    sub_group: str | None = None
+    group: Group
+    sub_group: str
 
-    default_member_permissions: Permissions = Permissions.NONE
-    is_dm_enabled: bool = False
-    is_nsfw: bool = False
+    default_member_permissions: Permissions
+    is_dm_enabled: bool
+    is_nsfw: bool
 
-    options: Tuple[Option, ...] = field(default_factory=tuple)
-    hooks: Tuple[Callable[[Any], Awaitable[HookResult]], ...] = field(
-        default_factory=tuple
-    )
+    options: tuple[Option, ...]
+    hooks: tuple[HookT, ...]
 
-    autocomplete: Dict[str, Callable[[Any], Awaitable[Any]]] = field(
+    _autocomplete: dict[str, Callable[..., Awaitable[Any]]] = field(
         default_factory=dict
     )
 
@@ -59,12 +58,11 @@ class Command(Interactable):
 
     @property
     def qualname(self) -> str:
-        return (
-            f"{getattr(self.group, "name", None)} " f"{self.sub_group} " f"{self.name}"
-        ).replace("None ", "")
+        parts = [getattr(self.group, "name", None), self.sub_group, self.name]
+        return " ".join(filter(None, parts))
 
     def autocomplete(self, argument: str) -> None:
-        def decorator(func: Callable[[Any], Awaitable[Any]]) -> None:
+        def decorator(func: Callable[..., Awaitable[Any]]) -> None:
             self.autocomplete[argument] = func
 
         return decorator

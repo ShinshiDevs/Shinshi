@@ -14,14 +14,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from collections.abc import Sequence
-from dataclasses import dataclass
+from collections.abc import Awaitable, Callable
+from typing import TypeVar
 
-from hikari.channels import ChannelType
-
-from shinshi.discord.interactables.options.option import Option
+from shinshi.discord.interactables.hooks.hook_result import HookResult
 
 
-@dataclass(kw_only=True)
-class ChannelOption(Option):
-    channel_types: Sequence[ChannelType] | None = None
+HookT = TypeVar("HookT", bound=Callable[..., Awaitable[HookResult]])

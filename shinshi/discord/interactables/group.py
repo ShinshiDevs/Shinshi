@@ -17,14 +17,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Dict, TypeVar
+from typing import TYPE_CHECKING
 
 from hikari.permissions import Permissions
 
 if TYPE_CHECKING:
-    from shinshi.discord.interactables.command import Command as _Command
-
-Command = TypeVar("Command", bound="_Command")
+    from shinshi.discord.interactables.command import Command
 
 
 @dataclass(kw_only=True)
@@ -35,11 +33,11 @@ class Group:
     is_dm_enabled: bool = False
     is_nsfw: bool = False
 
-    commands: Dict[str, Command] = field(default_factory=dict)
-    sub_groups: Dict[str, SubGroup] = field(default_factory=dict)
+    commands: dict[str, Command] = field(default_factory=dict)
+    sub_groups: dict[str, SubGroup] = field(default_factory=dict)
 
 
 @dataclass(kw_only=True)
 class SubGroup:
     name: str
-    commands: Dict[str, Command] = field(default_factory=dict)
+    commands: dict[str, Command] = field(default_factory=dict)

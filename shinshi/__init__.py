@@ -17,11 +17,11 @@
 import platform
 from logging.config import dictConfig
 from pathlib import Path
-from typing import Any, Dict, Final, Sequence
+from typing import Final
 
 import orjson
 
-__all__: Sequence[str] = (
+__all__ = (
     "__license__",
     "__copyright__",
     "__github_url__",
@@ -36,7 +36,7 @@ __copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
 __github_url__: Final[str] = "https://github.com/ShinshiDevs/Shinshi"
 __support_url__: Final[str] = "https://discord.gg/3bXW7an2ke"
 
-__banner_extras__: Dict[str, Any] = {
+__banner_extras__: dict[str, str] = {
     "shinshi_license": __license__,
     "shinshi_copyright": __copyright__,
     "shinshi_github_url": __github_url__,

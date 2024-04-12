@@ -14,8 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Dict, Sequence, TypeVar
+from typing import Any
 
 from hikari.api import ComponentBuilder
 from hikari.embeds import Embed
@@ -31,7 +32,7 @@ from shinshi.discord.bot import Bot
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.i18n import I18nGroup
 
-InteractionT = TypeVar("InteractionT", bound=CommandInteraction | ComponentInteraction)
+type InteractionT = CommandInteraction | ComponentInteraction
 
 
 @dataclass(kw_only=True)
@@ -75,7 +76,8 @@ class InteractionContext:
         ] = UNDEFINED,
         ensure_message: bool = False,
     ) -> Message | None:
-        kwargs: Dict[str, Any] = dict(
+        kwargs: dict[str, Any] = dict(
+            token=self.interaction.token,
             content=content,
             attachment=attachment,
             attachments=attachments,
@@ -90,13 +92,11 @@ class InteractionContext:
         if self._has_deferred_response:
             await self.bot.rest.edit_interaction_response(
                 application=self.interaction.application_id,
-                token=self.interaction.token,
                 **kwargs,
             )
         else:
             await self.bot.rest.create_interaction_response(
                 interaction=self.interaction.id,
-                token=self.interaction.token,
                 response_type=ResponseType.MESSAGE_CREATE,
                 flags=flags,
                 **kwargs,

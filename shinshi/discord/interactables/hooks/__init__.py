@@ -15,3 +15,4 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from .hook_result import HookResult  # noqa: F401
+from .typing import HookT  # noqa: F401

@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from logging import getLogger
-from typing import Any, Dict, List
+from typing import Any
 
 from hikari.commands import CommandOption, OptionType
 from hikari.interactions import CommandInteraction
@@ -29,8 +29,8 @@ class SlashCommandProcessor(CommandProcessor):
 
     async def proceed_slash_command(self, interaction: CommandInteraction) -> None:
         group_name, subgroup_name, command_name = None, None, interaction.command_name
-        arguments: Dict[str, Any] = {}
-        options: List[CommandOption] = (
+        arguments: dict[str, Any] = {}
+        options: list[CommandOption] = (
             list(interaction.options) if interaction.options else []
         )
         while options:

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari import MessageFlag
+from hikari.messages import MessageFlag
 from sentry_sdk import capture_exception, push_scope
 
 from shinshi.discord.exceptions.interaction_exception import InteractionException

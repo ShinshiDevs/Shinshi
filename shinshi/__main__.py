@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import logging
 import os
 import warnings
 
@@ -25,7 +24,6 @@ from hikari.events import InteractionCreateEvent, StartedEvent, StartingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from sentry_sdk.integrations.asyncio import AsyncioIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 
 from shinshi import RESOURCES_DIR
 from shinshi.discord.bot import Bot
@@ -54,10 +52,6 @@ sentry_sdk.init(
     integrations=[
         AioHttpIntegration(),
         AsyncioIntegration(),
-        LoggingIntegration(
-            level=logging.WARNING,
-            event_level=logging.WARNING,
-        ),
     ],
 )
 

@@ -15,17 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from hikari.embeds import Embed
-from hikari.impl import (
-    LinkButtonBuilder,
-    MessageActionRowBuilder,
-)
 
 from shinshi import (
     IMAGES_DIR,
     __copyright__,
     __github_url__,
     __license__,
-    __support_url__,
 )
 from shinshi.discord.interaction.interaction_context import InteractionContext
 from shinshi.discord.models.translatable import Translatable
@@ -40,7 +35,7 @@ class InfoWorkflow(Workflow):
         embed = (
             Embed(
                 title=context.bot.me.username,
-                url="https://github.com/ShinshiDevs",
+                url=__github_url__,
                 description=context.i18n.get(
                     "commands.info.embed.description",
                     {"shard": context.interaction.get_guild().shard_id + 1},
@@ -67,15 +62,4 @@ class InfoWorkflow(Workflow):
                 ),
             )
         )
-        return await context.create_response(
-            embed=embed,
-            component=MessageActionRowBuilder(
-                components=[
-                    LinkButtonBuilder(label="Github", url=__github_url__),
-                    LinkButtonBuilder(
-                        label=context.i18n.get("buttons.support.label"),
-                        url=__support_url__,
-                    ),
-                ]
-            ),
-        )
+        return await context.create_response(embed=embed)
