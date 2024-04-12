@@ -16,6 +16,7 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
+from hikari.impl import LinkButtonBuilder, MessageActionRowBuilder
 
 from shinshi.discord.interactables.group import Group
 from shinshi.discord.interaction.interaction_context import InteractionContext
@@ -23,17 +24,19 @@ from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
 from shinshi.utils.string import format_datetime
+from shinshi.workflows.general.exceptions.guild_exceptions import NoGuildIconException
 
 
 class GuildWorkflow(Workflow):
     GROUP = Group(name="guild")
 
     @staticmethod
-    async def get_base_embed(context: InteractionContext, guild: GatewayGuild) -> Embed:
+    async def __get_guild(context: InteractionContext) -> tuple[GatewayGuild, Embed]:
+        guild: GatewayGuild = context.interaction.get_guild()
         embed = Embed(title=guild.name)
         if invites := await context.bot.rest.fetch_guild_invites(guild):
             embed.url = f"https://discord.gg/{invites[-1].code}"
-        return embed
+        return guild, embed
 
     @command(
         group=GROUP,
@@ -41,46 +44,64 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.info.description"),
     )
     async def guild_info(self, context: InteractionContext) -> None:
-        guild: GatewayGuild = context.interaction.get_guild()
-        embed: Embed = (
-            (await self.get_base_embed(context, guild))
-            .set_thumbnail(guild.icon_url)
-            .set_author(name=context.i18n.get("commands.guild.info.embed.author.name"))
-            .set_footer(text=f"ID: {guild.id}")
-            .add_field(
-                name=context.i18n.get("commands.guild.info.embed.fields.owner.name"),
-                value=f"<@!{guild.owner_id}>",
-                inline=True,
-            )
-            .add_field(
-                name=context.i18n.get(
-                    "commands.guild.info.embed.fields.created_at.name"
-                ),
-                value=(
-                    f"{format_datetime(guild.created_at, "R")}\n"
-                    f"{format_datetime(guild.created_at, "D")}"
-                ),
-                inline=True,
-            )
-            .add_field(
-                name=context.i18n.get(
-                    "commands.guild.info.embed.fields.you_joined_at.name"
-                ),
-                value=(
-                    f"{format_datetime(context.interaction.member.joined_at, "R")}\n"
-                    f"{format_datetime(context.interaction.member.joined_at, "D")}"
-                ),
-                inline=True,
-            )
-            .add_field(
-                name=context.i18n.get("commands.guild.info.embed.fields.members.name"),
-                value=guild.member_count,
-                inline=True,
-            )
-            .add_field(
-                name=context.i18n.get("commands.guild.info.embed.fields.channels.name"),
-                value=len(guild.get_channels()),
-                inline=True,
-            )
+        guild, embed = await self.__get_guild(context)
+        embed.set_thumbnail(guild.icon_url)
+        embed.set_author(name=context.i18n.get("commands.guild.info.embed.author.name"))
+        embed.set_footer(text=f"ID: {guild.id}")
+        embed.add_field(
+            name=context.i18n.get("commands.guild.info.embed.fields.owner.name"),
+            value=f"<@!{guild.owner_id}>",
+            inline=True,
+        )
+        embed.add_field(
+            name=context.i18n.get("commands.guild.info.embed.fields.created_at.name"),
+            value=(
+                f"{format_datetime(guild.created_at, "R")}\n"
+                f"{format_datetime(guild.created_at, "D")}"
+            ),
+            inline=True,
+        )
+        embed.add_field(
+            name=context.i18n.get(
+                "commands.guild.info.embed.fields.you_joined_at.name"
+            ),
+            value=(
+                f"{format_datetime(context.interaction.member.joined_at, "R")}\n"
+                f"{format_datetime(context.interaction.member.joined_at, "D")}"
+            ),
+            inline=True,
+        )
+        embed.add_field(
+            name=context.i18n.get("commands.guild.info.embed.fields.members.name"),
+            value=guild.member_count,
+            inline=True,
+        )
+        embed.add_field(
+            name=context.i18n.get("commands.guild.info.embed.fields.channels.name"),
+            value=len(guild.get_channels()),
+            inline=True,
         )
         return await context.create_response(embed=embed)
+
+    @command(
+        group=GROUP,
+        name="icon",
+        description=Translatable("commands.guild.icon.description"),
+    )
+    async def guild_icon(self, context: InteractionContext) -> None:
+        guild, embed = await self.__get_guild(context)
+        if not guild.icon_url:
+            raise NoGuildIconException(context)
+        embed.set_author(name=context.i18n.get("commands.guild.icon.embed.author.name"))
+        embed.set_image(guild.icon_url)
+        return await context.create_response(
+            embed=embed,
+            component=MessageActionRowBuilder(
+                components=(
+                    LinkButtonBuilder(
+                        label=f"{res}x{res}", url=guild.make_icon_url(size=res).url
+                    )
+                    for res in (256, 512, 1024)
+                )
+            ),
+        )

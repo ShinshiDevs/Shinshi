@@ -14,8 +14,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .guild_exceptions import NoGuildIconException  # noqa: F401
-from .user_exceptions import (  # noqa: F401
-    NoUserAvatarException,
-    NoUserBannerException,
-)
+from hikari.messages import MessageFlag
+
+from shinshi.discord.exceptions import InteractionException
+
+
+class NoGuildIconException(InteractionException):
+    async def callback(self) -> None:
+        return await self.context.create_response(
+            content=self.context.i18n.get(
+                "commands.guild.icon.exceptions.no_icon_exception",
+            ),
+            user_mentions=False,
+            flags=MessageFlag.EPHEMERAL,
+        )

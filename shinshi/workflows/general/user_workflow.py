@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-
-
 from hikari.commands import OptionType
 from hikari.embeds import Embed
 from hikari.impl import (
@@ -38,6 +36,8 @@ from shinshi.workflows.general.exceptions import (
     NoUserBannerException,
 )
 
+type TargetT = InteractionMember | User | None
+
 
 class UserWorkflow(Workflow):
     GROUP = Group(name="user", is_dm_enabled=True)
@@ -51,18 +51,21 @@ class UserWorkflow(Workflow):
     )
 
     @staticmethod
-    def __get_base_embed(target: User | InteractionMember) -> Embed:
+    def __get_target(
+        context: InteractionContext, target: TargetT
+    ) -> tuple[TargetT, Embed]:
+        target = target or context.interaction.member
         colour: int | None = None
         if isinstance(target, InteractionMember):
             colour = next(
                 (role.colour for role in target.get_roles() if role.colour), None
             )
-        title = (
+        title: str = (
             target.display_name
             if hasattr(target, "display_name")
             else target.global_name or target.username
         )
-        return Embed(
+        return target, Embed(
             title=title,
             url=f"https://discordapp.com/users/{target.id}",
             description=f"@{target.username}" if title != target.username else None,
@@ -78,32 +81,27 @@ class UserWorkflow(Workflow):
     async def user_info(
         self,
         context: InteractionContext,
-        target: User | InteractionMember | None = None,
+        target: TargetT = None,
     ) -> None:
-        target = target or context.interaction.member
+        target, embed = self.__get_target(context, target)
         icon_name: str = (
             "user"
             if not target.is_bot
             else f"bot{"_verified" if UserFlag.VERIFIED_BOT in target.flags else ""}"
         ) + ".webp"
-        embed: Embed = (
-            self.__get_base_embed(target)
-            .set_thumbnail(target.display_avatar_url)
-            .set_author(
-                name=context.i18n.get("commands.user.info.embed.author.name"),
-                icon=IMAGES_DIR / icon_name,
-            )
-            .set_footer(text=f"ID: {target.id}")
-            .add_field(
-                name=context.i18n.get(
-                    "commands.user.info.embed.fields.created_at.name"
-                ),
-                value=(
-                    f"{format_datetime(target.created_at, "R")}\n"
-                    f"{format_datetime(target.created_at, "D")}"
-                ),
-                inline=True,
-            )
+        embed.set_thumbnail(target.display_avatar_url)
+        embed.set_author(
+            name=context.i18n.get("commands.user.info.embed.author.name"),
+            icon=IMAGES_DIR / icon_name,
+        )
+        embed.set_footer(text=f"ID: {target.id}")
+        embed.add_field(
+            name=context.i18n.get("commands.user.info.embed.fields.created_at.name"),
+            value=(
+                f"{format_datetime(target.created_at, "R")}\n"
+                f"{format_datetime(target.created_at, "D")}"
+            ),
+            inline=True,
         )
         if isinstance(target, InteractionMember):
             embed.add_field(
@@ -117,7 +115,7 @@ class UserWorkflow(Workflow):
                 ),
                 inline=True,
             )
-            roles: tuple[str, ...] = (
+            roles = tuple[str](
                 role.mention
                 for role in sorted(
                     target.get_roles(), key=lambda role: role.position, reverse=True
@@ -166,15 +164,14 @@ class UserWorkflow(Workflow):
     async def user_avatar(
         self,
         context: InteractionContext,
-        target: User | InteractionMember | None = None,
+        target: TargetT = None,
     ) -> None:
-        target = target or context.interaction.member
+        target, embed = self.__get_target(context, target)
         if target.avatar_url is None:
             raise NoUserAvatarException(context, target)
-        embed: Embed = (
-            self.__get_base_embed(target)
-            .set_image(target.avatar_url)
-            .set_author(name=context.i18n.get("commands.user.avatar.embed.author.name"))
+        embed.set_image(target.avatar_url)
+        embed.set_author(
+            name=context.i18n.get("commands.user.avatar.embed.author.name")
         )
         return await context.create_response(
             embed=embed,
@@ -197,19 +194,18 @@ class UserWorkflow(Workflow):
     async def user_banner(
         self,
         context: InteractionContext,
-        target: User | InteractionMember | None = None,
+        target: TargetT = None,
     ) -> None:
-        target: User = await (target or context.interaction.user).fetch_self()
-        if target.banner_url is None:
-            raise NoUserBannerException(context, target)
-        return await context.create_response(
-            embed=(
-                self.__get_base_embed(target)
-                .set_image(target.banner_url)
-                .set_author(
+        target, embed = self.__get_target(context, target)
+        user: User = target.fetch_self()
+        if user.banner_url is None:
+            raise NoUserBannerException(context, user)
+        return (
+            await context.create_response(
+                embed=embed.set_image(user.banner_url).set_author(
                     name=context.i18n.get("commands.user.banner.embed.author.name"),
-                    icon=target.display_avatar_url,
-                    url=target.banner_url.url,
+                    icon=user.display_avatar_url,
+                    url=user.banner_url.url,
                 )
             ),
         )
