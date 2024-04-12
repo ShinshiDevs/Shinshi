@@ -27,23 +27,16 @@ class ExceptionProcessor:
         self, context: InteractionContext, exception: Exception
     ) -> None:
         if isinstance(exception, InteractionException):
-            try:
-                return await exception.callback()
-            except Exception as exception:
-                self.__logger.error(
-                    "Cannot handle exception, because of another exception",
-                    exc_info=exception,
-                )
-        else:
-            with push_scope() as scope:
-                if isinstance(context.interactable, Command):
-                    scope.set_tag("command", context.interactable.qualname)
-                if guild := context.interaction.get_guild():
-                    scope.set_tag("shard ID", guild.shard_id)
-                scope.set_tag("user ID", context.interaction.user.id)
-                scope.level = "warning"
-                capture_exception(exception)
-            return await context.create_response(
-                content=context.i18n.get("exceptions.unknown_exception"),
-                flags=MessageFlag.EPHEMERAL,
-            )
+            return await exception.callback()
+        with push_scope() as scope:
+            if isinstance(context.interactable, Command):
+                scope.set_tag("command", context.interactable.qualname)
+            if guild := context.interaction.get_guild():
+                scope.set_tag("shard ID", guild.shard_id)
+            scope.set_tag("user ID", context.interaction.user.id)
+            scope.level = "warning"
+            capture_exception(exception)
+        return await context.create_response(
+            content=context.i18n.get("exceptions.unknown_exception"),
+            flags=MessageFlag.EPHEMERAL,
+        )

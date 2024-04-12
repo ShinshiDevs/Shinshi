@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-import abc
-
 from shinshi.discord.interactables.command import Command
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.workflows.constants import WORKFLOW_INTERACTABLES
@@ -35,6 +33,5 @@ class Workflow(metaclass=WorkflowMeta):
             if isinstance(interactable, Command)
         ]
 
-    @abc.abstractmethod
     async def start(self) -> None:
-        ...
+        return

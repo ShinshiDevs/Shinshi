@@ -23,13 +23,15 @@ from hikari.interactions import (
 )
 from hikari.users import User
 
+type ValueT = (
+    User | InteractionMember | InteractionChannel | Role | str | int | float | None
+)
+
 
 class CommandProcessor:
     def convert_command_option_value(
         self, interaction: CommandInteraction, option: CommandOption
-    ) -> (
-        User | InteractionMember | InteractionChannel | Role | str | int | float | None
-    ):
+    ) -> ValueT:
         match option.type:
             case OptionType.STRING:
                 return str(option.value)

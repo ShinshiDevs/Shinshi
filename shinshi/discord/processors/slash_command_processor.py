@@ -22,6 +22,7 @@ from hikari.interactions import CommandInteraction
 
 from shinshi.discord.interactables.command import Command
 from shinshi.discord.processors.command_processor import CommandProcessor
+from shinshi.discord.workflows.constants import INTERACTABLE_WORKFLOW_INSTANCE
 
 
 class SlashCommandProcessor(CommandProcessor):
@@ -52,22 +53,22 @@ class SlashCommandProcessor(CommandProcessor):
             command: Command = self.workflow_manager.get_command(
                 group_name, subgroup_name, command_name
             )
-        except KeyError:
-            raise Exception(
+        except KeyError as exception:
+            raise ValueError(
                 (
                     f"Cannot access command with name"
                     f"{group_name}"
                     f"{subgroup_name}"
                     f"{command_name}"
                 ).replace("None ", "")
-            )
+            ) from exception
         try:
             context = await self.create_interaction_context(interaction, command)
             if command.is_defer:
                 await context.defer()
             try:
                 await command.callback(
-                    command._workflow,
+                    getattr(command, INTERACTABLE_WORKFLOW_INSTANCE),
                     context,
                     **arguments,
                 )

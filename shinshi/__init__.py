@@ -48,5 +48,5 @@ __banner_extras__: dict[str, str] = {
 RESOURCES_DIR = Path.cwd() / "resources"
 IMAGES_DIR = RESOURCES_DIR / "images"
 
-with open(RESOURCES_DIR / "logging.json") as stream:
+with open(RESOURCES_DIR / "logging.json", encoding="UTF-8") as stream:
     dictConfig(orjson.loads(stream.read()))

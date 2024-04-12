@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-import abc
-
 from shinshi.discord.interaction.interaction_context import InteractionContext
 
 
@@ -24,6 +22,5 @@ class InteractionException(Exception):
         self.context = context
         super().__init__(*args)
 
-    @abc.abstractmethod
     async def callback(self) -> None:
-        ...
+        raise NotImplementedError

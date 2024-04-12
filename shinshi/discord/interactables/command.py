@@ -63,6 +63,6 @@ class Command(Interactable):
 
     def autocomplete(self, argument: str) -> None:
         def decorator(func: Callable[..., Awaitable[Any]]) -> None:
-            self.autocomplete[argument] = func
+            self._autocomplete[argument] = func
 
         return decorator
