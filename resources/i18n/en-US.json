@@ -120,25 +120,39 @@
                         }
                     }
                 }
-            }
-        },
-        "say": {
-            "description": "Send a message via webhook",
-            "arguments": {
-                "content": {
-                    "description": "The content of the message"
+            },
+            "icon": {
+                "description": "Guild's icon",
+                "embed": {
+                    "author": {
+                        "name": "Icon"
+                    }
                 },
-                "attachment": {
-                    "description": "Attachment"
-                },
-                "channel": {
-                    "description": "The channel to send the message to"
+                "exceptions": {
+                    "no_icon_exception": "Current guild don't have icon!"
                 }
             },
-            "exceptions": {
-                "insufficient_arguments": "Insufficient arguments. `content` or `attachment` must be provided.",
-                "webhook_creation_exception": "Unable to create webhook. Possible reasons...\n- Shinshi don't permissions to create a webhook.\n- Internal Discord API error.",
-                "webhook_execution_exception": "Failed to send the message using the webhook.\nPossibly, the webhook was not created or is inaccessible."
+            "splash": {
+                "description": "Guild's splash",
+                "embed": {
+                    "author": {
+                        "name": "Splash"
+                    }
+                },
+                "exceptions": {
+                    "no_splash_exception": "Current guild don't have splash!"
+                }
+            },
+            "banner": {
+                "description": "Guild's banner",
+                "embed": {
+                    "author": {
+                        "name": "Banner"
+                    }
+                },
+                "exceptions": {
+                    "no_banner_exception": "Current guild don't have banner!"
+                }
             }
         },
         "invite": {

@@ -28,3 +28,25 @@ class NoGuildIconException(InteractionException):
             user_mentions=False,
             flags=MessageFlag.EPHEMERAL,
         )
+
+
+class NoGuildSplashException(InteractionException):
+    async def callback(self) -> None:
+        return await self.context.create_response(
+            content=self.context.i18n.get(
+                "commands.guild.splash.exceptions.no_splash_exception",
+            ),
+            user_mentions=False,
+            flags=MessageFlag.EPHEMERAL,
+        )
+
+
+class NoGuildBannerException(InteractionException):
+    async def callback(self) -> None:
+        return await self.context.create_response(
+            content=self.context.i18n.get(
+                "commands.guild.banner.exceptions.no_banner_exception",
+            ),
+            user_mentions=False,
+            flags=MessageFlag.EPHEMERAL,
+        )

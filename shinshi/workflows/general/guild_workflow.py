@@ -24,7 +24,11 @@ from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
 from shinshi.utils.string import format_datetime
-from shinshi.workflows.general.exceptions.guild_exceptions import NoGuildIconException
+from shinshi.workflows.general.exceptions.guild_exceptions import (
+    NoGuildBannerException,
+    NoGuildIconException,
+    NoGuildSplashException,
+)
 
 
 class GuildWorkflow(Workflow):
@@ -105,3 +109,37 @@ class GuildWorkflow(Workflow):
                 )
             ),
         )
+
+    @command(
+        group=GROUP,
+        name="splash",
+        description=Translatable("commands.guild.splash.description"),
+    )
+    async def guild_splash(self, context: InteractionContext) -> None:
+        guild, embed = await self.__get_guild(context)
+        if not guild.splash_url:
+            raise NoGuildSplashException(context)
+        embed.set_author(
+            name=context.i18n.get("commands.guild.splash.embed.author.name"),
+            url=guild.splash_url.url,
+            icon=guild.icon_url,
+        )
+        embed.set_image(guild.splash_url)
+        return await context.create_response(embed=embed)
+
+    @command(
+        group=GROUP,
+        name="banner",
+        description=Translatable("commands.guild.banner.description"),
+    )
+    async def guild_banner(self, context: InteractionContext) -> None:
+        guild, embed = await self.__get_guild(context)
+        if not guild.banner_url:
+            raise NoGuildBannerException(context)
+        embed.set_author(
+            name=context.i18n.get("commands.guild.banner.embed.author.name"),
+            url=guild.banner_url.url,
+            icon=guild.icon_url,
+        )
+        embed.set_image(guild.banner_url)
+        return await context.create_response(embed=embed)
