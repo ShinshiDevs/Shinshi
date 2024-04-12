@@ -14,5 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .user_no_avatar_exception import UserAvatarAvailabilityException  # noqa: F401
-from .user_no_banner_exception import UserBannerAvailabilityException  # noqa: F401
+from .user_exceptions import (  # noqa: F401
+    UserAvatarAvailabilityException,
+    UserBannerAvailabilityException,
+)

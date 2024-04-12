@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from .guild_workflow import GuildWorkflow  # noqa: F401
 from .info_workflow import InfoWorkflow  # noqa: F401
 from .invite_workflow import InviteWorkflow  # noqa: F401
 from .support_workflow import SupportWorkflow  # noqa: F401

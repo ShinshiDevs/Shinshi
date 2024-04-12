@@ -4,7 +4,7 @@
 [Python]: https://python.org/
 
 <a href="https://github.com/ShinshiDevs/Shinshi">
-    <img src="./resources/shinshi_character_png.png" align=right width="250" height="375">
+    <img src="./resources/images/shinshi_character_png.png" align=right width="250" height="375">
 </a>
 
 # [Shinshi]

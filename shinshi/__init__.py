@@ -28,7 +28,7 @@ __all__: Sequence[str] = (
     "__support_url__",
     "__banner_extras__",
     "RESOURCES_DIR",
-    "ICONS_DIR",
+    "IMAGES_DIR",
 )
 
 __license__: Final[str] = "GPL-3.0"
@@ -46,7 +46,7 @@ __banner_extras__: Dict[str, Any] = {
 }
 
 RESOURCES_DIR = Path.cwd() / "resources"
-ICONS_DIR = RESOURCES_DIR / "icons"
+IMAGES_DIR = RESOURCES_DIR / "images"
 
 with open(RESOURCES_DIR / "logging.json") as stream:
     dictConfig(orjson.loads(stream.read()))

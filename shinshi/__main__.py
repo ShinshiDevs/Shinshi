@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+import logging
 import os
 import warnings
 
@@ -22,6 +23,9 @@ import orjson
 import sentry_sdk
 from hikari.events import InteractionCreateEvent, StartedEvent, StartingEvent
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
+from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from shinshi import RESOURCES_DIR
 from shinshi.discord.bot import Bot
@@ -29,13 +33,6 @@ from shinshi.discord.interaction.interaction_processor import InteractionProcess
 from shinshi.discord.workflows import WorkflowManager
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import general
-
-sentry_sdk.init(
-    dsn=os.environ.get("SHINSHI_SENTRY_DSN"),
-    traces_sample_rate=1.0,
-    profiles_sample_rate=1.0,
-    keep_alive=True,
-)
 
 try:
     import uvloop
@@ -48,14 +45,33 @@ except ImportError:
     )
     asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 
+sentry_sdk.init(
+    dsn=os.environ.get("SHINSHI_SENTRY_DSN"),
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+    keep_alive=True,
+    enable_tracing=True,
+    integrations=[
+        AioHttpIntegration(),
+        AsyncioIntegration(),
+        LoggingIntegration(
+            level=logging.WARNING,
+            event_level=logging.WARNING,
+        ),
+    ],
+)
+
 i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
 bot = Bot(
     token=os.environ.get("SHINSHI_DISCORD_TOKEN"),
     cache_settings=CacheSettings(
-        components=CacheComponents.ME
-        | CacheComponents.GUILDS
+        components=CacheComponents.NONE
+        | CacheComponents.ME
         | CacheComponents.MEMBERS
-        | CacheComponents.ROLES,
+        | CacheComponents.GUILDS
+        | CacheComponents.GUILD_CHANNELS
+        | CacheComponents.ROLES
+        | CacheComponents.EMOJIS,
         max_messages=100,
         max_dm_channel_ids=0,
     ),
@@ -67,6 +83,7 @@ workflow_manager = WorkflowManager(
     bot,
     i18n_provider,
     (
+        general.GuildWorkflow,
         general.InfoWorkflow,
         general.InviteWorkflow,
         general.SupportWorkflow,

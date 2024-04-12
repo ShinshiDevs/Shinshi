@@ -54,7 +54,12 @@ class SlashCommandProcessor(CommandProcessor):
             )
         except KeyError:
             raise Exception(
-                f"Cannot access command with name {group_name} {subgroup_name} {command_name}"
+                (
+                    f"Cannot access command with name"
+                    f"{group_name}"
+                    f"{subgroup_name}"
+                    f"{command_name}"
+                ).replace("None ", "")
             )
         try:
             context = await self.create_interaction_context(interaction, command)
@@ -70,9 +75,7 @@ class SlashCommandProcessor(CommandProcessor):
                 await self.proceed_exception(context, exception)
         except Exception as exception:
             self.__logger.error(
-                "error occurred while executing command %s %s %s.",
-                group_name,
-                subgroup_name,
-                command_name,
+                "error occurred while executing command %s.",
+                command.qualname,
                 exc_info=exception,
             )

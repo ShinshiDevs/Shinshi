@@ -25,7 +25,7 @@ from hikari.impl import (
 from hikari.interactions import InteractionMember
 from hikari.users import User, UserFlag
 
-from shinshi import ICONS_DIR
+from shinshi import IMAGES_DIR
 from shinshi.discord.interactables.group import Group
 from shinshi.discord.interactables.options import Option
 from shinshi.discord.interaction.interaction_context import InteractionContext
@@ -57,7 +57,7 @@ class UserWorkflow(Workflow):
             colour = next(
                 (role.colour for role in target.get_roles() if role.colour), None
             )
-        title: str = (
+        title = (
             target.display_name
             if hasattr(target, "display_name")
             else target.global_name or target.username
@@ -86,12 +86,12 @@ class UserWorkflow(Workflow):
             if not target.is_bot
             else f"bot{"_verified" if UserFlag.VERIFIED_BOT in target.flags else ""}"
         ) + ".webp"
-        embed = (
+        embed: Embed = (
             self.__get_base_embed(target)
             .set_thumbnail(target.display_avatar_url)
             .set_author(
                 name=context.i18n.get("commands.user.info.embed.author.name"),
-                icon=ICONS_DIR / icon_name,
+                icon=IMAGES_DIR / icon_name,
             )
             .set_footer(text=f"ID: {target.id}")
             .add_field(
@@ -99,8 +99,8 @@ class UserWorkflow(Workflow):
                     "commands.user.info.embed.fields.created_at.name"
                 ),
                 value=(
-                    f"{format_datetime(target.created_at, 'R')}\n"
-                    f"{format_datetime(target.created_at, 'D')}"
+                    f"{format_datetime(target.created_at, "R")}\n"
+                    f"{format_datetime(target.created_at, "D")}"
                 ),
                 inline=True,
             )
@@ -112,8 +112,8 @@ class UserWorkflow(Workflow):
                     {"guild": target.get_guild().name},
                 ),
                 value=(
-                    f"{format_datetime(target.joined_at, 'R')}\n"
-                    f"{format_datetime(target.joined_at, 'D')}"
+                    f"{format_datetime(target.joined_at, "R")}\n"
+                    f"{format_datetime(target.joined_at, "D")}"
                 ),
                 inline=True,
             )
@@ -171,7 +171,7 @@ class UserWorkflow(Workflow):
         target: User | InteractionMember = target or context.interaction.member
         if target.avatar_url is None:
             raise UserAvatarAvailabilityException(context, target)
-        embed = (
+        embed: Embed = (
             self.__get_base_embed(target)
             .set_image(target.avatar_url)
             .set_author(name=context.i18n.get("commands.user.avatar.embed.author.name"))

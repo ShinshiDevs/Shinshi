@@ -89,6 +89,39 @@
                 }
             }
         },
+        "guild": {
+            "info": {
+                "description": "Информация о текущем сервере",
+                "embed": {
+                    "author": {
+                        "name": "Сервер"
+                    },
+                    "fields": {
+                        "owner": {
+                            "name": "Владелец"
+                        },
+                        "created_at": {
+                            "name": "Создан"
+                        },
+                        "you_joined_at": {
+                            "name": "Вы зашли"
+                        },
+                        "members": {
+                            "name": "Участники"
+                        },
+                        "channels": {
+                            "name": "Каналы"
+                        },
+                        "roles": {
+                            "name": "Роли"
+                        },
+                        "emojis": {
+                            "name": "Эмодзи"
+                        }
+                    }
+                }
+            }
+        },
         "say": {
             "description": "Отправить сообщение веб-хуком",
             "arguments": {

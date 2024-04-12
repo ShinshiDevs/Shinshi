@@ -21,6 +21,24 @@ from shinshi.discord.exceptions import InteractionException
 from shinshi.discord.interaction.interaction_context import InteractionContext
 
 
+class UserAvatarAvailabilityException(InteractionException):
+    def __init__(self, context: InteractionContext, user: User, *args) -> None:
+        self.user = user
+        super().__init__(context, *args)
+
+    async def callback(self) -> None:
+        return await self.context.create_response(
+            content=self.context.i18n.get(
+                "commands.user.avatar.exceptions.no_avatar_exception",
+                {
+                    "user": self.user.mention,
+                },
+            ),
+            user_mentions=False,
+            flags=MessageFlag.EPHEMERAL,
+        )
+
+
 class UserBannerAvailabilityException(InteractionException):
     def __init__(self, context: InteractionContext, user: User, *args) -> None:
         self.user = user

@@ -89,6 +89,39 @@
                 }
             }
         },
+        "guild": {
+            "info": {
+                "description": "Information about current guild",
+                "embed": {
+                    "author": {
+                        "name": "Guild"
+                    },
+                    "fields": {
+                        "owner": {
+                            "name": "Owner"
+                        },
+                        "created_at": {
+                            "name": "Created at"
+                        },
+                        "you_joined_at": {
+                            "name": "You joined at"
+                        },
+                        "members": {
+                            "name": "Members"
+                        },
+                        "channels": {
+                            "name": "Channels"
+                        },
+                        "roles": {
+                            "name": "Roles"
+                        },
+                        "emojis": {
+                            "name": "Emojis"
+                        }
+                    }
+                }
+            }
+        },
         "say": {
             "description": "Send a message via webhook",
             "arguments": {

@@ -21,7 +21,7 @@ from hikari.impl import (
 )
 
 from shinshi import (
-    ICONS_DIR,
+    IMAGES_DIR,
     __copyright__,
     __github_url__,
     __license__,
@@ -49,7 +49,7 @@ class InfoWorkflow(Workflow):
             .set_thumbnail(context.bot.me.avatar_url)
             .set_author(
                 name=context.i18n.get("commands.info.embed.author.name"),
-                icon=ICONS_DIR / "information.webp",
+                icon=IMAGES_DIR / "information.webp",
             )
             .set_footer(text=f"{__copyright__} ({__license__})")
             .add_field(
