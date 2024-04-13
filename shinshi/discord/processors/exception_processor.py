@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari.messages import MessageFlag
 from sentry_sdk import capture_exception, push_scope
 
 from shinshi.discord.exceptions.interaction_exception import InteractionException
@@ -36,7 +35,6 @@ class ExceptionProcessor:
             scope.set_tag("user ID", context.interaction.user.id)
             scope.level = "warning"
             capture_exception(exception)
-        return await context.create_response(
-            content=context.i18n.get("exceptions.unknown_exception"),
-            flags=MessageFlag.EPHEMERAL,
+        return await context.send_error(
+            context.i18n.get("exceptions.unknown_exception")
         )

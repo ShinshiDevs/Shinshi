@@ -3,7 +3,8 @@
         "name": "English"
     },
     "exceptions": {
-        "unknown_exception": "An unexpected exception occurred and I've already reported this to the developers. Sorry for the inconvenience."
+        "unknown_exception": "An unexpected exception occurred and I've already reported this to the developers. Sorry for the inconvenience.",
+        "cooldown_error": "You're in ratelimit, retry again {retry_after}"
     },
     "buttons": {
         "support": {

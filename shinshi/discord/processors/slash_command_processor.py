@@ -21,6 +21,7 @@ from hikari.commands import CommandOption, OptionType
 from hikari.interactions import CommandInteraction
 
 from shinshi.discord.interactables.command import Command
+from shinshi.discord.interactables.hooks import HookResult
 from shinshi.discord.processors.command_processor import CommandProcessor
 from shinshi.discord.workflows.constants import INTERACTABLE_WORKFLOW_INSTANCE
 
@@ -67,6 +68,10 @@ class SlashCommandProcessor(CommandProcessor):
             if command.is_defer:
                 await context.defer()
             try:
+                for hook in command.hooks:
+                    result: HookResult = await hook(context)
+                    if result.stop:
+                        return
                 await command.callback(
                     getattr(command, INTERACTABLE_WORKFLOW_INSTANCE),
                     context,

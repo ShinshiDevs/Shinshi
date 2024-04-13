@@ -14,39 +14,31 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari.messages import MessageFlag
-
 from shinshi.discord.exceptions import InteractionException
 
 
 class NoGuildIconException(InteractionException):
     async def callback(self) -> None:
-        return await self.context.create_response(
-            content=self.context.i18n.get(
+        return await self.context.send_warning(
+            self.context.i18n.get(
                 "commands.guild.icon.exceptions.no_icon_exception",
-            ),
-            user_mentions=False,
-            flags=MessageFlag.EPHEMERAL,
+            )
         )
 
 
 class NoGuildSplashException(InteractionException):
     async def callback(self) -> None:
-        return await self.context.create_response(
-            content=self.context.i18n.get(
+        return await self.context.send_warning(
+            self.context.i18n.get(
                 "commands.guild.splash.exceptions.no_splash_exception",
-            ),
-            user_mentions=False,
-            flags=MessageFlag.EPHEMERAL,
+            )
         )
 
 
 class NoGuildBannerException(InteractionException):
     async def callback(self) -> None:
-        return await self.context.create_response(
-            content=self.context.i18n.get(
-                "commands.guild.banner.exceptions.no_banner_exception",
-            ),
-            user_mentions=False,
-            flags=MessageFlag.EPHEMERAL,
+        return await self.context.send_warning(
+            self.context.i18n.get(
+                "commands.guild.splash.exceptions.no_splash_exception",
+            )
         )

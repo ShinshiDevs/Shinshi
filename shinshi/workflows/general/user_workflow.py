@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from datetime import timedelta
+
 from hikari import Role
 from hikari.commands import OptionType
 from hikari.embeds import Embed
@@ -25,6 +27,7 @@ from hikari.interactions import InteractionMember
 from hikari.users import User, UserFlag
 
 from shinshi import IMAGES_DIR
+from shinshi.discord.ext.hooks.cooldown.hook import cooldown
 from shinshi.discord.interactables.group import Group
 from shinshi.discord.interactables.options import Option
 from shinshi.discord.interaction.interaction_context import InteractionContext
@@ -180,13 +183,14 @@ class UserWorkflow(Workflow):
         name="banner",
         description=Translatable("commands.user.banner.description"),
         options=OPTIONS,
+        hooks=[cooldown(period=timedelta(seconds=5))],
     )
     async def user_banner(
         self,
         context: InteractionContext,
         target: TargetT = None,
     ) -> None:
-        target = target or context.interaction.user = await target.fetch_self()
+        target = await context.bot.rest.fetch_user(target or context.interaction.user)
         if target.banner_url is None:
             raise NoUserBannerException(context, target)
         return (

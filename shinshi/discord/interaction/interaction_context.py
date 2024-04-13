@@ -33,6 +33,9 @@ from shinshi.discord.interactables.interactable import Interactable
 from shinshi.i18n import I18nGroup
 
 type InteractionT = CommandInteraction | ComponentInteraction
+# TODO: Remove this, emojis.json must be used
+ERROR_EMOJI: tuple[str, int] = "error", 1228757404666171402
+WARNING_EMOJI: tuple[str, int] = "warning", 1228757406029189230
 
 
 @dataclass(kw_only=True)
@@ -132,4 +135,16 @@ class InteractionContext:
     async def delete_response(self) -> None:
         await self.bot.rest.delete_interaction_response(
             application=self.interaction.application_id, token=self.interaction.token
+        )
+
+    async def send_error(self, content: UndefinedOr[Any] = UNDEFINED) -> None:
+        return await self.create_response(
+            content=" ".join((f"<:{ERROR_EMOJI[0]}:{ERROR_EMOJI[1]}>", content)),
+            flags=MessageFlag.EPHEMERAL,
+        )
+
+    async def send_warning(self, content: UndefinedOr[Any] = UNDEFINED) -> None:
+        return await self.create_response(
+            content=" ".join((f"<:{WARNING_EMOJI[0]}:{WARNING_EMOJI[1]}>", content)),
+            flags=MessageFlag.EPHEMERAL,
         )
