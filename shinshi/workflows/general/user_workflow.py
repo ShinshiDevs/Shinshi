@@ -197,7 +197,7 @@ class UserWorkflow(Workflow):
         target: TargetT = None,
     ) -> None:
         target, embed = self.__get_target(context, target)
-        user: User = target.fetch_self()
+        user: User = await target.fetch_self()
         if user.banner_url is None:
             raise NoUserBannerException(context, user)
         return (
