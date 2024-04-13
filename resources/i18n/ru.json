@@ -8,6 +8,9 @@
     "buttons": {
         "support": {
             "label": "Сервер поддержки"
+        },
+        "open": {
+            "label": "Открыть"
         }
     },
     "commands": {
@@ -22,12 +25,15 @@
                     "information": {
                         "name": "Информация",
                         "value": [
-                            "**Гильдии:** {guilds}",
+                            "**Серверов:** {guilds}",
                             "**Задержка:** {latency}"
                         ]
                     }
                 }
             }
+        },
+        "support": {
+            "description": "Сервер поддержки"
         },
         "user": {
             "arguments": {
@@ -66,12 +72,8 @@
                 "description": "Аватар пользователя",
                 "embed": {
                     "author": {
-                        "name": "Аватар"
+                        "name": "Аватар {user}"
                     }
-                },
-                "buttons": {
-                    "global": "Глобальная",
-                    "guild": "Серверная"
                 },
                 "exceptions": {
                     "no_avatar_exception": "У {user} нет аватарки"
@@ -81,7 +83,7 @@
                 "description": "Баннер пользователя",
                 "embed": {
                     "author": {
-                        "name": "Баннер"
+                        "name": "Баннер {user}"
                     }
                 },
                 "exceptions": {
@@ -125,7 +127,7 @@
                 "description": "Иконка сервера",
                 "embed": {
                     "author": {
-                        "name": "Иконка"
+                        "name": "Иконка {guild}"
                     }
                 },
                 "exceptions": {
@@ -136,7 +138,7 @@
                 "description": "Фон приглашения сервера",
                 "embed": {
                     "author": {
-                        "name": "Фон приглашения"
+                        "name": "Фон приглашения {guild}"
                     }
                 },
                 "exceptions": {
@@ -147,7 +149,7 @@
                 "description": "Баннер сервера",
                 "embed": {
                     "author": {
-                        "name": "Баннер"
+                        "name": "Баннер {guild}"
                     }
                 },
                 "exceptions": {

@@ -8,6 +8,9 @@
     "buttons": {
         "support": {
             "label": "Support"
+        },
+        "open": {
+            "label": "Open"
         }
     },
     "commands": {
@@ -28,6 +31,9 @@
                     }
                 }
             }
+        },
+        "support": {
+            "description": "Support"
         },
         "user": {
             "arguments": {
@@ -56,22 +62,14 @@
                             }
                         }
                     }
-                },
-                "buttons": {
-                    "avatar": "Avatar",
-                    "banner": "Banner"
                 }
             },
             "avatar": {
                 "description": "User's avatar",
                 "embed": {
                     "author": {
-                        "name": "Avatar"
+                        "name": "{user} avatar"
                     }
-                },
-                "buttons": {
-                    "global": "Global",
-                    "guild": "Guild"
                 },
                 "exceptions": {
                     "no_avatar_exception": "{user} don't have avatar"
@@ -81,7 +79,7 @@
                 "description": "User's banner",
                 "embed": {
                     "author": {
-                        "name": "Banner"
+                        "name": "{user} banner"
                     }
                 },
                 "exceptions": {
@@ -125,7 +123,7 @@
                 "description": "Guild's icon",
                 "embed": {
                     "author": {
-                        "name": "Icon"
+                        "name": "{guild} icon"
                     }
                 },
                 "exceptions": {
@@ -136,7 +134,7 @@
                 "description": "Guild's splash",
                 "embed": {
                     "author": {
-                        "name": "Splash"
+                        "name": "{guild} splash"
                     }
                 },
                 "exceptions": {
@@ -147,7 +145,7 @@
                 "description": "Guild's banner",
                 "embed": {
                     "author": {
-                        "name": "Banner"
+                        "name": "{guild} banner"
                     }
                 },
                 "exceptions": {

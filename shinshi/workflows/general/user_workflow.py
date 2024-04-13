@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from hikari import Role
 from hikari.commands import OptionType
 from hikari.embeds import Embed
 from hikari.impl import (
@@ -50,28 +51,6 @@ class UserWorkflow(Workflow):
         ),
     )
 
-    @staticmethod
-    def __get_target(
-        context: InteractionContext, target: TargetT
-    ) -> tuple[TargetT, Embed]:
-        target = target or context.interaction.member
-        colour: int | None = None
-        if isinstance(target, InteractionMember):
-            colour = next(
-                (role.colour for role in target.get_roles() if role.colour), None
-            )
-        title: str = (
-            target.display_name
-            if hasattr(target, "display_name")
-            else target.global_name or target.username
-        )
-        return target, Embed(
-            title=title,
-            url=f"https://discordapp.com/users/{target.id}",
-            description=f"@{target.username}" if title != target.username else None,
-            colour=colour,
-        )
-
     @command(
         group=GROUP,
         name="info",
@@ -83,27 +62,39 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: TargetT = None,
     ) -> None:
-        target, embed = self.__get_target(context, target)
+        target = target or context.interaction.member
         icon_name: str = (
             "user"
             if not target.is_bot
             else f"bot{"_verified" if UserFlag.VERIFIED_BOT in target.flags else ""}"
         ) + ".webp"
-        embed.set_thumbnail(target.display_avatar_url)
-        embed.set_author(
-            name=context.i18n.get("commands.user.info.embed.author.name"),
-            icon=IMAGES_DIR / icon_name,
-        )
-        embed.set_footer(text=f"ID: {target.id}")
-        embed.add_field(
-            name=context.i18n.get("commands.user.info.embed.fields.created_at.name"),
-            value=(
-                f"{format_datetime(target.created_at, "R")}\n"
-                f"{format_datetime(target.created_at, "D")}"
-            ),
-            inline=True,
+        embed = (
+            Embed(
+                title=target.global_name or target.username,
+                url=f"https://discordapp.com/users/{target.id}",
+                description=f"@{target.username}" if not target.global_name else None,
+            )
+            .set_thumbnail(target.display_avatar_url)
+            .set_author(
+                name=context.i18n.get("commands.user.info.embed.author.name"),
+                icon=IMAGES_DIR / icon_name,
+            )
+            .set_footer(text=f"ID: {target.id}")
+            .add_field(
+                name=context.i18n.get(
+                    "commands.user.info.embed.fields.created_at.name"
+                ),
+                value=(
+                    f"{format_datetime(target.created_at, "R")}\n"
+                    f"{format_datetime(target.created_at, "D")}"
+                ),
+                inline=True,
+            )
         )
         if isinstance(target, InteractionMember):
+            roles: list[Role] = sorted(
+                target.get_roles(), key=lambda role: role.position, reverse=True
+            )
             embed.add_field(
                 name=context.i18n.get(
                     "commands.user.info.embed.fields.joined_at.name",
@@ -115,22 +106,11 @@ class UserWorkflow(Workflow):
                 ),
                 inline=True,
             )
-            roles = tuple[str](
-                role.mention
-                for role in sorted(
-                    target.get_roles(), key=lambda role: role.position, reverse=True
-                )
-                if role.id != target.guild_id
-            )
-            if not roles:
-                embed.add_field(
-                    name=context.i18n.get("commands.user.info.embed.fields.roles.name"),
-                    value=context.i18n.get(
-                        "commands.user.info.embed.fields.roles.value.no_roles"
-                    ),
-                    inline=False,
-                )
-            else:
+            embed.title = target.display_name
+            embed.colour = next((role.colour for role in roles if role.colour), None)
+            if roles := tuple[str](
+                role.mention for role in roles if role.id != target.guild_id
+            ):
                 if len(roles) > 5:
                     embed.add_field(
                         name=context.i18n.get(
@@ -143,7 +123,6 @@ class UserWorkflow(Workflow):
                                 "count": int(len(roles) - 5),
                             },
                         ),
-                        inline=False,
                     )
                 else:
                     embed.add_field(
@@ -151,8 +130,14 @@ class UserWorkflow(Workflow):
                             "commands.user.info.embed.fields.roles.name"
                         ),
                         value=", ".join(roles),
-                        inline=False,
                     )
+            else:
+                embed.add_field(
+                    name=context.i18n.get("commands.user.info.embed.fields.roles.name"),
+                    value=context.i18n.get(
+                        "commands.user.info.embed.fields.roles.value.no_roles"
+                    ),
+                )
         return await context.create_response(embed=embed)
 
     @command(
@@ -166,15 +151,20 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: TargetT = None,
     ) -> None:
-        target, embed = self.__get_target(context, target)
+        target = target or context.interaction.member
         if target.avatar_url is None:
             raise NoUserAvatarException(context, target)
-        embed.set_image(target.avatar_url)
-        embed.set_author(
-            name=context.i18n.get("commands.user.avatar.embed.author.name")
-        )
         return await context.create_response(
-            embed=embed,
+            embed=(
+                Embed()
+                .set_image(target.avatar_url)
+                .set_author(
+                    name=context.i18n.get(
+                        "commands.user.avatar.embed.author.name",
+                        {"user": target.global_name or target.username},
+                    )
+                )
+            ),
             component=MessageActionRowBuilder(
                 components=(
                     LinkButtonBuilder(
@@ -196,16 +186,29 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: TargetT = None,
     ) -> None:
-        target, embed = self.__get_target(context, target)
-        user: User = await target.fetch_self()
-        if user.banner_url is None:
-            raise NoUserBannerException(context, user)
+        target = target or context.interaction.user = await target.fetch_self()
+        if target.banner_url is None:
+            raise NoUserBannerException(context, target)
         return (
             await context.create_response(
-                embed=embed.set_image(user.banner_url).set_author(
-                    name=context.i18n.get("commands.user.banner.embed.author.name"),
-                    icon=user.display_avatar_url,
-                    url=user.banner_url.url,
-                )
+                embed=(
+                    Embed()
+                    .set_image(target.banner_url)
+                    .set_author(
+                        name=context.i18n.get(
+                            "commands.user.banner.embed.author.name",
+                            {"user": target.global_name or target.username},
+                        ),
+                        icon=target.display_avatar_url,
+                    )
+                ),
+                component=MessageActionRowBuilder(
+                    components=[
+                        LinkButtonBuilder(
+                            label=context.i18n.get("buttons.open.label"),
+                            url=target.banner_url.url,
+                        )
+                    ]
+                ),
             ),
         )

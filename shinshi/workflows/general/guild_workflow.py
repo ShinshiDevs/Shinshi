@@ -93,13 +93,20 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.icon.description"),
     )
     async def guild_icon(self, context: InteractionContext) -> None:
-        guild, embed = await self.__get_guild(context)
-        if not guild.icon_url:
+        guild: GatewayGuild = context.interaction.get_guild()
+        if guild.icon_url is None:
             raise NoGuildIconException(context)
-        embed.set_author(name=context.i18n.get("commands.guild.icon.embed.author.name"))
-        embed.set_image(guild.icon_url)
         return await context.create_response(
-            embed=embed,
+            embed=(
+                Embed()
+                .set_image(guild.icon_url)
+                .set_author(
+                    name=context.i18n.get(
+                        "commands.guild.icon.embed.author.name",
+                        {"guild": guild.name},
+                    )
+                )
+            ),
             component=MessageActionRowBuilder(
                 components=(
                     LinkButtonBuilder(
@@ -116,16 +123,28 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.splash.description"),
     )
     async def guild_splash(self, context: InteractionContext) -> None:
-        guild, embed = await self.__get_guild(context)
+        guild: GatewayGuild = context.interaction.get_guild()
         if not guild.splash_url:
             raise NoGuildSplashException(context)
-        embed.set_author(
-            name=context.i18n.get("commands.guild.splash.embed.author.name"),
-            url=guild.splash_url.url,
-            icon=guild.icon_url,
+        return await context.create_response(
+            embed=(
+                Embed()
+                .set_image(guild.splash_url)
+                .set_author(
+                    name=context.i18n.get(
+                        "commands.guild.splash.embed.author.name", {"guild": guild.name}
+                    )
+                )
+            ),
+            component=MessageActionRowBuilder(
+                components=[
+                    LinkButtonBuilder(
+                        label=context.i18n.get("buttons.open.label"),
+                        url=guild.splash_url.url,
+                    )
+                ]
+            ),
         )
-        embed.set_image(guild.splash_url)
-        return await context.create_response(embed=embed)
 
     @command(
         group=GROUP,
@@ -133,13 +152,25 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.banner.description"),
     )
     async def guild_banner(self, context: InteractionContext) -> None:
-        guild, embed = await self.__get_guild(context)
+        guild: GatewayGuild = context.interaction.get_guild()
         if not guild.banner_url:
             raise NoGuildBannerException(context)
-        embed.set_author(
-            name=context.i18n.get("commands.guild.banner.embed.author.name"),
-            url=guild.banner_url.url,
-            icon=guild.icon_url,
+        return await context.create_response(
+            embed=(
+                Embed()
+                .set_image(guild.banner_url)
+                .set_author(
+                    name=context.i18n.get(
+                        "commands.guild.banner.embed.author.name", {"guild": guild.name}
+                    )
+                )
+            ),
+            component=MessageActionRowBuilder(
+                components=[
+                    LinkButtonBuilder(
+                        label=context.i18n.get("buttons.open.label"),
+                        url=guild.banner_url.url,
+                    )
+                ]
+            ),
         )
-        embed.set_image(guild.banner_url)
-        return await context.create_response(embed=embed)
