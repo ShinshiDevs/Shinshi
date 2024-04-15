@@ -60,7 +60,19 @@ bot.event_manager.subscribe(
 )
 
 
-def main():
+@bot.listen()
+async def on_starting(_: StartingEvent) -> None:
+    await i18n_provider.start()
+    await workflow_manager.build_workflows()
+
+
+@bot.listen()
+async def on_started(_: StartedEvent) -> None:
+    await bot.fetch_application()
+    await workflow_manager.sync_slash_commands()
+
+
+def main() -> None:
     bot.print_banner("shinshi", True, False, __banner_extras__)
     sentry_sdk.init(
         dsn=getenv("SHINSHI_SENTRY_DSN"),
@@ -68,17 +80,6 @@ def main():
         profiles_sample_rate=1.0,
         keep_alive=True,
     )
-
-    @bot.listen()
-    async def starting(_: StartingEvent):
-        await i18n_provider.start()
-        await workflow_manager.build_workflows()
-
-    @bot.listen()
-    async def started(_: StartedEvent):
-        await bot.fetch_application()
-        await workflow_manager.sync_slash_commands()
-
     bot.run()
 
 
