@@ -99,3 +99,8 @@ $RECYCLE.BIN/
 
 ### PyCharm
 .idea
+
+
+
+### Visual Studio Code
+.vscode
