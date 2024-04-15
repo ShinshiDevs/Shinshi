@@ -41,22 +41,21 @@ class WorkflowManager:
         self.slash_command_builders: list[SlashCommandBuilder] = []
 
     async def build_workflows(self) -> None:
+        groups: list[Group] = []
         for workflow_cls in self.workflows:
             workflow: Workflow = workflow_cls()
             await workflow.start()
 
             for command in workflow.get_commands():
                 if command.group:
-                    self.commands[command.group.name] = command.group
+                    if command.group in groups:
+                        continue
+                    groups.append(command.group)
                 else:
-                    self.commands[command.name] = command
                     self.slash_command_builders.append(
                         self.get_command_builder(command)
                     )
-
-        for group in [
-            group for group in self.commands.values() if isinstance(group, Group)
-        ]:
+        for group in groups:
             self.slash_command_builders.append(self.get_group_builder(group))
 
     async def sync_slash_commands(self) -> None:

@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from shinshi.discord.exceptions import InteractionException
+from shinshi.discord.interaction import InteractionException
 
 
 class NoGuildIconException(InteractionException):

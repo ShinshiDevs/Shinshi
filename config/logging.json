@@ -1,10 +1,7 @@
 {
     "version": 1,
-    "disable_existing_loggers": true,
+    "disable_existing_loggers": false,
     "formatters": {
-        "standard": {
-            "format": "%(asctime)s %(levelname)-8s %(name)s %(message)s"
-        },
         "colored": {
             "()": "colorlog.ColoredFormatter",
             "format": "%(thin)s%(asctime)s%(reset)s %(bold)s%(log_color)s%(levelname)-8s%(reset)s %(light_cyan)s%(name)s%(reset)s %(message)s",
@@ -20,11 +17,6 @@
         }
     },
     "handlers": {
-        "file": {
-            "class": "logging.FileHandler",
-            "formatter": "standard",
-            "filename": "logs/last.log"
-        },
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "colored",
@@ -32,13 +24,6 @@
         }
     },
     "root": {
-        "handlers": [
-            "file",
-            "console"
-        ],
-        "level": "DEBUG"
-    },
-    "hikari.rest": {
         "handlers": [
             "console"
         ],

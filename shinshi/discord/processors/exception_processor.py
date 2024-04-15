@@ -16,9 +16,8 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from sentry_sdk import capture_exception, push_scope
 
-from shinshi.discord.exceptions.interaction_exception import InteractionException
 from shinshi.discord.interactables.command import Command
-from shinshi.discord.interaction.interaction_context import InteractionContext
+from shinshi.discord.interaction import InteractionContext, InteractionException
 
 
 class ExceptionProcessor:

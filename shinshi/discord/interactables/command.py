@@ -18,7 +18,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from hikari import Permissions
+from hikari.permissions import Permissions
 
 from shinshi.discord.interactables.group import Group, SubGroup
 from shinshi.discord.interactables.hooks.typing import HookT

@@ -15,64 +15,34 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
-import os
-import warnings
+from logging.config import dictConfig
+from os import getenv
 
 import orjson
 import sentry_sdk
 from hikari.events import InteractionCreateEvent, StartedEvent, StartingEvent
-from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
-from sentry_sdk.integrations.aiohttp import AioHttpIntegration
-from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from hikari.impl import HTTPSettings
 
-from shinshi import RESOURCES_DIR
+from shinshi import CONFIG_DIR, RESOURCES_DIR, __banner_extras__
 from shinshi.discord.bot import Bot
-from shinshi.discord.interaction.interaction_processor import InteractionProcessor
+from shinshi.discord.interaction import InteractionProcessor
 from shinshi.discord.workflows import WorkflowManager
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import general
 
-try:
-    import uvloop
+with open(CONFIG_DIR / "logging.json", encoding="UTF-8") as stream:
+    dictConfig(orjson.loads(stream.read()))
 
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+try:
+    asyncio.set_event_loop_policy(__import__("uvloop").EventLoopPolicy())
 except ImportError:
-    warnings.warn(
-        "Are you on Windows? Bruh. Uvloop has left the chat.."
-        "If not, install uvloop by `poetry install --group unix`"
-    )
     asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 
-sentry_sdk.init(
-    dsn=os.environ.get("SHINSHI_SENTRY_DSN"),
-    traces_sample_rate=1.0,
-    profiles_sample_rate=1.0,
-    keep_alive=True,
-    enable_tracing=True,
-    integrations=[
-        AioHttpIntegration(),
-        AsyncioIntegration(),
-    ],
-)
-
-i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
 bot = Bot(
-    token=os.environ.get("SHINSHI_DISCORD_TOKEN"),
-    cache_settings=CacheSettings(
-        components=CacheComponents.NONE
-        | CacheComponents.ME
-        | CacheComponents.MEMBERS
-        | CacheComponents.GUILDS
-        | CacheComponents.GUILD_CHANNELS
-        | CacheComponents.ROLES
-        | CacheComponents.EMOJIS,
-        max_messages=100,
-        max_dm_channel_ids=0,
-    ),
+    token=getenv("SHINSHI_DISCORD_TOKEN"),
     http_settings=HTTPSettings(enable_cleanup_closed=True),
-    dumps=orjson.dumps,
-    loads=orjson.loads,
 )
+i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
 workflow_manager = WorkflowManager(
     bot,
     i18n_provider,
@@ -84,23 +54,33 @@ workflow_manager = WorkflowManager(
         general.UserWorkflow,
     ),
 )
-interaction_processor = InteractionProcessor(bot, i18n_provider, workflow_manager)
+bot.event_manager.subscribe(
+    InteractionCreateEvent,
+    InteractionProcessor(bot, i18n_provider, workflow_manager).proceed_interaction,
+)
 
 
-@bot.listen(StartingEvent)
-async def on_starting(_: StartingEvent) -> None:
-    await i18n_provider.start()
-    await workflow_manager.build_workflows()
-
-
-@bot.listen(StartedEvent)
-async def on_started(_: StartedEvent) -> None:
-    await bot.get_application()
-    await workflow_manager.sync_slash_commands()
-    bot.event_manager.subscribe(
-        InteractionCreateEvent, interaction_processor.proceed_interaction
+def main():
+    bot.print_banner("shinshi", True, False, __banner_extras__)
+    sentry_sdk.init(
+        dsn=getenv("SHINSHI_SENTRY_DSN"),
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+        keep_alive=True,
     )
+
+    @bot.listen()
+    async def starting(_: StartingEvent):
+        await i18n_provider.start()
+        await workflow_manager.build_workflows()
+
+    @bot.listen()
+    async def started(_: StartedEvent):
+        await bot.fetch_application()
+        await workflow_manager.sync_slash_commands()
+
+    bot.run()
 
 
 if __name__ == "__main__":
-    bot.run()
+    main()

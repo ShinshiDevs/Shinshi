@@ -23,7 +23,7 @@ from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 class Workflow(metaclass=WorkflowMeta):
     def __init__(self) -> None:
         self.interactables: list[Interactable] = getattr(
-            self, WORKFLOW_INTERACTABLES, ()
+            self, WORKFLOW_INTERACTABLES, []
         )
 
     def get_commands(self) -> list[Command]:

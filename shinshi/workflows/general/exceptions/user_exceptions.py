@@ -16,15 +16,16 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from hikari.users import User
 
-from shinshi.discord.exceptions import InteractionException
-from shinshi.discord.interaction.interaction_context import InteractionContext
+from shinshi.discord.interaction import InteractionContext, InteractionException
 
 
-class NoUserAvatarException(InteractionException):
+class UserException(InteractionException):
     def __init__(self, context: InteractionContext, user: User, *args) -> None:
         self.user = user
         super().__init__(context, *args)
 
+
+class NoUserAvatarException(UserException):
     async def callback(self) -> None:
         return await self.context.send_warning(
             self.context.i18n.get(
@@ -36,11 +37,7 @@ class NoUserAvatarException(InteractionException):
         )
 
 
-class NoUserBannerException(InteractionException):
-    def __init__(self, context: InteractionContext, user: User, *args) -> None:
-        self.user = user
-        super().__init__(context, *args)
-
+class NoUserBannerException(UserException):
     async def callback(self) -> None:
         return await self.context.send_warning(
             self.context.i18n.get(

@@ -22,7 +22,7 @@ from hikari.snowflakes import Snowflake
 
 from shinshi.discord.ext.hooks.cooldown.bucket import BucketType
 from shinshi.discord.interactables.hooks import HookResult, HookT
-from shinshi.discord.interaction.interaction_context import InteractionContext
+from shinshi.discord.interaction import InteractionContext
 from shinshi.utils.string import format_datetime
 
 
@@ -52,15 +52,13 @@ def cooldown(period: timedelta, *, _bucket: BucketType = BucketType.USER) -> Hoo
             return HookResult(stop=False)
         else:
             asyncio.gather(
-                *(
-                    context.send_warning(
-                        context.i18n.get(
-                            "exceptions.cooldown_error",
-                            {"retry_after": format_datetime(retry_after, "R")},
-                        )
-                    ),
-                    delete_after(context),
-                )
+                context.send_warning(
+                    context.i18n.get(
+                        "exceptions.cooldown_error",
+                        {"retry_after": format_datetime(retry_after, "R")},
+                    )
+                ),
+                delete_after(context),
             )
             return HookResult(stop=True)
 

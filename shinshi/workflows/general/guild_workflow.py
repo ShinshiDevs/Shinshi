@@ -19,7 +19,7 @@ from hikari.guilds import GatewayGuild
 from hikari.impl import LinkButtonBuilder, MessageActionRowBuilder
 
 from shinshi.discord.interactables.group import Group
-from shinshi.discord.interaction.interaction_context import InteractionContext
+from shinshi.discord.interaction import InteractionContext
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command

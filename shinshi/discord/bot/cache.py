@@ -14,9 +14,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari.impl import CacheImpl, CacheSettings, GatewayBot
+from hikari.impl import CacheImpl, CacheSettings, CacheComponents, GatewayBot
 
 
 class Cache(CacheImpl):
-    def __init__(self, app: GatewayBot, settings: CacheSettings) -> None:
-        super().__init__(app, settings)
+    settings = CacheSettings(
+        components=CacheComponents.ALL,
+        max_messages=100,
+        max_dm_channel_ids=0,
+    )
+
+    def __init__(self, app: GatewayBot) -> None:
+        print("hi")
+        super().__init__(app, self.settings)

@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import os
-from logging import getLogger
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -26,7 +26,7 @@ from shinshi.i18n import I18nGroup
 
 class I18nProvider:
     def __init__(self, base_directory: Path) -> None:
-        self.__logger = getLogger("shinshi.i18n")
+        self.__logger = logging.getLogger("shinshi.i18n")
         self.base_directory = base_directory
         self.languages: dict[str, I18nGroup] = {}
 

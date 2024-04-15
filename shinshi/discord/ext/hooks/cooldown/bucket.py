@@ -18,7 +18,7 @@ from enum import Enum
 
 from hikari.snowflakes import Snowflake
 
-from shinshi.discord.interaction.interaction_context import InteractionContext
+from shinshi.discord.interaction import InteractionContext
 
 
 class BucketType(Enum):

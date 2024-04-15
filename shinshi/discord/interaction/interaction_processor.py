@@ -22,8 +22,7 @@ from shinshi.discord.bot import Bot
 from shinshi.discord.constants import DEFAULT_LANGUAGE
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.interaction.interaction_context import InteractionContext
-from shinshi.discord.processors import ExceptionProcessor
-from shinshi.discord.processors.slash_command_processor import SlashCommandProcessor
+from shinshi.discord.processors import ExceptionProcessor, SlashCommandProcessor
 from shinshi.discord.workflows import WorkflowManager
 from shinshi.i18n import I18nProvider
 

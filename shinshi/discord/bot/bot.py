@@ -14,34 +14,29 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Any
-
 from hikari.applications import Application
-from hikari.impl import CacheSettings, GatewayBot
+from hikari.impl import GatewayBot
 from hikari.users import OwnUser
 
-from shinshi import RESOURCES_DIR, __banner_extras__
 from shinshi.discord.bot.cache import Cache
-from shinshi.discord.bot.ux import print_banner
 
 
 class Bot(GatewayBot):
-    def __init__(self, token: str, cache_settings: CacheSettings, **kwargs):
+    def __init__(self, token: str, **kwargs):
         self.__application: Application | None = None
-        self.__cache = Cache(self, cache_settings)
+        self.__cache = Cache(self)
         super().__init__(
             token=token,
             banner=None,
-            cache_settings=cache_settings,
+            cache_settings=self.__cache.settings,
             **kwargs,
         )
-        print_banner(RESOURCES_DIR / "banner.txt", extra_args=__banner_extras__)
 
-    async def get_application(self) -> Application:
-        if self.__application is not None:
-            return self.__application
+    async def fetch_application(self) -> None:
+        """
+        Application instance will be stored in application variable of Bot class.
+        """
         self.__application = await self.rest.fetch_application()
-        return self.__application
 
     @property
     def application(self) -> Application:
@@ -62,5 +57,5 @@ class Bot(GatewayBot):
         return self.__cache
 
     @_cache.setter
-    def _cache(self, ot: Any) -> None:  # type: ignore
-        pass
+    def _cache(self, ot: Cache) -> None:
+        return
