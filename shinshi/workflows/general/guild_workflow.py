@@ -17,6 +17,7 @@
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 from hikari.impl import LinkButtonBuilder, MessageActionRowBuilder
+from hikari.permissions import Permissions
 
 from shinshi.discord.interactables.group import Group
 from shinshi.discord.interaction import InteractionContext
@@ -38,8 +39,9 @@ class GuildWorkflow(Workflow):
     async def __get_guild(context: InteractionContext) -> tuple[GatewayGuild, Embed]:
         guild: GatewayGuild = context.interaction.get_guild()
         embed = Embed(title=guild.name)
-        if invites := await context.bot.rest.fetch_guild_invites(guild):
-            embed.url = f"https://discord.gg/{invites[-1].code}"
+        if Permissions.MANAGE_GUILD & context.interaction.app_permissions:
+            if invites := await context.bot.rest.fetch_guild_invites(guild):
+                embed.url = f"https://discord.gg/{invites[-1].code}"
         return guild, embed
 
     @command(

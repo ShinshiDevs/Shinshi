@@ -39,6 +39,6 @@ class NoGuildBannerException(InteractionException):
     async def callback(self) -> None:
         return await self.context.send_warning(
             self.context.i18n.get(
-                "commands.guild.splash.exceptions.no_splash_exception",
+                "commands.guild.banner.exceptions.no_banner_exception",
             )
         )

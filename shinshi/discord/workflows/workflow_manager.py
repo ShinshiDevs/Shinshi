@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+import logging
+
 from hikari.commands import CommandChoice, CommandOption, OptionType
 from hikari.impl import SlashCommandBuilder
 
@@ -33,6 +35,8 @@ class WorkflowManager:
         i18n_provider: I18nProvider,
         workflows: tuple[Workflow, ...],
     ) -> None:
+        self.__logger = logging.getLogger("shinshi.workflows")
+
         self.bot = bot
         self.i18n_provider = i18n_provider
         self.workflows = workflows
@@ -41,24 +45,26 @@ class WorkflowManager:
         self.slash_command_builders: list[SlashCommandBuilder] = []
 
     async def build_workflows(self) -> None:
-        groups: list[Group] = []
         for workflow_cls in self.workflows:
-            workflow: Workflow = workflow_cls()
+            workflow = workflow_cls()
             await workflow.start()
-
             for command in workflow.get_commands():
                 if command.group:
-                    if command.group in groups:
-                        continue
-                    groups.append(command.group)
-                else:
-                    self.slash_command_builders.append(
-                        self.get_command_builder(command)
-                    )
-        for group in groups:
-            self.slash_command_builders.append(self.get_group_builder(group))
+                    self.commands.update({command.group.name: command.group})
+                    continue
+                self.commands.update({command.name: command})
+            self.__logger.debug("loaded %s", workflow_cls.__qualname__)
+        self.__logger.info("loaded commands %s", ", ".join(self.commands.keys()))
 
     async def sync_slash_commands(self) -> None:
+        for command in self.commands.values():
+            self.slash_command_builders.append(
+                (
+                    self.get_group_builder
+                    if isinstance(command, Group)
+                    else self.get_command_builder
+                )(command)
+            )
         await self.bot.rest.set_application_commands(
             self.bot.application,
             self.slash_command_builders,

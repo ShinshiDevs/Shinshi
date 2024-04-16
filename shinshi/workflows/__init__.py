@@ -14,3 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from shinshi.discord.workflows import Workflow
+from shinshi.workflows import general
+
+workflows: tuple[Workflow] = (
+    general.GuildWorkflow,
+    general.InfoWorkflow,
+    general.InviteWorkflow,
+    general.SupportWorkflow,
+    general.UserWorkflow,
+)

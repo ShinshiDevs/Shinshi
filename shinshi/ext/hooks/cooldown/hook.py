@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from cachetools import TTLCache
 from hikari.snowflakes import Snowflake
 
-from shinshi.discord.ext.hooks.cooldown.bucket import BucketType
+from shinshi.ext.hooks.cooldown.bucket import BucketType
 from shinshi.discord.interactables.hooks import HookResult, HookT
 from shinshi.discord.interaction import InteractionContext
 from shinshi.utils.string import format_datetime

@@ -20,15 +20,21 @@ from os import getenv
 
 import orjson
 import sentry_sdk
-from hikari.events import InteractionCreateEvent, StartedEvent, StartingEvent
+from hikari.events import (
+    InteractionCreateEvent,
+    ShardReadyEvent,
+    StartedEvent,
+    StartingEvent,
+)
 from hikari.impl import HTTPSettings
+from hikari.presences import Activity, ActivityType
 
 from shinshi import CONFIG_DIR, RESOURCES_DIR, __banner_extras__
 from shinshi.discord.bot import Bot
 from shinshi.discord.interaction import InteractionProcessor
 from shinshi.discord.workflows import WorkflowManager
 from shinshi.i18n import I18nProvider
-from shinshi.workflows import general
+from shinshi.workflows import workflows
 
 with open(CONFIG_DIR / "logging.json", encoding="UTF-8") as stream:
     dictConfig(orjson.loads(stream.read()))
@@ -43,16 +49,10 @@ bot = Bot(
     http_settings=HTTPSettings(enable_cleanup_closed=True),
 )
 i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
-workflow_manager = WorkflowManager(
+workflow_manager = bot.workflow_manager = WorkflowManager(
     bot,
     i18n_provider,
-    (
-        general.GuildWorkflow,
-        general.InfoWorkflow,
-        general.InviteWorkflow,
-        general.SupportWorkflow,
-        general.UserWorkflow,
-    ),
+    workflows,
 )
 bot.event_manager.subscribe(
     InteractionCreateEvent,
@@ -64,6 +64,20 @@ bot.event_manager.subscribe(
 async def on_starting(_: StartingEvent) -> None:
     await i18n_provider.start()
     await workflow_manager.build_workflows()
+
+
+@bot.listen()
+async def on_shard_start(event: ShardReadyEvent):
+    guild_count = sum(
+        [guild.shard_id == event.shard.id for guild in await bot.rest.fetch_my_guilds()]
+    )
+    await event.shard.update_presence(
+        activity=Activity(
+            type=ActivityType.CUSTOM,
+            state=f"Shard #{event.shard.id} with {guild_count} guilds",
+            name="-",
+        )
+    )
 
 
 @bot.listen()
@@ -80,7 +94,10 @@ def main() -> None:
         profiles_sample_rate=1.0,
         keep_alive=True,
     )
-    bot.run()
+    bot.run(
+        check_for_updates=False,
+        coroutine_tracking_depth=5,
+    )
 
 
 if __name__ == "__main__":

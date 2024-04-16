@@ -14,8 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-import os
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -54,8 +54,8 @@ class I18nProvider:
         return root_group
 
     async def start(self) -> None:
-        self.__logger.debug("Starting...")
+        self.__logger.debug("loading localizations from %s...", self.base_directory)
         for file in self.base_directory.glob("*.json"):
             language = self.__build_map(file)
             self.languages[os.path.splitext(file.name)[0]] = language
-        self.__logger.info("Loaded %s languages", ", ".join(self.languages.keys()))
+        self.__logger.info("loaded %s languages", ", ".join(self.languages.keys()))

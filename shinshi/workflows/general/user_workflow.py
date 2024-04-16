@@ -27,13 +27,13 @@ from hikari.interactions import InteractionMember
 from hikari.users import User, UserFlag
 
 from shinshi import IMAGES_DIR
-from shinshi.discord.ext.hooks.cooldown import cooldown
 from shinshi.discord.interactables.group import Group
 from shinshi.discord.interactables.options import Option
 from shinshi.discord.interaction import InteractionContext
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
+from shinshi.ext.hooks.cooldown import cooldown
 from shinshi.utils.string import format_datetime
 from shinshi.workflows.general.exceptions import (
     NoUserAvatarException,
