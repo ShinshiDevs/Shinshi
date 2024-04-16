@@ -68,13 +68,10 @@ async def on_starting(_: StartingEvent) -> None:
 
 @bot.listen()
 async def on_shard_start(event: ShardReadyEvent):
-    guild_count = sum(
-        [guild.shard_id == event.shard.id for guild in await bot.rest.fetch_my_guilds()]
-    )
     await event.shard.update_presence(
         activity=Activity(
             type=ActivityType.CUSTOM,
-            state=f"Shard #{event.shard.id} with {guild_count} guilds",
+            state=f"Shard #{event.shard.id} with {len(event.unavailable_guilds)} guilds",
             name="-",
         )
     )
