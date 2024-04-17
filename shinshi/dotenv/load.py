@@ -14,15 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from shinshi.discord.interaction.interaction_context import InteractionContext
+import os
+from typing import Any
+
+from shinshi.dotenv.parse import parse_dotenv_file
 
 
-class InteractionException(Exception):
-    __slots__: tuple[str, ...] = ("context",)
-
-    def __init__(self, context: InteractionContext, *args) -> None:
-        self.context = context
-        super().__init__(*args)
-
-    async def callback(self) -> None:
-        raise NotImplementedError
+def load_dotenv(file_path: os.PathLike) -> dict[str, Any] | None:
+    if variables := parse_dotenv_file(file_path):
+        for key, value in variables.items():
+            os.environ.update({key: value})

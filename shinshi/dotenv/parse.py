@@ -14,15 +14,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from shinshi.discord.interaction.interaction_context import InteractionContext
+import os
+import re
+from typing import Any
+
+DOTENV_REGEX = re.compile(r"^([A-Za-z_]+\w*)=([^#]+)(#.*)?$")
 
 
-class InteractionException(Exception):
-    __slots__: tuple[str, ...] = ("context",)
-
-    def __init__(self, context: InteractionContext, *args) -> None:
-        self.context = context
-        super().__init__(*args)
-
-    async def callback(self) -> None:
-        raise NotImplementedError
+def parse_dotenv_file(file_path: os.PathLike) -> dict[str, Any]:
+    with open(file_path, "r", encoding="UTF-8") as file:
+        for line in file:
+            if match := DOTENV_REGEX.match(line):
+                os.environ[match.group(1)] = match.group(2).strip().replace('"', "")

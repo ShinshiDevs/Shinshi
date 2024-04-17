@@ -33,8 +33,11 @@ from shinshi import CONFIG_DIR, RESOURCES_DIR, __banner_extras__
 from shinshi.discord.bot import Bot
 from shinshi.discord.interaction import InteractionProcessor
 from shinshi.discord.workflows import WorkflowManager
+from shinshi.dotenv.load import load_dotenv
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import workflows
+
+load_dotenv(".env")
 
 with open(CONFIG_DIR / "logging.json", encoding="UTF-8") as stream:
     dictConfig(orjson.loads(stream.read()))

@@ -21,6 +21,8 @@ from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 
 
 class Workflow(metaclass=WorkflowMeta):
+    __slots__: tuple[str, ...] = ("interactables",)
+
     def __init__(self) -> None:
         self.interactables: list[Interactable] = getattr(
             self, WORKFLOW_INTERACTABLES, []

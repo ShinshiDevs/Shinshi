@@ -34,7 +34,7 @@ from shinshi.i18n import I18nGroup
 
 type InteractionT = CommandInteraction | ComponentInteraction
 # TODO: Remove this, emojis.json must be used
-ERROR_EMOJI: tuple[str, int] = "error", 1228757404666171402
+ERROR_EMOJI: tuple[str, int] = "exclamation", 1228757404666171402
 WARNING_EMOJI: tuple[str, int] = "warning", 1228757406029189230
 
 

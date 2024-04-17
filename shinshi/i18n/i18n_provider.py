@@ -25,6 +25,8 @@ from shinshi.i18n import I18nGroup
 
 
 class I18nProvider:
+    __slots__: tuple[str, ...] = ("__logger", "base_directory", "languages")
+
     def __init__(self, base_directory: Path) -> None:
         self.__logger = logging.getLogger("shinshi.i18n")
         self.base_directory = base_directory

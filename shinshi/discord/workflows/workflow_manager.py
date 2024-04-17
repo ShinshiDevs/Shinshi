@@ -29,6 +29,15 @@ from shinshi.i18n import I18nProvider
 
 
 class WorkflowManager:
+    __slots__: tuple[str, ...] = (
+        "__logger",
+        "bot",
+        "i18n_provider",
+        "workflows",
+        "commands",
+        "slash_command_builders",
+    )
+
     def __init__(
         self,
         bot: Bot,
@@ -162,10 +171,15 @@ class WorkflowManager:
         subgroup_name: str | None,
         command_name: str | None,
     ) -> Command | None:
-        group = self.commands.get(group_name) if group_name else None
-        if group and isinstance(group, Group):
-            subgroup = group.sub_groups.get(subgroup_name) if subgroup_name else None
-            if subgroup and isinstance(subgroup, SubGroup):
-                return subgroup.commands.get(command_name)
-            return group.commands.get(command_name)
-        return self.commands.get(command_name)
+        if subgroup_name and not group_name:
+            raise ValueError("Cannot get a subgroup without parent group")
+        if group := (self.commands.get(group_name) or self.commands.get(command_name)):
+            if isinstance(group, Group):
+                if group := group.sub_groups.get(subgroup_name, group):
+                    return group.commands[command_name]
+            else:
+                if group is None:
+                    raise ValueError(
+                        f"Command {group_name} {subgroup_name} {command_name} cannot be accessed"
+                    )
+                return group

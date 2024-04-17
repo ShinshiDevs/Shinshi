@@ -16,17 +16,16 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
-from logging import getLogger
 from typing import Any
 
+_LOGGER = logging.getLogger("shinshi.i18n")
 _ARGUMENTS_SENTINEL: dict[str, Any] = {}
 
 
 @dataclass
 class I18nGroup:
-    __logger = getLogger("shinshi.i18n")
-
     name: str
     value: dict[str, str | tuple[str, ...] | I18nGroup] = field(default_factory=dict)
 
@@ -69,11 +68,11 @@ class I18nGroup:
         try:
             value: str = self.__resolve_key(key, arguments)
             if not isinstance(value, str):
-                self.__logger.warning("failed to resolve i18n-key %s", key)
+                _LOGGER.warning("failed to resolve i18n-key %s", key)
                 return key
             return value
         except Exception as exception:
-            self.__logger.error(
+            _LOGGER.error(
                 "Failed to resolve i18n-key %s in %s", key, self, exc_info=exception
             )
             return key
@@ -86,11 +85,11 @@ class I18nGroup:
         try:
             value: tuple[str, ...] = self.__get_value_by_key(key)
             if not value:
-                self.__logger.warning("failed to resolve list-type i18n-key %s", key)
+                _LOGGER.warning("failed to resolve list-type i18n-key %s", key)
                 return (key,)
             return tuple(item.format(**arguments) for item in value)
         except Exception as exception:
-            self.__logger.error(
+            _LOGGER.error(
                 "Failed to resolve list-type i18n-key %s in %s",
                 key,
                 self,
