@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from hikari.applications import Application
 from hikari.impl import GatewayBot
 from hikari.users import OwnUser
 
@@ -22,8 +21,9 @@ from shinshi.discord.bot.cache import Cache
 
 
 class Bot(GatewayBot):
-    def __init__(self, token: str, **kwargs):
-        self.__application: Application | None = None
+    def __init__(self, token: str | None, **kwargs) -> None:
+        if not token:
+            raise ValueError("Bot cannot be started without token")
         self.__cache = Cache(self)
         super().__init__(
             token=token,
@@ -32,27 +32,18 @@ class Bot(GatewayBot):
             **kwargs,
         )
 
-    async def fetch_application(self) -> None:
-        """
-        Application instance will be stored in application variable of Bot class.
-        """
-        self.__application = await self.rest.fetch_application()
-
-    @property
-    def application(self) -> Application:
-        return self.__application
-
     @property
     def me(self) -> OwnUser:
-        user: OwnUser = self.get_me()
-        assert user
-        return user
+        if user := self.get_me():
+            return user
+        else:
+            raise RuntimeError("Cannot access own user")
 
     @property
     def cache(self) -> Cache:
         return self.__cache
 
-    @property
+    @property  # type: ignore
     def _cache(self) -> Cache:
         return self.__cache
 

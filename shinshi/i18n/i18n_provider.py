@@ -33,7 +33,7 @@ class I18nProvider:
         self.languages: dict[str, I18nGroup] = {}
 
     @staticmethod
-    def __build_map(file: Path) -> I18nGroup | None:
+    def __build_map(file: Path) -> I18nGroup:
         with open(file, "rb") as stream:
             data: dict[str, Any] = orjson.loads(stream.read()) or {}
             if not isinstance(data, dict):

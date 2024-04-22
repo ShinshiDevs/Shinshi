@@ -14,7 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Any, Self
+from __future__ import annotations
+
+from typing import Any, Type
 
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.workflows.constants import (
@@ -24,8 +26,13 @@ from shinshi.discord.workflows.constants import (
 
 
 class WorkflowMeta(type):
-    def __new__(mcs, name: str, bases: tuple[type, ...], attrs: dict[str, Any]) -> Self:
-        cls = super().__new__(mcs, name, bases, attrs)
+    def __new__(
+        self: Type[WorkflowMeta],
+        name: str,
+        bases: tuple[type, ...],
+        attrs: dict[str, Any],
+    ) -> WorkflowMeta:
+        cls: WorkflowMeta = super().__new__(self, name, bases, attrs)
         setattr(cls, WORKFLOW_INTERACTABLES, [])
         for name, obj in attrs.items():
             if isinstance(obj, Interactable):

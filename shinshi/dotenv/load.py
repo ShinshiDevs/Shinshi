@@ -15,12 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import os
-from typing import Any
 
 from shinshi.dotenv.parse import parse_dotenv_file
 
 
-def load_dotenv(file_path: os.PathLike) -> dict[str, Any] | None:
+def load_dotenv(file_path: os.PathLike) -> None:
     if variables := parse_dotenv_file(file_path):
         for key, value in variables.items():
             os.environ.update({key: value})

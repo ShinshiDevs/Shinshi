@@ -14,12 +14,4 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .guild_exceptions import (  # noqa: F401
-    NoGuildBannerException,
-    NoGuildIconException,
-    NoGuildSplashException,
-)
-from .user_exceptions import (  # noqa: F401
-    NoUserAvatarException,
-    NoUserBannerException,
-)
+from .kick_hook import kick_hook  # noqa: F401

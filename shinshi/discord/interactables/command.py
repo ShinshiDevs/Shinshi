@@ -32,15 +32,15 @@ class Command(Interactable):
     name: str
     description: Translatable | str | None = None
 
-    group: Group
-    sub_group: str
+    group: Group | None
+    sub_group: str | None
 
     default_member_permissions: Permissions
     is_dm_enabled: bool
     is_nsfw: bool
 
     options: tuple[Option, ...]
-    hooks: tuple[HookT, ...]
+    hooks: tuple[HookT, ...]  # type: ignore  # TODO: Hook class or something object-type.
 
     _autocomplete: dict[str, Callable[..., Awaitable[Any]]] = field(
         default_factory=dict
@@ -62,7 +62,5 @@ class Command(Interactable):
         return " ".join(filter(None, parts))
 
     def autocomplete(self, argument: str) -> None:
-        def decorator(func: Callable[..., Awaitable[Any]]) -> None:
+        def _(func: Callable[..., Awaitable[Any]]) -> None:
             self._autocomplete[argument] = func
-
-        return decorator

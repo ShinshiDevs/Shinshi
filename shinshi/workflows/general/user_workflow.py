@@ -16,9 +16,9 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from datetime import timedelta
 
-from hikari import Role
 from hikari.commands import OptionType
 from hikari.embeds import Embed
+from hikari.guilds import Role
 from hikari.impl import (
     LinkButtonBuilder,
     MessageActionRowBuilder,
@@ -33,14 +33,9 @@ from shinshi.discord.interaction import InteractionContext
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
+from shinshi.ext.colour import Colour
 from shinshi.ext.hooks.cooldown import cooldown
 from shinshi.utils.string import format_datetime
-from shinshi.workflows.general.exceptions import (
-    NoUserAvatarException,
-    NoUserBannerException,
-)
-
-type TargetT = InteractionMember | User | None
 
 
 class UserWorkflow(Workflow):
@@ -63,57 +58,57 @@ class UserWorkflow(Workflow):
     async def user_info(
         self,
         context: InteractionContext,
-        target: TargetT = None,
+        target: InteractionMember | User | None = None,
     ) -> None:
-        target = target or context.interaction.member
+        user: InteractionMember | User = target or context.interaction.member  # type: ignore
         icon_name: str = (
             "user"
-            if not target.is_bot
-            else f"bot{"_verified" if UserFlag.VERIFIED_BOT in target.flags else ""}"
+            if not user.is_bot
+            else f"{"verified_" if UserFlag.VERIFIED_BOT in user.flags else ""}bot"
         ) + ".webp"
         embed = (
             Embed(
-                title=target.global_name or target.username,
-                url=f"https://discordapp.com/users/{target.id}",
-                description=f"@{target.username}" if not target.global_name else None,
+                title=user.global_name or user.username,
+                url=f"https://discordapp.com/users/{user.id}",
+                description=f"@{user.username}" if user.global_name else None,
+                colour=Colour.DARK,
             )
-            .set_thumbnail(target.display_avatar_url)
+            .set_thumbnail(user.display_avatar_url)
             .set_author(
                 name=context.i18n.get("commands.user.info.embed.author.name"),
                 icon=IMAGES_DIR / icon_name,
             )
-            .set_footer(text=f"ID: {target.id}")
+            .set_footer(text=f"ID: {user.id}")
             .add_field(
                 name=context.i18n.get(
                     "commands.user.info.embed.fields.created_at.name"
                 ),
                 value=(
-                    f"{format_datetime(target.created_at, "R")}\n"
-                    f"{format_datetime(target.created_at, "D")}"
+                    f"{format_datetime(user.created_at, "R")}\n"
+                    f"{format_datetime(user.created_at, "D")}"
                 ),
                 inline=True,
             )
         )
-        if isinstance(target, InteractionMember):
+        if isinstance(user, InteractionMember):
             roles: list[Role] = sorted(
-                target.get_roles(), key=lambda role: role.position, reverse=True
+                user.get_roles(), key=lambda role: role.position, reverse=True
             )
             embed.add_field(
                 name=context.i18n.get(
                     "commands.user.info.embed.fields.joined_at.name",
-                    {"guild": target.get_guild().name},
+                    {"guild": user.get_guild().name},  # type: ignore  # InteractionMember always has a guild
                 ),
                 value=(
-                    f"{format_datetime(target.joined_at, "R")}\n"
-                    f"{format_datetime(target.joined_at, "D")}"
+                    f"{format_datetime(user.joined_at, "R")}\n"  # type: ignore  # the same... mypy is stupid
+                    f"{format_datetime(user.joined_at, "D")}"  # type: ignore
                 ),
                 inline=True,
             )
-            embed.title = target.display_name
-            embed.colour = next((role.colour for role in roles if role.colour), None)
-            if roles := tuple[str](
-                role.mention for role in roles if role.id != target.guild_id
-            ):
+            embed.title = user.display_name
+            if colour := next((role.colour for role in roles if role.colour), None):
+                embed.colour = colour
+            if roles := [role.mention for role in roles if role.id != user.guild_id]:  # type: ignore
                 if len(roles) > 5:
                     embed.add_field(
                         name=context.i18n.get(
@@ -122,7 +117,7 @@ class UserWorkflow(Workflow):
                         value=context.i18n.get(
                             "commands.user.info.embed.fields.roles.value.many_roles",
                             {
-                                "roles": ", ".join(roles[:5]),
+                                "roles": ", ".join(roles[:5]),  # type: ignore
                                 "count": int(len(roles) - 5),
                             },
                         ),
@@ -152,29 +147,37 @@ class UserWorkflow(Workflow):
     async def user_avatar(
         self,
         context: InteractionContext,
-        target: TargetT = None,
+        target: InteractionMember | User | None = None,
     ) -> None:
-        target = target or context.interaction.member
-        if target.avatar_url is None:
-            raise NoUserAvatarException(context, target)
+        user: InteractionMember | User = target or context.interaction.member  # type: ignore
+        if user.avatar_url is None:
+            return await context.send_warning(
+                context.i18n.get(
+                    "commands.user.avatar.exceptions.no_avatar_exception",
+                    {
+                        "user": user.username or user.global_name,
+                    },
+                )
+            )
         return await context.create_response(
             embed=(
-                Embed()
-                .set_image(target.avatar_url)
+                Embed(colour=Colour.DARK)
+                .set_image(user.avatar_url)
                 .set_author(
                     name=context.i18n.get(
                         "commands.user.avatar.embed.author.name",
-                        {"user": target.global_name or target.username},
+                        {"user": user.global_name or user.username},
                     )
                 )
             ),
             component=MessageActionRowBuilder(
-                components=(
+                components=[
                     LinkButtonBuilder(
-                        label=f"{res}x{res}", url=target.make_avatar_url(size=res).url
+                        label=f"{res}x{res}",
+                        url=target.make_avatar_url(size=res).url,  # type: ignore
                     )
                     for res in (256, 512, 1024)
-                )
+                ]
             ),
         )
 
@@ -183,36 +186,41 @@ class UserWorkflow(Workflow):
         name="banner",
         description=Translatable("commands.user.banner.description"),
         options=OPTIONS,
-        hooks=[cooldown(period=timedelta(seconds=5))],
+        hooks=[cooldown(period=timedelta(seconds=5))],  # type: ignore  # TODO: hook object, the same in shinshi/discord/interactables/command.py on 43 line
     )
     async def user_banner(
         self,
         context: InteractionContext,
-        target: TargetT = None,
+        target: InteractionMember | User | None = None,
     ) -> None:
         target = await context.bot.rest.fetch_user(target or context.interaction.user)
         if target.banner_url is None:
-            raise NoUserBannerException(context, target)
-        return (
-            await context.create_response(
-                embed=(
-                    Embed()
-                    .set_image(target.banner_url)
-                    .set_author(
-                        name=context.i18n.get(
-                            "commands.user.banner.embed.author.name",
-                            {"user": target.global_name or target.username},
-                        ),
-                        icon=target.display_avatar_url,
+            return await context.send_warning(
+                context.i18n.get(
+                    "commands.user.banner.exceptions.no_banner_exception",
+                    {
+                        "user": target.username or target.global_name,
+                    },
+                )
+            )
+        return await context.create_response(
+            embed=(
+                Embed(colour=Colour.DARK)
+                .set_image(target.banner_url)
+                .set_author(
+                    name=context.i18n.get(
+                        "commands.user.banner.embed.author.name",
+                        {"user": target.global_name or target.username},
+                    ),
+                    icon=target.display_avatar_url,
+                )
+            ),
+            component=MessageActionRowBuilder(
+                components=[
+                    LinkButtonBuilder(
+                        label=context.i18n.get("buttons.open.label"),
+                        url=target.banner_url.url,
                     )
-                ),
-                component=MessageActionRowBuilder(
-                    components=[
-                        LinkButtonBuilder(
-                            label=context.i18n.get("buttons.open.label"),
-                            url=target.banner_url.url,
-                        )
-                    ]
-                ),
+                ]
             ),
         )

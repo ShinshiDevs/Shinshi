@@ -16,12 +16,11 @@
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import re
-from typing import Any
 
 DOTENV_REGEX = re.compile(r"^([A-Za-z_]+\w*)=([^#]+)(#.*)?$")
 
 
-def parse_dotenv_file(file_path: os.PathLike) -> dict[str, Any]:
+def parse_dotenv_file(file_path: os.PathLike) -> None:
     with open(file_path, "r", encoding="UTF-8") as file:
         for line in file:
             if match := DOTENV_REGEX.match(line):

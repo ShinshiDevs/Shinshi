@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import logging
+from typing import Type
 
+from hikari.api import SlashCommandBuilder
 from hikari.commands import CommandChoice, CommandOption, OptionType
-from hikari.impl import SlashCommandBuilder
 
 from shinshi.discord.bot import Bot
 from shinshi.discord.interactables.command import Command
@@ -42,7 +43,7 @@ class WorkflowManager:
         self,
         bot: Bot,
         i18n_provider: I18nProvider,
-        workflows: tuple[Workflow, ...],
+        workflows: tuple[Type[Workflow], ...],
     ) -> None:
         self.__logger = logging.getLogger("shinshi.workflows")
 
@@ -69,13 +70,13 @@ class WorkflowManager:
         for command in self.commands.values():
             self.slash_command_builders.append(
                 (
-                    self.get_group_builder
+                    self.get_group_builder(command)
                     if isinstance(command, Group)
-                    else self.get_command_builder
-                )(command)
+                    else self.get_command_builder(command)
+                )
             )
         await self.bot.rest.set_application_commands(
-            self.bot.application,
+            await self.bot.rest.fetch_application(),
             self.slash_command_builders,
         )
 
@@ -104,30 +105,28 @@ class WorkflowManager:
             .set_is_nsfw(command.is_nsfw)
         )
         if isinstance(command, Command):
-            description: Translatable = self.get_translatable_description(
-                command.description
-            )
+            description: Translatable = self.cast_translatable(command.description)
             builder.set_description(description.fallback)
             builder.set_description_localizations(description.translates)
         return builder
 
-    def get_translatable_description(
-        self, description: Translatable | str | None
+    def cast_translatable(
+        self, value: Translatable | str | None, *, fallback: str | None = None
     ) -> Translatable:
-        description: Translatable = (
-            Translatable(fallback=description or "No description")
-            if not isinstance(description, Translatable)
-            else description
+        translatable: Translatable = (
+            Translatable(fallback=value or fallback)
+            if not isinstance(value, Translatable)
+            else value
         )
-        description.build(self.i18n_provider)
-        return description
+        translatable.build(self.i18n_provider)
+        return translatable
 
     def build_option(self, option: Option) -> CommandOption:
-        description: Translatable = self.get_translatable_description(
-            option.description
-        )
-        choices: tuple[CommandChoice, ...] = (
-            CommandChoice(name=choice.name, value=choice.value)
+        description: Translatable = self.cast_translatable(option.description)
+        choices: tuple[CommandChoice, ...] = tuple(
+            CommandChoice(
+                name=self.cast_translatable(choice.name).fallback, value=choice.value
+            )
             for choice in option.choices
         )
         return CommandOption(
@@ -146,9 +145,7 @@ class WorkflowManager:
         )
 
     def build_sub_command(self, command: Command) -> CommandOption:
-        description: Translatable = self.get_translatable_description(
-            command.description
-        )
+        description: Translatable = self.cast_translatable(command.description)
         return CommandOption(
             type=OptionType.SUB_COMMAND,
             name=command.name,
@@ -162,24 +159,24 @@ class WorkflowManager:
             type=OptionType.SUB_COMMAND_GROUP,
             name=sub_group.name,
             description="-",
-            options=[self.build_sub_command(command) for command in sub_group.commands],
+            options=[
+                self.build_sub_command(command)
+                for command in sub_group.commands.values()
+            ],
         )
 
     def get_command(
         self,
         group_name: str | None,
         subgroup_name: str | None,
-        command_name: str | None,
+        command_name: str,
     ) -> Command | None:
-        if subgroup_name and not group_name:
-            raise ValueError("Cannot get a subgroup without parent group")
-        if group := (self.commands.get(group_name) or self.commands.get(command_name)):
-            if isinstance(group, Group):
-                if group := group.sub_groups.get(subgroup_name, group):
-                    return group.commands[command_name]
-            else:
-                if group is None:
-                    raise ValueError(
-                        f"Command {group_name} {subgroup_name} {command_name} cannot be accessed"
-                    )
-                return group
+        commands = self.commands
+        group = self.commands.get(group_name or "")
+        if isinstance(group, Group):
+            sub_group: SubGroup | None = group.sub_groups.get(subgroup_name or "")
+            if sub_group:
+                return sub_group.commands[command_name]
+            return group.commands[command_name]
+        command = commands[command_name]
+        return command if not isinstance(command, Group) else None

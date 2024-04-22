@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from hikari.api import ComponentBuilder
@@ -28,33 +28,33 @@ from hikari.snowflakes import SnowflakeishSequence
 from hikari.undefined import UNDEFINED, UndefinedOr
 from hikari.users import PartialUser
 
+from shinshi import IMAGES_DIR
 from shinshi.discord.bot import Bot
 from shinshi.discord.interactables.interactable import Interactable
+from shinshi.ext.colour import Colour
 from shinshi.i18n import I18nGroup
 
-type InteractionT = CommandInteraction | ComponentInteraction
-# TODO: Remove this, emojis.json must be used
-ERROR_EMOJI: tuple[str, int] = "exclamation", 1228757404666171402
-WARNING_EMOJI: tuple[str, int] = "warning", 1228757406029189230
+ERROR_ICON = IMAGES_DIR / "error.webp"
+WARNING_ICON = IMAGES_DIR / "warning.webp"
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class InteractionContext:
-    interaction: InteractionT
+    interaction: CommandInteraction | ComponentInteraction
+    interactable: Interactable
     bot: Bot
     i18n: I18nGroup
-    interactable: Interactable
+
+    arguments: dict[str, Any] = field(default_factory=dict)
 
     _has_created_response: bool = False
     _has_deferred_response: bool = False
 
-    async def defer(self) -> None:
+    async def defer(self, flags: UndefinedOr[MessageFlag] = UNDEFINED) -> None:
         await self.bot.rest.create_interaction_response(
             interaction=self.interaction.id,
             token=self.interaction.token,
-            flags=(
-                MessageFlag.EPHEMERAL if self.interactable.is_ephemeral else UNDEFINED
-            ),
+            flags=flags,
             response_type=ResponseType.DEFERRED_MESSAGE_CREATE,
         )
         self._has_deferred_response = True
@@ -77,11 +77,24 @@ class InteractionContext:
         role_mentions: UndefinedOr[
             SnowflakeishSequence[PartialRole] | bool
         ] = UNDEFINED,
-        ensure_message: bool = False,
-    ) -> Message | None:
-        kwargs: dict[str, Any] = dict(
+    ) -> None:
+        if self._has_deferred_response:
+            await self.edit_response(
+                content=content,
+                attachment=attachment,
+                attachments=attachments,
+                component=component,
+                components=components,
+                embed=embed,
+                embeds=embeds,
+            )
+            return
+        await self.bot.rest.create_interaction_response(
+            interaction=self.interaction.id,
+            response_type=ResponseType.MESSAGE_CREATE,
             token=self.interaction.token,
             content=content,
+            flags=flags,
             attachment=attachment,
             attachments=attachments,
             component=component,
@@ -92,22 +105,7 @@ class InteractionContext:
             user_mentions=user_mentions,
             role_mentions=role_mentions,
         )
-        if self._has_deferred_response:
-            await self.bot.rest.edit_interaction_response(
-                application=self.interaction.application_id,
-                **kwargs,
-            )
-        else:
-            await self.bot.rest.create_interaction_response(
-                interaction=self.interaction.id,
-                response_type=ResponseType.MESSAGE_CREATE,
-                flags=flags,
-                **kwargs,
-            )
-        if ensure_message:
-            return await self.bot.rest.fetch_interaction_response(
-                self.interaction.id, self.interaction.token
-            )
+        return
 
     async def edit_response(
         self,
@@ -137,14 +135,32 @@ class InteractionContext:
             application=self.interaction.application_id, token=self.interaction.token
         )
 
-    async def send_error(self, content: UndefinedOr[Any] = UNDEFINED) -> None:
-        return await self.create_response(
-            content=" ".join((f"<:{ERROR_EMOJI[0]}:{ERROR_EMOJI[1]}>", content)),
+    async def send_error(
+        self,
+        content: Any | None = None,
+        *,
+        description: Any | None = None,
+        icon: Resourceish | None = None,
+    ) -> None:
+        await self.create_response(
+            content=Embed(
+                description=description,
+                colour=Colour.RED,
+            ).set_author(name=content, icon=icon or ERROR_ICON),
             flags=MessageFlag.EPHEMERAL,
         )
 
-    async def send_warning(self, content: UndefinedOr[Any] = UNDEFINED) -> None:
-        return await self.create_response(
-            content=" ".join((f"<:{WARNING_EMOJI[0]}:{WARNING_EMOJI[1]}>", content)),
+    async def send_warning(
+        self,
+        content: Any | None = None,
+        *,
+        description: Any | None = None,
+        icon: Resourceish | None = None,
+    ) -> None:
+        await self.create_response(
+            content=Embed(
+                description=description,
+                colour=Colour.YELLOW,
+            ).set_author(name=content, icon=icon or WARNING_ICON),
             flags=MessageFlag.EPHEMERAL,
         )

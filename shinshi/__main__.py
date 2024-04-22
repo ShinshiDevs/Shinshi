@@ -24,9 +24,7 @@ from hikari.events import (
     InteractionCreateEvent,
     ShardReadyEvent,
     StartedEvent,
-    StartingEvent,
 )
-from hikari.impl import HTTPSettings
 from hikari.presences import Activity, ActivityType
 
 from shinshi import CONFIG_DIR, RESOURCES_DIR, __banner_extras__
@@ -37,7 +35,7 @@ from shinshi.dotenv.load import load_dotenv
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import workflows
 
-load_dotenv(".env")
+load_dotenv(".env")  # type: ignore
 
 with open(CONFIG_DIR / "logging.json", encoding="UTF-8") as stream:
     dictConfig(orjson.loads(stream.read()))
@@ -47,12 +45,15 @@ try:
 except ImportError:
     asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
 
-bot = Bot(
-    token=getenv("SHINSHI_DISCORD_TOKEN"),
-    http_settings=HTTPSettings(enable_cleanup_closed=True),
+sentry_sdk.init(
+    dsn=getenv("SHINSHI_SENTRY_DSN"),
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+    keep_alive=True,
 )
+bot = Bot(token=getenv("SHINSHI_DISCORD_TOKEN"))
 i18n_provider = I18nProvider(RESOURCES_DIR / "i18n")
-workflow_manager = bot.workflow_manager = WorkflowManager(
+workflow_manager = WorkflowManager(
     bot,
     i18n_provider,
     workflows,
@@ -61,12 +62,6 @@ bot.event_manager.subscribe(
     InteractionCreateEvent,
     InteractionProcessor(bot, i18n_provider, workflow_manager).proceed_interaction,
 )
-
-
-@bot.listen()
-async def on_starting(_: StartingEvent) -> None:
-    await i18n_provider.start()
-    await workflow_manager.build_workflows()
 
 
 @bot.listen()
@@ -82,23 +77,21 @@ async def on_shard_start(event: ShardReadyEvent):
 
 @bot.listen()
 async def on_started(_: StartedEvent) -> None:
-    await bot.fetch_application()
     await workflow_manager.sync_slash_commands()
 
 
-def main() -> None:
+async def main() -> None:
     bot.print_banner("shinshi", True, False, __banner_extras__)
-    sentry_sdk.init(
-        dsn=getenv("SHINSHI_SENTRY_DSN"),
-        traces_sample_rate=1.0,
-        profiles_sample_rate=1.0,
-        keep_alive=True,
-    )
-    bot.run(
-        check_for_updates=False,
-        coroutine_tracking_depth=5,
-    )
+    await workflow_manager.build_workflows()
+    await i18n_provider.start()
+    try:
+        await bot.start()
+    except KeyboardInterrupt:
+        await bot.close()
+        loop.stop()
 
 
 if __name__ == "__main__":
-    main()
+    loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+    loop.run_until_complete(main())
+    loop.run_forever()

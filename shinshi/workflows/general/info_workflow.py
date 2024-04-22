@@ -14,11 +14,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+import platform
+from datetime import datetime
+
+import psutil
+from hikari._about import __version__
 from hikari.embeds import Embed
 
 from shinshi import (
     IMAGES_DIR,
-    __copyright__,
+    __author__,
     __github_url__,
     __license__,
 )
@@ -26,40 +31,81 @@ from shinshi.discord.interaction import InteractionContext
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
+from shinshi.ext.colour import Colour
 from shinshi.utils.string import get_separated_number
+
+components: tuple[tuple[str, str, str], ...] = (
+    (
+        platform.python_implementation(),
+        platform.python_version(),
+        "https://github.com/python/cpython",
+    ),
+    ("hikari", __version__, "https://github.com/hikari-py/hikari"),
+)
 
 
 class InfoWorkflow(Workflow):
-    @command(description=Translatable("commands.info.description"), is_dm_enabled=True)
+    @command(
+        description=Translatable("commands.info.description"),
+        is_dm_enabled=True,
+        is_defer=True,
+    )
     async def info(self, context: InteractionContext) -> None:
+        process = psutil.Process()
         embed = (
             Embed(
                 title=context.bot.me.username,
                 url=__github_url__,
-                description=context.i18n.get(
-                    "commands.info.embed.description",
-                    {"shard": context.interaction.get_guild().shard_id + 1},
-                ),
+                colour=Colour.DARK,
             )
-            .set_thumbnail(context.bot.me.avatar_url)
             .set_author(
                 name=context.i18n.get("commands.info.embed.author.name"),
-                icon=IMAGES_DIR / "information.webp",
+                icon=IMAGES_DIR / "info.webp",
             )
-            .set_footer(text=f"{__copyright__} ({__license__})")
+            .set_footer(
+                text=f"{__license__} {datetime.now().year} {__author__}",
+                icon=IMAGES_DIR / "copyright.webp",
+            )
             .add_field(
-                name=context.i18n.get("commands.info.embed.fields.information.name"),
+                name=context.i18n.get("commands.info.embed.fields.libraries.name"),
                 value="\n".join(
-                    context.i18n.get_list(
-                        "commands.info.embed.fields.information.value",
-                        {
-                            "guilds": get_separated_number(
-                                len(context.bot.cache.get_guilds_view())
-                            ),
-                            "latency": f"{round(context.bot.heartbeat_latency * 1000, 1)}ms",
-                        },
+                    [
+                        f"[{component} {version}]({url})"
+                        for component, version, url in components
+                    ]
+                ),
+                inline=True,
+            )
+            .add_field(
+                name=context.i18n.get("commands.info.embed.fields.guilds.name"),
+                value=get_separated_number(len(context.bot.cache.get_guilds_view())),
+                inline=True,
+            )
+            .add_field(
+                name=context.i18n.get("commands.info.embed.fields.members.name"),
+                value=get_separated_number(
+                    sum(
+                        guild.member_count  # type: ignore  # fix soon, because sum need bool, not int
+                        for guild in context.bot.cache.get_guilds_view().values()
                     )
                 ),
+                inline=True,
+            )
+            .add_field(
+                name=context.i18n.get("commands.info.embed.fields.latency.name"),
+                value=f"{round(context.bot.heartbeat_latency * 1000, 2)}ms",
+                inline=True,
+            )
+            .add_field(
+                name=context.i18n.get("commands.info.embed.fields.ram.name"),
+                value=f"{round(process.memory_full_info().rss / (2 ** 20), 1)} MB "
+                f"({round(process.memory_percent(), 2)}%)",
+                inline=True,
+            )
+            .add_field(
+                name=context.i18n.get("commands.info.embed.fields.cpu.name"),
+                value=f"{round(process.cpu_percent(interval=1), 2)}%",
+                inline=True,
             )
         )
         return await context.create_response(embed=embed)

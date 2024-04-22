@@ -3,8 +3,15 @@
         "name": "Русский"
     },
     "exceptions": {
-        "unknown_exception": "Произошло непредвиденное исключение и я уже доложила об этом разработчикам. Извините за неудобства.",
-        "cooldown_error": "Вы попали в рейт-лимит, попробуйте снова {retry_after}"
+        "unknown_exception": {
+            "content": "Произошло непредвиденное исключение",
+            "description": "Я уже доложила об этом разработчикам. Извините за неудобства."
+        },
+        "cooldown_warning": {
+            "content": "Вы попали в рейт-лимит",
+            "description": "Попробуйте снова {retry_after}."
+        },
+        "ratelimit_error": "Я попала в рейт-лимит, попробуйте снова позже."
     },
     "buttons": {
         "support": {
@@ -16,20 +23,33 @@
     },
     "commands": {
         "info": {
-            "description": "Информация о Shinshi в данный момент",
+            "description": "Информация о Shinshi в текущий момент",
             "embed": {
-                "description": "Вы на **{shard} шарде**.",
                 "author": {
-                    "name": "Привет, я"
+                    "name": "Информация"
                 },
                 "fields": {
-                    "information": {
-                        "name": "Информация",
-                        "value": [
-                            "**Серверов:** {guilds}",
-                            "**Задержка:** {latency}"
-                        ]
+                    "libraries": {
+                        "name": "Библиотеки"
+                    },
+                    "guilds": {
+                        "name": "Сервера"
+                    },
+                    "members": {
+                        "name": "Участники"
+                    },
+                    "latency": {
+                        "name": "Задержка"
+                    },
+                    "ram": {
+                        "name": "RAM"
+                    },
+                    "cpu": {
+                        "name": "CPU"
                     }
+                },
+                "footer": {
+                    "text": "Осколок #{id}"
                 }
             }
         },

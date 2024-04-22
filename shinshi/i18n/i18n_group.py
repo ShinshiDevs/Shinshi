@@ -32,11 +32,12 @@ class I18nGroup:
     def __find_value_in_group(
         self, sub_keys: list[str]
     ) -> str | tuple[str, ...] | None:
-        current_group = self
+        current_group: I18nGroup = self
         for sub_key in sub_keys[:-1]:
-            current_group = current_group.value.get(sub_key)
-            if not isinstance(current_group, I18nGroup):
+            group = current_group.value.get(sub_key)
+            if not isinstance(group, I18nGroup):
                 return None
+            current_group = group
         value: str | tuple[str, ...] | I18nGroup | None = current_group.value.get(
             sub_keys[-1]
         )
@@ -66,7 +67,7 @@ class I18nGroup:
         if arguments is None:
             arguments = _ARGUMENTS_SENTINEL
         try:
-            value: str = self.__resolve_key(key, arguments)
+            value: str | tuple[str, ...] | None = self.__resolve_key(key, arguments)
             if not isinstance(value, str):
                 _LOGGER.warning("failed to resolve i18n-key %s", key)
                 return key
@@ -83,7 +84,7 @@ class I18nGroup:
         if arguments is None:
             arguments = _ARGUMENTS_SENTINEL
         try:
-            value: tuple[str, ...] = self.__get_value_by_key(key)
+            value: str | tuple[str, ...] | None = self.__get_value_by_key(key)
             if not value:
                 _LOGGER.warning("failed to resolve list-type i18n-key %s", key)
                 return (key,)

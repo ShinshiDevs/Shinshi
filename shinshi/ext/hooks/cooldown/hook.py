@@ -20,13 +20,14 @@ from datetime import datetime, timedelta
 from cachetools import TTLCache
 from hikari.snowflakes import Snowflake
 
-from shinshi.ext.hooks.cooldown.bucket import BucketType
+from shinshi import IMAGES_DIR
 from shinshi.discord.interactables.hooks import HookResult, HookT
 from shinshi.discord.interaction import InteractionContext
+from shinshi.ext.hooks.cooldown.bucket import BucketType
 from shinshi.utils.string import format_datetime
 
 
-def cooldown(period: timedelta, *, _bucket: BucketType = BucketType.USER) -> HookT:
+def cooldown(period: timedelta, *, _bucket: BucketType = BucketType.USER) -> HookT:  # type: ignore  # TODO: The same from shinshi/discord/interactables/command.py on 43 line.
     """Creates a cooldown hook using TTLCache.
 
     This hook prevents the command from being used again within a certain period of time.
@@ -53,13 +54,15 @@ def cooldown(period: timedelta, *, _bucket: BucketType = BucketType.USER) -> Hoo
         else:
             asyncio.gather(
                 context.send_warning(
-                    context.i18n.get(
-                        "exceptions.cooldown_error",
+                    content=context.i18n.get("exceptions.cooldown_warning.content"),
+                    description=context.i18n.get(
+                        "exceptions.cooldown_warning.description",
                         {"retry_after": format_datetime(retry_after, "R")},
-                    )
+                    ),
+                    icon=IMAGES_DIR / "cooldown_warning.webp",
                 ),
                 delete_after(context),
             )
             return HookResult(stop=True)
 
-    return hook
+    return hook  # type: ignore  # the same

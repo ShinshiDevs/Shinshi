@@ -23,8 +23,8 @@ from shinshi.i18n import I18nProvider
 
 @dataclass
 class Translatable:
+    fallback: Any
     key: str | None = None
-    fallback: str | None = None
 
     translates: dict[str, Any] = field(default_factory=dict)
 

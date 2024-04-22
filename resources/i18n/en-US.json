@@ -3,8 +3,15 @@
         "name": "English"
     },
     "exceptions": {
-        "unknown_exception": "An unexpected exception occurred and I've already reported this to the developers. Sorry for the inconvenience.",
-        "cooldown_error": "You're in ratelimit, retry again {retry_after}"
+        "unknown_exception": {
+            "content": "An unexpected exception occurred",
+            "description": "I've already reported this to the developers. Sorry for the inconvenience."
+        },
+        "cooldown_warning": {
+            "content": "You're in ratelimit",
+            "description": "Retry again {retry_after}."
+        },
+        "ratelimit_error": "I'm in ratelimit. Please retry again soon."
     },
     "buttons": {
         "support": {
@@ -18,18 +25,31 @@
         "info": {
             "description": "Information about Shinshi at the moment",
             "embed": {
-                "description": "You're on the **{shard} shard**.",
                 "author": {
-                    "name": "Hi, I'm"
+                    "name": "Information"
                 },
                 "fields": {
-                    "information": {
-                        "name": "Information",
-                        "value": [
-                            "**Guilds:** {guilds}",
-                            "**Latency:** {latency}"
-                        ]
+                    "libraries": {
+                        "name": "Libraries"
+                    },
+                    "guilds": {
+                        "name": "Guilds"
+                    },
+                    "members": {
+                        "name": "Members"
+                    },
+                    "latency": {
+                        "name": "Latency"
+                    },
+                    "ram": {
+                        "name": "RAM"
+                    },
+                    "cpu": {
+                        "name": "CPU"
                     }
+                },
+                "footer": {
+                    "text": "Shard #{id}"
                 }
             }
         },

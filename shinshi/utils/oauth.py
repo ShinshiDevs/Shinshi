@@ -38,7 +38,7 @@ def oauth_url(
     if permissions:
         base_url = base_url.update_query({"permissions": permissions.value})
     if guild:
-        base_url = base_url.update_query({"guild_id": str(guild.id)})
+        base_url = base_url.update_query({"guild_id": str(guild)})
     if redirect_uri:
         base_url = base_url.update_query(
             {"response_type": "code", "redirect_uri": redirect_uri}

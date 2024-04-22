@@ -19,5 +19,4 @@ from typing import TypeVar
 
 from shinshi.discord.interactables.hooks.hook_result import HookResult
 
-
 HookT = TypeVar("HookT", bound=Callable[..., Awaitable[HookResult]])

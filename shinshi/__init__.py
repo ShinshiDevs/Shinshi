@@ -20,6 +20,7 @@ from typing import Final
 __all__ = (
     "__license__",
     "__copyright__",
+    "__author__",
     "__github_url__",
     "__support_url__",
     "__banner_extras__",
@@ -30,6 +31,7 @@ __all__ = (
 
 __license__: Final[str] = "GPL-3.0"
 __copyright__: Final[str] = "Copyright (C) 2024 Shinshi Developers Team"
+__author__: Final[str] = "Shinshi Developers Team"
 __github_url__: str = "https://github.com/ShinshiDevs/Shinshi"
 __support_url__: str = "https://discord.gg/3bXW7an2ke"
 

@@ -14,40 +14,32 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-import logging
 from typing import Any
 
-from hikari.commands import CommandOption, CommandType, OptionType
+from hikari import errors
+from hikari.commands import CommandType, OptionType
 from hikari.events import InteractionCreateEvent
-from hikari.guilds import Role
 from hikari.interactions import (
     CommandInteraction,
-    InteractionChannel,
-    InteractionMember,
+    CommandInteractionOption,
+    ComponentInteraction,
     PartialInteraction,
 )
-from hikari.users import User
-from sentry_sdk import capture_exception, push_scope
+from sentry_sdk import capture_exception
 
+from shinshi import IMAGES_DIR
 from shinshi.discord.bot import Bot
 from shinshi.discord.constants import DEFAULT_LANGUAGE
-from shinshi.discord.interactables.command import Command
-from shinshi.discord.interactables.hooks import HookResult
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.interaction.interaction_context import InteractionContext
-from shinshi.discord.interaction.interaction_exception import InteractionException
+from shinshi.discord.interaction.utils import get_interaction_argument
 from shinshi.discord.workflows import WorkflowManager
 from shinshi.discord.workflows.constants import INTERACTABLE_WORKFLOW_INSTANCE
 from shinshi.i18n import I18nProvider
 
-type ValueT = (
-    User | InteractionMember | InteractionChannel | Role | str | int | float | None
-)
-
 
 class InteractionProcessor:
     __slots__: tuple[str, ...] = (
-        "__logger",
         "bot",
         "i18n_provider",
         "workflow_manager",
@@ -59,112 +51,92 @@ class InteractionProcessor:
         i18n_provider: I18nProvider,
         workflow_manager: WorkflowManager,
     ) -> None:
-        self.__logger = logging.getLogger("shinshi.interactions")
-
         self.bot = bot
         self.i18n_provider = i18n_provider
         self.workflow_manager = workflow_manager
 
-    async def create_interaction_context(
-        self, interaction: PartialInteraction, interactable: Interactable
+    async def proceed_interaction(self, event: InteractionCreateEvent) -> None:
+        if isinstance(event.interaction, CommandInteraction):
+            if event.interaction.command_type == CommandType.SLASH:
+                await self.proceed_slash_command(event.interaction)
+
+    async def proceed_slash_command(self, interaction: CommandInteraction) -> None:
+        group_name, subgroup_name = None, None
+        command_name = interaction.command_name
+        arguments: dict[str, Any] = {}
+        options: list[CommandInteractionOption] = list(interaction.options or [])
+        while options:
+            option = options.pop(0)
+            match option.type:
+                case OptionType.SUB_COMMAND_GROUP:
+                    group_name = interaction.command_name
+                    subgroup_name = option.name
+                    options = list(option.options) if option.options else []
+                case OptionType.SUB_COMMAND:
+                    group_name = group_name or interaction.command_name
+                    command_name = option.name
+                    options = list(option.options) if option.options else []
+                case _:
+                    arguments[option.name] = get_interaction_argument(
+                        interaction, option
+                    )
+        command = self.workflow_manager.get_command(
+            group_name, subgroup_name, command_name
+        )
+        if not command:
+            raise ValueError(
+                f"Cannot access command {group_name} {subgroup_name} {command_name}"
+            )
+        context = self.create_interaction_context(interaction, command)
+        context.arguments = arguments
+        try:
+            await command.callback(
+                getattr(command, INTERACTABLE_WORKFLOW_INSTANCE),
+                context,
+                **arguments,
+            )
+        except Exception as exception:
+            await self.proceed_exception(context, exception)
+
+    def create_interaction_context(
+        self,
+        interaction: PartialInteraction,
+        interactable: Interactable,
     ) -> InteractionContext:
+        if not isinstance(interaction, (CommandInteraction, ComponentInteraction)):
+            raise ValueError("Not valid interaction type")
         return InteractionContext(
             interaction=interaction,
             bot=self.bot,
             i18n=(
                 self.i18n_provider.languages.get(
-                    interaction.locale or interaction.guild_locale,
+                    str(interaction.locale or interaction.guild_locale),
                     self.i18n_provider.languages[DEFAULT_LANGUAGE],
                 )
             ),
             interactable=interactable,
         )
 
-    def convert_command_option_value(
-        self, interaction: CommandInteraction, option: CommandOption
-    ) -> ValueT:
-        match option.type:
-            case OptionType.STRING:
-                return str(option.value)
-            case OptionType.INTEGER:
-                return int(option.value)
-            case OptionType.BOOLEAN:
-                return bool(option.value)
-            case OptionType.USER:
-                return interaction.resolved.members.get(
-                    option.value
-                ) or interaction.resolved.users.get(option.value)
-            case OptionType.CHANNEL:
-                return interaction.resolved.channels.get(option.value)
-            case OptionType.ROLE:
-                return interaction.resolved.roles.get(option.value)
-            case OptionType.MENTIONABLE:
-                return interaction.resolved.members.get(
-                    option.value
-                ) or interaction.resolved.roles.get(option.value)
-            case OptionType.FLOAT:
-                return float(option.value)
-            case OptionType.ATTACHMENT:
-                return interaction.resolved.attachments.get(option.value)
-            case _:
-                return
-
-    async def proceed_interaction(self, event: InteractionCreateEvent) -> None:
-        if isinstance(event.interaction, CommandInteraction):
-            match event.interaction.command_type:
-                case CommandType.SLASH:
-                    await self.proceed_slash_command(event.interaction)
-
     async def proceed_exception(
         self, context: InteractionContext, exception: Exception
     ) -> None:
-        if isinstance(exception, InteractionException):
-            return await exception.callback()
-        with push_scope() as scope:
-            if isinstance(context.interactable, Command):
-                scope.set_tag("command", context.interactable.qualname)
-            scope.set_tag("user ID", context.interaction.user.id)
-            scope.level = "warning"
-            capture_exception(exception)
-        return await context.send_error(
-            context.i18n.get("exceptions.unknown_exception")
-        )
-
-    async def proceed_slash_command(self, interaction: CommandInteraction) -> None:
-        group_name, subgroup_name, command_name = None, None, interaction.command_name
-        arguments: dict[str, Any] = {}
-        options: list[CommandOption] = interaction.options or []
-        for option in options:
-            if option.type == OptionType.SUB_COMMAND_GROUP:
-                group_name = interaction.command_name
-                subgroup_name = option.name
-            elif option.type == OptionType.SUB_COMMAND:
-                group_name = group_name or interaction.command_name
-                command_name = option.name
-            else:
-                arguments[option.name] = self.convert_command_option_value(
-                    interaction, option
-                )
-        if command := self.workflow_manager.get_command(
-            group_name, subgroup_name, command_name
-        ):
-            context = await self.create_interaction_context(interaction, command)
-            try:
-                if command.is_defer:
-                    await context.defer()
-                for hook in command.hooks:
-                    result: HookResult = await hook()
-                    if result.stop:
-                        return
-                await command.callback(
-                    getattr(command, INTERACTABLE_WORKFLOW_INSTANCE),
-                    context,
-                    **arguments,
-                )
-            except Exception as exception:
-                await self.proceed_exception(context, exception)
-        else:
-            self.__logger.error(
-                "Cannot access %s command",
-                f"{group_name} {subgroup_name} {command}".replace("None", ""),
+        exception = getattr(exception, "original", exception)
+        if isinstance(exception, errors.NotFoundError):
+            await context.send_warning(
+                context.i18n.get("errors.hikari.not_found_error")
             )
+            return
+        elif isinstance(exception, errors.ForbiddenError):
+            await context.send_error(context.i18n.get("errors.hikari.forbidden"))
+            return
+        elif isinstance(exception, errors.RateLimitTooLongError):
+            await context.send_error(
+                content=context.i18n.get("errors.hikari.ratelimit"),
+                icon=IMAGES_DIR / "ratelimit.webp",
+            )
+            return
+        capture_exception(exception)
+        await context.send_error(
+            content=context.i18n.get("exceptions.unknown_exception.content"),
+            description=context.i18n.get("exceptions.unknown_exception.description"),
+        )

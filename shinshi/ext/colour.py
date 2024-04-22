@@ -14,18 +14,18 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Type
+import enum
 
-from shinshi.discord.workflows import Workflow
-from shinshi.workflows import general, moderation
 
-workflows: tuple[Type[Workflow], ...] = (
-    # General
-    general.GuildWorkflow,
-    general.InfoWorkflow,
-    general.InviteWorkflow,
-    general.SupportWorkflow,
-    general.UserWorkflow,
-    # Moderation
-    moderation.KickWorkflow,
-)
+class Colour(int, enum.Enum):
+    DARKER = 0x2B2D30
+    DARK = 0x505359
+    WHITE = 0xFBFDFF
+
+    RED = 0xF05454
+    YELLOW = 0xF0C454
+    GREEN = 0x68E653
+    BLUE = 0x54B8F0
+    DARK_BLUE = 0x5464F0
+    PURPLE = 0xBC65F1
+    PINK = 0xF054A9
