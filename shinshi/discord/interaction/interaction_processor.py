@@ -30,7 +30,7 @@ from sentry_sdk import capture_exception
 from shinshi import IMAGES_DIR
 from shinshi.discord.bot import Bot
 from shinshi.discord.constants import DEFAULT_LANGUAGE
-from shinshi.discord.interactables.hooks.hook_result import HookResult
+from shinshi.discord.interactables.hooks import HookResult
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.interaction.interaction_context import InteractionContext
 from shinshi.discord.interaction.utils import get_interaction_argument
