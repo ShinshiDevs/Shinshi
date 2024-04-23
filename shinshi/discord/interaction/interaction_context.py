@@ -34,9 +34,6 @@ from shinshi.discord.interactables.interactable import Interactable
 from shinshi.ext.colour import Colour
 from shinshi.i18n import I18nGroup
 
-ERROR_ICON = IMAGES_DIR / "error.webp"
-WARNING_ICON = IMAGES_DIR / "warning.webp"
-
 
 @dataclass(kw_only=True, slots=True)
 class InteractionContext:
@@ -146,7 +143,7 @@ class InteractionContext:
             content=Embed(
                 description=description,
                 colour=Colour.RED,
-            ).set_author(name=content, icon=icon or ERROR_ICON),
+            ).set_author(name=content, icon=icon or IMAGES_DIR / "error.webp"),
             flags=MessageFlag.EPHEMERAL,
         )
 
@@ -161,6 +158,6 @@ class InteractionContext:
             content=Embed(
                 description=description,
                 colour=Colour.YELLOW,
-            ).set_author(name=content, icon=icon or WARNING_ICON),
+            ).set_author(name=content, icon=icon or IMAGES_DIR / "warning.webp"),
             flags=MessageFlag.EPHEMERAL,
         )

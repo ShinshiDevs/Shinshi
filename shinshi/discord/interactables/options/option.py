@@ -22,7 +22,7 @@ from shinshi.discord.interactables.options.models.choice import Choice
 from shinshi.discord.models.translatable import Translatable
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class Option:
     type: OptionType
 

@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from shinshi.discord.interactables.options.option import Option
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class NumberOption(Option):
     min_value: int | None = None
     max_value: int | None = None

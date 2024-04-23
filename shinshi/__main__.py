@@ -20,12 +20,6 @@ from os import getenv
 
 import orjson
 import sentry_sdk
-from hikari.events import (
-    InteractionCreateEvent,
-    ShardReadyEvent,
-    StartedEvent,
-)
-from hikari.presences import Activity, ActivityType
 
 from shinshi import CONFIG_DIR, RESOURCES_DIR, __banner_extras__
 from shinshi.discord.bot import Bot
@@ -35,7 +29,7 @@ from shinshi.dotenv.load import load_dotenv
 from shinshi.i18n import I18nProvider
 from shinshi.workflows import workflows
 
-load_dotenv(".env")  # type: ignore
+load_dotenv(".env")
 
 with open(CONFIG_DIR / "logging.json", encoding="UTF-8") as stream:
     dictConfig(orjson.loads(stream.read()))
@@ -58,26 +52,7 @@ workflow_manager = WorkflowManager(
     i18n_provider,
     workflows,
 )
-bot.event_manager.subscribe(
-    InteractionCreateEvent,
-    InteractionProcessor(bot, i18n_provider, workflow_manager).proceed_interaction,
-)
-
-
-@bot.listen()
-async def on_shard_start(event: ShardReadyEvent):
-    await event.shard.update_presence(
-        activity=Activity(
-            type=ActivityType.CUSTOM,
-            state=f"Shard #{event.shard.id} with {len(event.unavailable_guilds)} guilds",
-            name="-",
-        )
-    )
-
-
-@bot.listen()
-async def on_started(_: StartedEvent) -> None:
-    await workflow_manager.sync_slash_commands()
+interaction_processor = InteractionProcessor(bot, i18n_provider, workflow_manager)
 
 
 async def main() -> None:
@@ -86,9 +61,9 @@ async def main() -> None:
     await i18n_provider.start()
     try:
         await bot.start()
+        await workflow_manager.sync_slash_commands()
     except KeyboardInterrupt:
         await bot.close()
-        loop.stop()
 
 
 if __name__ == "__main__":

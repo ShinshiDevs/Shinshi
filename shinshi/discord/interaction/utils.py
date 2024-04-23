@@ -53,3 +53,7 @@ def get_interaction_argument(
             return interaction.resolved.attachments.get(option.value)  # type: ignore
         case _:
             return option.value
+
+
+# there's many ignore, because mypy want me to override dict.get for this
+# but, i don't want to do this, so ignore this's a best way, to continue do normal things

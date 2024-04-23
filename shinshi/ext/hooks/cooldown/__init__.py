@@ -14,4 +14,4 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from .hook import cooldown  # noqa: F401
+from .hook import Cooldown  # noqa: F401

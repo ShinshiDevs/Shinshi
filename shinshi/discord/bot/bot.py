@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+import logging
+
 from hikari.impl import GatewayBot
 from hikari.users import OwnUser
 
@@ -22,6 +24,7 @@ from shinshi.discord.bot.cache import Cache
 
 class Bot(GatewayBot):
     def __init__(self, token: str | None, **kwargs) -> None:
+        self.__logger = logging.getLogger("shinshi.bot")
         if not token:
             raise ValueError("Bot cannot be started without token")
         self.__cache = Cache(self)
@@ -36,8 +39,7 @@ class Bot(GatewayBot):
     def me(self) -> OwnUser:
         if user := self.get_me():
             return user
-        else:
-            raise RuntimeError("Cannot access own user")
+        raise RuntimeError("Cannot access own user")
 
     @property
     def cache(self) -> Cache:

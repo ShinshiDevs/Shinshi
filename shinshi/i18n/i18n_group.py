@@ -24,7 +24,7 @@ _LOGGER = logging.getLogger("shinshi.i18n")
 _ARGUMENTS_SENTINEL: dict[str, Any] = {}
 
 
-@dataclass
+@dataclass(slots=True)
 class I18nGroup:
     name: str
     value: dict[str, str | tuple[str, ...] | I18nGroup] = field(default_factory=dict)

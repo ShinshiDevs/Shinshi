@@ -22,7 +22,7 @@ from hikari.commands import CommandChoice, CommandOption, OptionType
 
 from shinshi.discord.bot import Bot
 from shinshi.discord.interactables.command import Command
-from shinshi.discord.interactables.group import Group, SubGroup
+from shinshi.discord.interactables.group import Group
 from shinshi.discord.interactables.options import Option
 from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
@@ -80,6 +80,17 @@ class WorkflowManager:
             self.slash_command_builders,
         )
 
+    def cast_translatable(
+        self, value: Translatable | str | None, *, fallback: str | None = None
+    ) -> Translatable:
+        translatable: Translatable = (
+            Translatable(fallback=str(value or fallback))
+            if not isinstance(value, Translatable)
+            else value
+        )
+        translatable.build(self.i18n_provider)
+        return translatable
+
     def get_group_builder(self, group: Group) -> SlashCommandBuilder:
         builder: SlashCommandBuilder = self.get_command_builder_base(group)
         for command in group.commands.values():
@@ -98,7 +109,7 @@ class WorkflowManager:
         builder: SlashCommandBuilder = (
             self.bot.rest.slash_command_builder(
                 name=command.name,
-                description="-",
+                description=command.name,
             )
             .set_default_member_permissions(command.default_member_permissions)
             .set_is_dm_enabled(command.is_dm_enabled)
@@ -109,17 +120,6 @@ class WorkflowManager:
             builder.set_description(description.fallback)
             builder.set_description_localizations(description.translates)
         return builder
-
-    def cast_translatable(
-        self, value: Translatable | str | None, *, fallback: str | None = None
-    ) -> Translatable:
-        translatable: Translatable = (
-            Translatable(fallback=value or fallback)
-            if not isinstance(value, Translatable)
-            else value
-        )
-        translatable.build(self.i18n_provider)
-        return translatable
 
     def build_option(self, option: Option) -> CommandOption:
         description: Translatable = self.cast_translatable(option.description)
@@ -154,11 +154,11 @@ class WorkflowManager:
             description_localizations=description.translates,
         )
 
-    def build_sub_group(self, sub_group: SubGroup) -> CommandOption:
+    def build_sub_group(self, sub_group: Group) -> CommandOption:
         return CommandOption(
             type=OptionType.SUB_COMMAND_GROUP,
             name=sub_group.name,
-            description="-",
+            description=sub_group.name,
             options=[
                 self.build_sub_command(command)
                 for command in sub_group.commands.values()
@@ -174,7 +174,7 @@ class WorkflowManager:
         commands = self.commands
         group = self.commands.get(group_name or "")
         if isinstance(group, Group):
-            sub_group: SubGroup | None = group.sub_groups.get(subgroup_name or "")
+            sub_group: Group | None = group.sub_groups.get(subgroup_name or "")
             if sub_group:
                 return sub_group.commands[command_name]
             return group.commands[command_name]

@@ -15,4 +15,3 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from .load import load_dotenv  # noqa: F401
-from .parse import parse_dotenv_file  # noqa: F401

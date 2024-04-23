@@ -14,20 +14,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
 from hikari.permissions import Permissions
 
-from shinshi.discord.interactables.group import Group, SubGroup
-from shinshi.discord.interactables.hooks.typing import HookT
+from shinshi.discord.interactables.group import Group
+from shinshi.discord.interactables.hooks import Hook
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.interactables.options.option import Option
 from shinshi.discord.models.translatable import Translatable
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class Command(Interactable):
     name: str
     description: Translatable | str | None = None
@@ -39,18 +39,18 @@ class Command(Interactable):
     is_dm_enabled: bool
     is_nsfw: bool
 
-    options: tuple[Option, ...]
-    hooks: tuple[HookT, ...]  # type: ignore  # TODO: Hook class or something object-type.
+    options: Sequence[Option]
+    hooks: Sequence[Hook]
 
-    _autocomplete: dict[str, Callable[..., Awaitable[Any]]] = field(
+    autocompletes: dict[str, Callable[..., Awaitable[Any]]] = field(
         default_factory=dict
     )
 
     def __post_init__(self) -> None:
         if self.group:
             if self.sub_group:
-                sub_group: SubGroup = self.group.sub_groups.setdefault(
-                    self.sub_group, SubGroup(name=self.sub_group)
+                sub_group: Group = self.group.sub_groups.setdefault(
+                    self.sub_group, Group(name=self.sub_group)
                 )
                 sub_group.commands[self.name] = self
             else:
@@ -63,4 +63,4 @@ class Command(Interactable):
 
     def autocomplete(self, argument: str) -> None:
         def _(func: Callable[..., Awaitable[Any]]) -> None:
-            self._autocomplete[argument] = func
+            self.autocompletes[argument] = func

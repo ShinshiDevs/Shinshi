@@ -17,7 +17,7 @@
 from typing import Type
 
 from shinshi.discord.workflows import Workflow
-from shinshi.workflows import general, moderation
+from shinshi.workflows import general
 
 workflows: tuple[Type[Workflow], ...] = (
     # General
@@ -26,6 +26,4 @@ workflows: tuple[Type[Workflow], ...] = (
     general.InviteWorkflow,
     general.SupportWorkflow,
     general.UserWorkflow,
-    # Moderation
-    moderation.KickWorkflow,
 )

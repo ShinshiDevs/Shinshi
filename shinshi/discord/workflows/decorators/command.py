@@ -14,14 +14,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Sequence
 from typing import Any
 
 from hikari.permissions import Permissions
 
 from shinshi.discord.interactables.command import Command
 from shinshi.discord.interactables.group import Group
-from shinshi.discord.interactables.hooks.typing import HookT
+from shinshi.discord.interactables.hooks import Hook
 from shinshi.discord.interactables.options import Option
 from shinshi.discord.models.translatable import Translatable
 
@@ -32,8 +32,8 @@ def command(
     name: str | None = None,
     group: Group | None = None,
     sub_group: str | None = None,
-    options: tuple[Option, ...] = (),
-    hooks: tuple[HookT, ...] = (),
+    options: Sequence[Option] = (),
+    hooks: Sequence[Hook] = (),
     default_member_permissions: Permissions = Permissions.NONE,
     is_dm_enabled: bool = False,
     is_nsfw: bool = False,

@@ -24,8 +24,8 @@ class Workflow(metaclass=WorkflowMeta):
     __slots__: tuple[str, ...] = ("interactables",)
 
     def __init__(self) -> None:
-        self.interactables: list[Interactable] = getattr(
-            self, WORKFLOW_INTERACTABLES, []
+        self.interactables: list[Interactable] = (
+            getattr(self, WORKFLOW_INTERACTABLES) or []
         )
 
     def get_commands(self) -> list[Command]:
@@ -36,4 +36,4 @@ class Workflow(metaclass=WorkflowMeta):
         ]
 
     async def start(self) -> None:
-        return
+        pass

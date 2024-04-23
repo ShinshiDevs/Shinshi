@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from shinshi.discord.interactables.command import Command
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class Group:
     name: str
 
@@ -34,10 +34,4 @@ class Group:
     is_nsfw: bool = False
 
     commands: dict[str, Command] = field(default_factory=dict)
-    sub_groups: dict[str, SubGroup] = field(default_factory=dict)
-
-
-@dataclass(kw_only=True)
-class SubGroup:
-    name: str
-    commands: dict[str, Command] = field(default_factory=dict)
+    sub_groups: dict[str, Group] = field(default_factory=dict)

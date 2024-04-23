@@ -22,6 +22,6 @@ from hikari.channels import ChannelType
 from shinshi.discord.interactables.options.option import Option
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class ChannelOption(Option):
     channel_types: Sequence[ChannelType] | None = None

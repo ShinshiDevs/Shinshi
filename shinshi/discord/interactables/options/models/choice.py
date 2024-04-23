@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from shinshi.discord.models.translatable import Translatable
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, slots=True)
 class Choice:
     name: Translatable | str
     value: str | float | int

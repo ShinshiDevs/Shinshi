@@ -21,35 +21,30 @@ from cachetools import TTLCache
 from hikari.snowflakes import Snowflake
 
 from shinshi import IMAGES_DIR
-from shinshi.discord.interactables.hooks import HookResult, HookT
+from shinshi.discord.interactables.hooks import Hook, HookResult
 from shinshi.discord.interaction import InteractionContext
 from shinshi.ext.hooks.cooldown.bucket import BucketType
 from shinshi.utils.string import format_datetime
 
 
-def cooldown(period: timedelta, *, _bucket: BucketType = BucketType.USER) -> HookT:  # type: ignore  # TODO: The same from shinshi/discord/interactables/command.py on 43 line.
-    """Creates a cooldown hook using TTLCache.
+class Cooldown:
+    def __init__(
+        self, period: timedelta, *, bucket: BucketType = BucketType.USER
+    ) -> None:
+        self.period = period
+        self.bucket = bucket
+        self.cache: TTLCache[Snowflake | tuple[Snowflake, ...], datetime] = TTLCache(
+            maxsize=1000, ttl=period.total_seconds()
+        )
 
-    This hook prevents the command from being used again within a certain period of time.
-
-    Args:
-        period (timedelta): The amount of time before the command can be used again.
-        _bucket (BucketType, optional): The bucket type for ratelimiting. Defaults to BucketType.USER.
-    Returns:
-        Callable: A hook function to be used before command execution.
-    """
-    cache: TTLCache[Snowflake | tuple[Snowflake, ...], datetime] = TTLCache(
-        maxsize=1000, ttl=period.total_seconds()
-    )
-
-    async def delete_after(context: InteractionContext) -> None:
-        await asyncio.sleep(period.total_seconds())
+    async def delete_after(self, context: InteractionContext) -> None:
+        await asyncio.sleep(self.period.total_seconds())
         await context.delete_response()
 
-    async def hook(context: InteractionContext) -> HookResult:
-        bucket: Snowflake | tuple[Snowflake, ...] = _bucket(context)
-        if (retry_after := cache.get(bucket)) is None:
-            cache[bucket] = datetime.now() + period
+    async def callback(self, context: InteractionContext) -> HookResult:
+        bucket: Snowflake | tuple[Snowflake, ...] = self.bucket(context)
+        if (retry_after := self.cache.get(bucket)) is None:
+            self.cache[bucket] = datetime.now() + self.period
             return HookResult(stop=False)
         else:
             asyncio.gather(
@@ -61,8 +56,10 @@ def cooldown(period: timedelta, *, _bucket: BucketType = BucketType.USER) -> Hoo
                     ),
                     icon=IMAGES_DIR / "cooldown_warning.webp",
                 ),
-                delete_after(context),
+                self.delete_after(context),
             )
             return HookResult(stop=True)
 
-    return hook  # type: ignore  # the same
+    @property
+    def hook(self) -> Hook:
+        return Hook(callback=self.callback)

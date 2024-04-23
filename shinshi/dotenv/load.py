@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import os
+import re
 
-from shinshi.dotenv.parse import parse_dotenv_file
+DOTENV_REGEX = re.compile(r"^([A-Za-z_]+\w*)=([^#]+)(#.*)?$")
 
 
-def load_dotenv(file_path: os.PathLike) -> None:
-    if variables := parse_dotenv_file(file_path):
-        for key, value in variables.items():
-            os.environ.update({key: value})
+def load_dotenv(file_path: str | os.PathLike) -> None:
+    with open(file_path, "r", encoding="UTF-8") as file:
+        for line in file:
+            if match := DOTENV_REGEX.match(line):
+                os.environ[match.group(1)] = match.group(2).strip().replace('"', "")

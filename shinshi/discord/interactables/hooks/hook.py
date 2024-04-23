@@ -15,8 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 from collections.abc import Awaitable, Callable
-from typing import TypeVar
+from dataclasses import dataclass
 
 from shinshi.discord.interactables.hooks.hook_result import HookResult
+from shinshi.discord.interaction.interaction_context import InteractionContext
 
-HookT = TypeVar("HookT", bound=Callable[..., Awaitable[HookResult]])
+
+@dataclass(slots=True)
+class Hook:
+    callback: Callable[[InteractionContext], Awaitable[HookResult]]

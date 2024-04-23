@@ -52,6 +52,10 @@ class InteractionProcessor:
         workflow_manager: WorkflowManager,
     ) -> None:
         self.bot = bot
+        self.bot.event_manager.subscribe(
+            InteractionCreateEvent, self.proceed_interaction
+        )
+
         self.i18n_provider = i18n_provider
         self.workflow_manager = workflow_manager
 

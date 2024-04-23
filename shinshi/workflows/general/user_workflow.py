@@ -34,20 +34,20 @@ from shinshi.discord.models.translatable import Translatable
 from shinshi.discord.workflows import Workflow
 from shinshi.discord.workflows.decorators import command
 from shinshi.ext.colour import Colour
-from shinshi.ext.hooks.cooldown import cooldown
+from shinshi.ext.hooks.cooldown import Cooldown
 from shinshi.utils.string import format_datetime
 
 
 class UserWorkflow(Workflow):
     GROUP = Group(name="user", is_dm_enabled=True)
-    OPTIONS: tuple[Option, ...] = (
+    OPTIONS: list[Option] = [
         Option(
             type=OptionType.USER,
             name="target",
             description=Translatable("commands.user.arguments.target.description"),
             is_required=False,
-        ),
-    )
+        )
+    ]
 
     @command(
         group=GROUP,
@@ -186,7 +186,7 @@ class UserWorkflow(Workflow):
         name="banner",
         description=Translatable("commands.user.banner.description"),
         options=OPTIONS,
-        hooks=[cooldown(period=timedelta(seconds=5))],  # type: ignore  # TODO: hook object, the same in shinshi/discord/interactables/command.py on 43 line
+        hooks=[Cooldown(period=timedelta(seconds=5)).hook],
     )
     async def user_banner(
         self,
