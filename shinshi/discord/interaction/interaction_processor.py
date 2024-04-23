@@ -30,6 +30,7 @@ from sentry_sdk import capture_exception
 from shinshi import IMAGES_DIR
 from shinshi.discord.bot import Bot
 from shinshi.discord.constants import DEFAULT_LANGUAGE
+from shinshi.discord.interactables.hooks.hook_result import HookResult
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.interaction.interaction_context import InteractionContext
 from shinshi.discord.interaction.utils import get_interaction_argument
@@ -94,6 +95,10 @@ class InteractionProcessor:
         context = self.create_interaction_context(interaction, command)
         context.arguments = arguments
         try:
+            for hook in command.hooks:
+                result: HookResult = await hook.callback(context)  # type: ignore
+                if result.stop:
+                    return
             await command.callback(
                 getattr(command, INTERACTABLE_WORKFLOW_INSTANCE),
                 context,
