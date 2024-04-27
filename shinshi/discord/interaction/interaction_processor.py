@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Sequence
 from typing import Any
 
 from hikari import errors
@@ -40,7 +41,7 @@ from shinshi.i18n import I18nProvider
 
 
 class InteractionProcessor:
-    __slots__: tuple[str, ...] = (
+    __slots__: Sequence[str] = (
         "bot",
         "i18n_provider",
         "workflow_manager",
@@ -96,7 +97,7 @@ class InteractionProcessor:
         context.arguments = arguments
         try:
             for hook in command.hooks:
-                result: HookResult = await hook.callback(context)  # type: ignore
+                result: HookResult = await hook.callback(context)
                 if result.stop:
                     return
             await command.callback(

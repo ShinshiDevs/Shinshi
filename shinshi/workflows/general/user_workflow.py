@@ -49,6 +49,12 @@ class UserWorkflow(Workflow):
         )
     ]
 
+    @staticmethod
+    def get_icon_name(user: InteractionMember | User) -> str:
+        if user.is_bot:
+            return ("verified_" if UserFlag.VERIFIED_BOT in user.flags else "") + "bot"
+        return "user"
+
     @command(
         group=GROUP,
         name="info",
@@ -60,55 +66,53 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: InteractionMember | User | None = None,
     ) -> None:
-        user: InteractionMember | User = target or context.interaction.member  # type: ignore
-        icon_name: str = (
-            "user"
-            if not user.is_bot
-            else f"{"verified_" if UserFlag.VERIFIED_BOT in user.flags else ""}bot"
-        ) + ".webp"
+        target = target or context.interaction.member
         embed = (
             Embed(
-                title=user.global_name or user.username,
-                url=f"https://discordapp.com/users/{user.id}",
-                description=f"@{user.username}" if user.global_name else None,
+                title=target.global_name or target.username,
+                url=f"https://discordapp.com/users/{target.id}",
+                description=f"@{target.username}" if target.global_name else None,
                 colour=Colour.DARK,
             )
-            .set_thumbnail(user.display_avatar_url)
+            .set_thumbnail(target.display_avatar_url)
             .set_author(
                 name=context.i18n.get("commands.user.info.embed.author.name"),
-                icon=IMAGES_DIR / icon_name,
+                icon=IMAGES_DIR / (self.get_icon_name(target) + ".webp"),
             )
-            .set_footer(text=f"ID: {user.id}")
+            .set_footer(text=f"ID: {target.id}")
             .add_field(
                 name=context.i18n.get(
                     "commands.user.info.embed.fields.created_at.name"
                 ),
                 value=(
-                    f"{format_datetime(user.created_at, "R")}\n"
-                    f"{format_datetime(user.created_at, "D")}"
+                    f"{format_datetime(target.created_at, "R")}\n"
+                    f"{format_datetime(target.created_at, "D")}"
                 ),
                 inline=True,
             )
         )
-        if isinstance(user, InteractionMember):
+        if isinstance(target, InteractionMember):
             roles: list[Role] = sorted(
-                user.get_roles(), key=lambda role: role.position, reverse=True
+                list(
+                    filter(lambda role: role.id != target.guild_id, target.get_roles())
+                ),
+                key=lambda role: role.position,
+                reverse=True,
             )
             embed.add_field(
                 name=context.i18n.get(
                     "commands.user.info.embed.fields.joined_at.name",
-                    {"guild": user.get_guild().name},  # type: ignore  # InteractionMember always has a guild
+                    {"guild": target.get_guild().name},
                 ),
                 value=(
-                    f"{format_datetime(user.joined_at, "R")}\n"  # type: ignore  # the same... mypy is stupid
-                    f"{format_datetime(user.joined_at, "D")}"  # type: ignore
+                    f"{format_datetime(target.joined_at, "R")}\n"
+                    f"{format_datetime(target.joined_at, "D")}"
                 ),
                 inline=True,
             )
-            embed.title = user.display_name
-            if colour := next((role.colour for role in roles if role.colour), None):
-                embed.colour = colour
-            if roles := [role.mention for role in roles if role.id != user.guild_id]:  # type: ignore
+            embed.title = target.display_name
+            embed.colour = next((role.colour for role in roles), None)
+            if roles:
                 if len(roles) > 5:
                     embed.add_field(
                         name=context.i18n.get(
@@ -117,7 +121,9 @@ class UserWorkflow(Workflow):
                         value=context.i18n.get(
                             "commands.user.info.embed.fields.roles.value.many_roles",
                             {
-                                "roles": ", ".join(roles[:5]),  # type: ignore
+                                "roles": ", ".join(
+                                    map(lambda role: role.mention, roles)[:5]
+                                ),
                                 "count": int(len(roles) - 5),
                             },
                         ),
@@ -127,7 +133,7 @@ class UserWorkflow(Workflow):
                         name=context.i18n.get(
                             "commands.user.info.embed.fields.roles.name"
                         ),
-                        value=", ".join(roles),
+                        value=", ".join(map(lambda role: role.mention, roles)),
                     )
             else:
                 embed.add_field(
@@ -149,24 +155,24 @@ class UserWorkflow(Workflow):
         context: InteractionContext,
         target: InteractionMember | User | None = None,
     ) -> None:
-        user: InteractionMember | User = target or context.interaction.member  # type: ignore
-        if user.avatar_url is None:
+        target = target or context.interaction.member
+        if target.avatar_url is None:
             return await context.send_warning(
                 context.i18n.get(
                     "commands.user.avatar.exceptions.no_avatar_exception",
                     {
-                        "user": user.username or user.global_name,
+                        "user": target.username or target.global_name,
                     },
                 )
             )
         return await context.create_response(
             embed=(
                 Embed(colour=Colour.DARK)
-                .set_image(user.avatar_url)
+                .set_image(target.avatar_url)
                 .set_author(
                     name=context.i18n.get(
                         "commands.user.avatar.embed.author.name",
-                        {"user": user.global_name or user.username},
+                        {"user": target.global_name or target.username},
                     )
                 )
             ),
@@ -174,7 +180,7 @@ class UserWorkflow(Workflow):
                 components=[
                     LinkButtonBuilder(
                         label=f"{res}x{res}",
-                        url=target.make_avatar_url(size=res).url,  # type: ignore
+                        url=target.make_avatar_url(size=res).url,
                     )
                     for res in (256, 512, 1024)
                 ]

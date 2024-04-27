@@ -27,12 +27,12 @@ from shinshi.discord.workflows.constants import (
 
 class WorkflowMeta(type):
     def __new__(
-        self: Type[WorkflowMeta],
+        cls: Type[WorkflowMeta],
         name: str,
         bases: tuple[type, ...],
         attrs: dict[str, Any],
     ) -> WorkflowMeta:
-        cls: WorkflowMeta = super().__new__(self, name, bases, attrs)
+        cls: WorkflowMeta = super().__new__(cls, name, bases, attrs)
         setattr(cls, WORKFLOW_INTERACTABLES, [])
         for name, obj in attrs.items():
             if isinstance(obj, Interactable):

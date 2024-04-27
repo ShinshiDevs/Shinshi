@@ -14,10 +14,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Final
 
-__all__ = (
+__all__: Sequence[str] = (
     "__license__",
     "__copyright__",
     "__author__",

@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import logging
+from collections.abc import Sequence
 from typing import Type
 
 from hikari.api import SlashCommandBuilder
@@ -30,7 +31,7 @@ from shinshi.i18n import I18nProvider
 
 
 class WorkflowManager:
-    __slots__: tuple[str, ...] = (
+    __slots__: Sequence[str] = (
         "__logger",
         "bot",
         "i18n_provider",

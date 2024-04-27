@@ -30,30 +30,22 @@ from hikari.interactions import (
 def get_interaction_argument(
     interaction: CommandInteraction, option: CommandInteractionOption
 ) -> InteractionMember | InteractionChannel | Resourceish | Role | Any | None:
-    if not interaction.resolved:
-        raise ValueError("Interaction don't have resolved data")
     match option.type:
         case OptionType.USER:
-            if interaction.resolved.members:
-                return interaction.resolved.members.get(option.value)  # type: ignore
-            if interaction.resolved.users:
-                return interaction.resolved.users.get(option.value)  # type: ignore
-            return None
+            return interaction.resolved.members.get(
+                option.value,
+                interaction.resolved.users.get(option.value),
+            )
         case OptionType.CHANNEL:
-            return interaction.resolved.channels.get(option.value)  # type: ignore
+            return interaction.resolved.channels.get(option.value)
         case OptionType.ROLE:
-            return interaction.resolved.roles.get(option.value)  # type: ignore
+            return interaction.resolved.roles.get(option.value)
         case OptionType.MENTIONABLE:
-            if interaction.resolved.members:
-                return interaction.resolved.members.get(option.value)  # type: ignore
-            if interaction.resolved.roles:
-                return interaction.resolved.roles.get(option.value)  # type: ignore
-            return None
+            return interaction.resolved.members.get(
+                option.value,
+                interaction.resolved.roles.get(option.value),
+            )
         case OptionType.ATTACHMENT:
-            return interaction.resolved.attachments.get(option.value)  # type: ignore
+            return interaction.resolved.attachments.get(option.value)
         case _:
             return option.value
-
-
-# there's many ignore, because mypy want me to override dict.get for this
-# but, i don't want to do this, so ignore this's a best way, to continue do normal things

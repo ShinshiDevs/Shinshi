@@ -61,6 +61,8 @@ class Command(Interactable):
         parts = [getattr(self.group, "name", None), self.sub_group, self.name]
         return " ".join(filter(None, parts))
 
-    def autocomplete(self, argument: str) -> None:
-        def _(func: Callable[..., Awaitable[Any]]) -> None:
+    def autocomplete(self, argument: str) -> Callable:
+        def decorator(func: Callable[..., Awaitable[Any]]) -> None:
             self.autocompletes[argument] = func
+
+        return decorator

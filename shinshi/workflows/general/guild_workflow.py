@@ -37,7 +37,7 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.info.description"),
     )
     async def guild_info(self, context: InteractionContext) -> None:
-        guild: GatewayGuild = context.interaction.get_guild()  # type: ignore
+        guild: GatewayGuild = context.interaction.get_guild()
         embed = (
             Embed(title=guild.name, colour=Colour.DARK)
             .set_thumbnail(guild.icon_url)
@@ -66,8 +66,8 @@ class GuildWorkflow(Workflow):
                     "commands.guild.info.embed.fields.you_joined_at.name"
                 ),
                 value=(
-                    f"{format_datetime(context.interaction.member.joined_at, "R")}\n"  # type: ignore # fix maybe or ignore
-                    f"{format_datetime(context.interaction.member.joined_at, "D")}"  # type: ignore
+                    f"{format_datetime(context.interaction.member.joined_at, "R")}\n"
+                    f"{format_datetime(context.interaction.member.joined_at, "D")}"
                 ),
                 inline=True,
             )
@@ -90,7 +90,7 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.icon.description"),
     )
     async def guild_icon(self, context: InteractionContext) -> None:
-        guild: GatewayGuild = context.interaction.get_guild()  # type: ignore
+        guild: GatewayGuild = context.interaction.get_guild()
         if guild.icon_url is None:
             return await context.send_warning(
                 context.i18n.get(
@@ -112,7 +112,7 @@ class GuildWorkflow(Workflow):
                 components=[
                     LinkButtonBuilder(
                         label=f"{res}x{res}",
-                        url=guild.make_icon_url(size=res).url,  # type: ignore
+                        url=guild.make_icon_url(size=res).url,
                     )
                     for res in (256, 512, 1024)
                 ]
@@ -125,7 +125,7 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.splash.description"),
     )
     async def guild_splash(self, context: InteractionContext) -> None:
-        guild: GatewayGuild = context.interaction.get_guild()  # type: ignore
+        guild: GatewayGuild = context.interaction.get_guild()
         if not guild.splash_url:
             return await context.send_warning(
                 context.i18n.get(
@@ -158,7 +158,7 @@ class GuildWorkflow(Workflow):
         description=Translatable("commands.guild.banner.description"),
     )
     async def guild_banner(self, context: InteractionContext) -> None:
-        guild: GatewayGuild = context.interaction.get_guild()  # type: ignore
+        guild: GatewayGuild = context.interaction.get_guild()
         if not guild.banner_url:
             return await context.send_warning(
                 context.i18n.get(

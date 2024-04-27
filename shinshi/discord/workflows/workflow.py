@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
+from collections.abc import Sequence
+
 from shinshi.discord.interactables.command import Command
 from shinshi.discord.interactables.interactable import Interactable
 from shinshi.discord.workflows.constants import WORKFLOW_INTERACTABLES
@@ -21,7 +23,7 @@ from shinshi.discord.workflows.workflow_meta import WorkflowMeta
 
 
 class Workflow(metaclass=WorkflowMeta):
-    __slots__: tuple[str, ...] = ("interactables",)
+    __slots__: Sequence[str] = ("interactables",)
 
     def __init__(self) -> None:
         self.interactables: list[Interactable] = (

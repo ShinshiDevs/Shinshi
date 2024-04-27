@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Shinshi.  If not, see <https://www.gnu.org/licenses/>.
 import asyncio
+from collections.abc import Sequence
 from datetime import datetime, timedelta
 
 from cachetools import TTLCache
@@ -28,6 +29,8 @@ from shinshi.utils.string import format_datetime
 
 
 class Cooldown:
+    __slots__: Sequence[str] = ("period", "bucket", "cache")
+
     def __init__(
         self, period: timedelta, *, bucket: BucketType = BucketType.USER
     ) -> None:
@@ -47,7 +50,7 @@ class Cooldown:
             self.cache[bucket] = datetime.now() + self.period
             return HookResult(stop=False)
         else:
-            asyncio.gather(
+            await asyncio.gather(
                 context.send_warning(
                     content=context.i18n.get("exceptions.cooldown_warning.content"),
                     description=context.i18n.get(

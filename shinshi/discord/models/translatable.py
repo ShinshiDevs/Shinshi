@@ -27,7 +27,7 @@ from shinshi.i18n import I18nProvider
 class Translatable:
     key: str | None = None
 
-    fallback: str | None = None
+    fallback: str = ""
     translates: dict[str, Any] = field(default_factory=dict)
 
     def build(self, i18n_provider: I18nProvider) -> None:
