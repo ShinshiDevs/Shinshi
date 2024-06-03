@@ -1,0 +1,28 @@
+**.log
+**.example
+README.md
+resources/*.png
+
+### Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*$py.class
+
+# Environments
+.venv
+venv/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ruff
+.ruff_cache/
+
+# Pyre type checker
+.pyre/
+.pytype/
+
+# Cython debug symbols
+cython_debug/
