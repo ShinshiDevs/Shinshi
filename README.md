@@ -5,7 +5,7 @@
 - [License](#License)
 
 <a href="https://github.com/ShinshiDevs/Shinshi">
-    <img src="./static/logo.svg" align=right width="200" height="200">
+    <img src="./static/logo.svg" align=right width="100" height="100">
 </a>
 
 # Shinshi
