@@ -1,104 +1,18 @@
-### Project
-# Secrets
-*.env
-# Media
-*.webp
-# Docker
-docker/data
+.DS_STORE
 
-
-
-### Python
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Environments
-.venv
-venv/
+.idea
+.vscode
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+.cache
+.ruff_cache
+.mypy_cache
 
-# ruff
-.ruff_cache/
-
-# Pyre type checker
-.pyre/
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# Poetry
 poetry.lock
 
+*.env
 
-### macOS
-# General
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-
-
-### Windows
-# Thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-
-# Dump file
-*.stackdump
-
-# Folder config file
-[Dd]esktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-
-
-### Linux
-*~
-
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
-
-
-
-### PyCharm
-.idea
-
-
-
-### Visual Studio Code
-.vscode
+test_project
