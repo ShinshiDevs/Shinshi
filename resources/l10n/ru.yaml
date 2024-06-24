@@ -1,27 +1,26 @@
 commands:
   about:
-    bot:
-      description: О боте
-      embed:
-        fields:
-          - name: Shinshi это
-            value: современный и удобный в использовании бот для Discord, разработанный для предоставления Вам и вашим серверам отличного функционала и стабильной производительности.
-            inline: false
-          - name: Версия
-            value: "{version} ([`{hash}`]({hash_commit_url}))"
-            inline: true
-          - name: "Задержка"
-            value: "{latency} ms"
-            inline: true
-          - name: "Использование ОЗУ"
-            value: "{ram_usage}"
-            inline: true
-          - name: "Серверы"
-            value: "{guild_count}"
-            inline: true
-          - name: "Участники"
-            value: "{member_count}"
-            inline: true
-          - name: "Сегмент"
-            value: "{shard_id}"
-            inline: true
+    description: О боте
+    embed:
+      fields:
+        - name: Shinshi это
+          value: современный и удобный в использовании бот для Discord, разработанный для предоставления Вам и вашим серверам отличного функционала и стабильной производительности.
+          inline: false
+        - name: Версия
+          value: "{version} ([`{hash}`]({hash_commit_url}))"
+          inline: true
+        - name: "Задержка"
+          value: "{latency} ms"
+          inline: true
+        - name: "Использование ОЗУ"
+          value: "{ram_usage}"
+          inline: true
+        - name: "Серверы"
+          value: "{guild_count}"
+          inline: true
+        - name: "Участники"
+          value: "{member_count}"
+          inline: true
+        - name: "Сегмент"
+          value: "{shard_id}"
+          inline: true

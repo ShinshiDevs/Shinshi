@@ -30,11 +30,10 @@ from shinshi.utils.size import convert_size
 
 class AboutCommand(SlashCommand):
     def __init__(self) -> None:
-        super().__init__("about")
+        super().__init__("about", description=Localized("commands.about.description"))
         self.process: Process = Process()
 
-    @sub_command("bot", description=Localized("commands.about.bot.description"))
-    async def about_bot(self, context: InteractionContext) -> None:
+    async def callback(self, context: InteractionContext) -> None:
         embed: Embed = Embed().set_thumbnail(context.bot.get_me().avatar_url)
         guilds: ValuesView[GatewayGuild] = context.bot.cache.get_guilds_view().values()
         ram_usage: tuple[int, str] = convert_size(self.process.memory_info().rss)
@@ -48,7 +47,7 @@ class AboutCommand(SlashCommand):
             member_count=sum(guild.member_count for guild in guilds),
             shard_id=context.guild.shard_id,
         )
-        for field in context.locale.get_seq("commands.about.bot.embed.fields"):
+        for field in context.locale.get_seq("commands.about.embed.fields"):
             field["value"] = field["value"].format(**formatting)
             embed.add_field(**field)
         return await context.create_response(embed=embed)
