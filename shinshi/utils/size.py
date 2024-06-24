@@ -13,25 +13,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from os import getenv
-from pathlib import Path
+import math
 
-from aurum.client import Client
-from aurum.enum.sync_commands import SyncCommandsFlag
-from dotenv.main import load_dotenv
-from hikari.impl import GatewayBot
+size_suffixes: tuple[str, ...] = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
 
-ROOT_CWD: Path = Path.cwd()
 
-load_dotenv(override=True)
-
-if not (token := getenv("SHINSHI_DISCORD_TOKEN")):
-    raise RuntimeError(
-        "Unable to retrieve a token, please ensure that the environment secrets are loaded correctly."
-    )
-bot: GatewayBot = GatewayBot(token)
-client: Client = Client(bot, sync_commands=SyncCommandsFlag.DEBUG)
-
-if __name__ == "__main__":
-    client.commands.load_folder(ROOT_CWD / "shinshi" / "commands")
-    bot.run()
+def convert_size(size_bytes: float) -> tuple[float, str]:
+    if size_bytes == 0:
+        return 0, "B"
+    exponent: int = int(math.floor(math.log(size_bytes, 1024)))
+    divisor: float = math.pow(1024, exponent)
+    size_value: float = round(size_bytes / divisor, 2)
+    return size_value, size_suffixes[exponent]

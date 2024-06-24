@@ -1,0 +1,27 @@
+commands:
+  about:
+    bot:
+      description: About bot
+      embed:
+        fields:
+          - name: Shinshi is
+            value: a modern and user-friendly Discord bot designed to give you and your servers great functionality and stable performance.
+            inline: false
+          - name: Version
+            value: "{version} ([`{hash}`]({hash_commit_url}))"
+            inline: true
+          - name: "Latency"
+            value: "{latency} ms"
+            inline: true
+          - name: "RAM usage"
+            value: "{ram_usage}"
+            inline: true
+          - name: "Guilds"
+            value: "{guild_count}"
+            inline: true
+          - name: "Members"
+            value: "{member_count}"
+            inline: true
+          - name: "Shard ID"
+            value: "{shard_id}"
+            inline: true
