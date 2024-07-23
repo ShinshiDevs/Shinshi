@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.idea
+.vscode
+
+.env
+
+poetry.lock
+
+.DS_STORE
