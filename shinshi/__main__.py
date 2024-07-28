@@ -1,16 +1,19 @@
-# Shinshi  Copyright (C) 2024  Shinshi Developers Team
-import os
+from hikari.presences import Activity, ActivityType
 
-from aurum.client import Client
-from hikari.impl import GatewayBot
-
+from shinshi import __version__
+from shinshi.client import Shinshi
 from shinshi.dotenv import load_dotenv
 from shinshi.l10n import LocalizationProvider
+from shinshi.utils.loop import install_uvloop
 
 if __name__ == "__main__":
     load_dotenv()
+    install_uvloop()
 
-    bot: GatewayBot = GatewayBot(os.environ.get("SHINSHI_DISCORD_TOKEN", ""))
-    client: Client = Client(bot, l10n=LocalizationProvider("i18n"))
-
-    bot.ruin()
+    client: Shinshi = Shinshi(l10n=LocalizationProvider("i18n"))
+    client.run(
+        activity=Activity(
+            type=ActivityType.LISTENING,
+            name=f"v{__version__}",
+        )
+    )

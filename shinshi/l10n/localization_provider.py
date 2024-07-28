@@ -23,10 +23,7 @@ class LocalizationProvider(LocalizationProviderInterface):
         for file in directory.glob("*.yaml"):
             name: str = file.name.split(".")[0]
             with open(file, "r") as buffer:
-                data: dict[str, Any] = load(buffer, Loader=CLoader)
-                if not data:
-                    data = {}
-                    self.__logger.warning("locale file %s loaded uncorrectly", file)
+                data: dict[str, Any] = load(buffer, Loader=CLoader) or {}
                 self.languages[name] = Locale(name=name, value=data)
         self.__logger.info(
             "started with %s languages",
