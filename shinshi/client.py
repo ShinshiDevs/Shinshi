@@ -1,10 +1,10 @@
 from os import environ
-from aurum import LocalizationProviderInterface
-from aurum.client import Client
+from aurum.l10n import LocalizationProviderInterface
+from aurum.client import Client as AurumClient
 from hikari.impl import GatewayBot
 
 
-class Shinshi(Client):
+class Client(AurumClient):
     def __init__(
         self,
         l10n: LocalizationProviderInterface,
@@ -12,5 +12,5 @@ class Shinshi(Client):
         self.bot: GatewayBot = GatewayBot(environ.get("SHINSHI_DISCORD_TOKEN"))
         super().__init__(bot=self.bot, l10n=l10n)
 
-    def run(self, *args, **kwargs) -> None:
-        self.bot.run(*args, **kwargs)
+    def run(self, **kwargs) -> None:
+        self.bot.run(**kwargs)
