@@ -1,0 +1,10 @@
+commands:
+  about:
+    description: General information about Shinshi in the moment
+    bot:
+      description: A modern and user-friendly Discord bot designed to provide you and your servers with great features and stable performance.
+    fields:
+      guilds: Guilds
+      members: Members
+      latency: Latency
+      version: Version

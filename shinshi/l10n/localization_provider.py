@@ -1,10 +1,11 @@
 import os
+from logging import Logger, getLogger
 from pathlib import Path
 from typing import Any
-from logging import Logger, getLogger
 
-from yaml import load, CLoader
-from aurum.l10n import LocalizationProviderInterface
+from aurum.l10n import LocalizationProviderInterface, Localized
+from hikari.interactions import CommandInteraction, ComponentInteraction
+from yaml import CLoader, load
 
 from shinshi.l10n.locale import Locale
 
@@ -29,3 +30,16 @@ class LocalizationProvider(LocalizationProviderInterface):
             "started with %s languages",
             ", ".join(self.languages.keys()),
         )
+
+    def build_localized(self, value: Localized) -> dict[Locale | str, str]:
+        key: str = value.value
+        locales: dict[str, Locale] = self.languages.copy()
+        value.fallback = locales.pop("default").get(key)
+        value.value = {}
+        for name, language in locales.items():
+            value.value[name] = language.get(key)
+
+    def get_locale(self, by: str | CommandInteraction | ComponentInteraction) -> Any:
+        if not isinstance(by, str):
+            by = str(by.locale or by.guild_locale).lower()
+        return self.languages.get(by, self.languages["default"])
