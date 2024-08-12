@@ -12,5 +12,6 @@ poetry.lock
 .DS_STORE
 
 memray-*
+*_cache
 
 *.webp

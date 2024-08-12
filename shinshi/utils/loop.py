@@ -10,4 +10,3 @@ except ImportError:
 
 def install_uvloop() -> None:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-

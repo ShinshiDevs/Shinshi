@@ -1,5 +1,5 @@
-from hikari.users import OwnUser
 from hikari.impl import GatewayBot
+from hikari.users import OwnUser
 
 
 class Bot(GatewayBot):

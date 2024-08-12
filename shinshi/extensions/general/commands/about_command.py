@@ -2,10 +2,10 @@ import subprocess
 from collections.abc import Sequence
 from functools import cache
 
-from hikari.guilds import GatewayGuild
-from hikari.embeds import Embed
 from aurum.commands import SlashCommand
 from aurum.l10n import Localized
+from hikari.embeds import Embed
+from hikari.guilds import GatewayGuild
 
 from shinshi import __version__
 from shinshi.colour import Colour
