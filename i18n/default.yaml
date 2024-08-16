@@ -1,6 +1,6 @@
 commands:
   about:
-    description: General information about Shinshi in the moment
+    description: General information about Shinshi in the moment.
     bot:
       description: A modern and user-friendly Discord bot designed to provide you and your servers with great features and stable performance.
     fields:
@@ -8,3 +8,14 @@ commands:
       members: Members
       latency: Latency
       version: Version
+  user:
+    options:
+      user: Select from the list or provide ID.
+    info:
+      description: Get the information about user.
+      fields:
+        created_at: Created at
+        joined_at: Joined at {guild}
+        roles:
+          name: Roles
+          sliced: "{roles}... and {sliced} more"

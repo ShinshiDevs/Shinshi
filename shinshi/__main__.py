@@ -8,7 +8,7 @@ from shinshi.l10n import LocalizationProvider
 from shinshi.utils.loop import install_uvloop
 
 if __name__ == "__main__":
-    basicConfig(level=DEBUG, format="%(log_color)s%(levelname)-8s%(reset)s %(message)s")
+    basicConfig(level=DEBUG, format="%(log_color)s%(levelname)-5s%(reset)s %(message)s")  # TODO: move to .env config
 
     install_uvloop()
     load_dotenv()

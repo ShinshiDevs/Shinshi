@@ -28,7 +28,9 @@ class Client(AurumClient):
         for _, extension, _ in iter_modules(module_path):
             commands: ModuleType = import_module(f"{module_name}.{extension}.commands")
             for name in getattr(commands, "__all__"):
-                command: AppCommand = getattr(commands, name)()  # init an object of command
+                command: AppCommand = getattr(
+                    commands, name
+                )()  # init an object of command
                 self.commands.commands[command.name] = command
             self.__logger.debug("loaded extension %s", extension)
 

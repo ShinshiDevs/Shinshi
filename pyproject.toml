@@ -9,12 +9,13 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
 
-hikari = { version = "^2.0.0.dev126", extras = ["speedups"] }
-
 uvloop = { version = "^0.19.0", optional = true }
-attrs = "^23.2.0"
+attrs = ">=24.2,<25.0"
 pyyaml = "^6.0.1"
-aurum-hikari = {git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "unstable"}
+aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "feature/17-message-components" } # TODO: switch on unstable when feature/17-message-components will closed, after on release switch to main
+hikari = { git = "https://github.com/hikari-py/hikari", rev = "master", extras = [
+    "speedups",
+] }
 
 
 [tool.poetry.group.dev.dependencies]
