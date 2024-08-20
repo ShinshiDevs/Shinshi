@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Iterable
 
 from aurum.commands import SlashCommand

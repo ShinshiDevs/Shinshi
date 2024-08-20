@@ -10,11 +10,15 @@ from hikari.guilds import GatewayGuild
 from shinshi import __version__
 from shinshi.colour import Colour
 from shinshi.context import Context
+from shinshi.memory_usage import MemoryUsage
+from shinshi.utils.datetime import format_datetime
 from shinshi.utils.icon import get_icon
+from shinshi.utils.size import humanize_bytes
 
 
 class AboutCommand(SlashCommand):
     def __init__(self) -> None:
+        self.memory_usage: MemoryUsage = MemoryUsage()
         super().__init__(
             "about", description=Localized(value="commands.about.description")
         )
@@ -27,6 +31,11 @@ class AboutCommand(SlashCommand):
             .decode("ascii")
             .strip()
         )
+
+    def get_heap_usage(self) -> str:
+        self.memory_usage.record()
+        date, heap_usage = self.memory_usage.get_heap_usage()
+        return f"{humanize_bytes(heap_usage)} ({format_datetime(date, "R")})"
 
     async def callback(self, context: Context) -> None:
         guilds: Sequence[GatewayGuild] = context.bot.cache.get_guilds_view().values()
@@ -55,6 +64,11 @@ class AboutCommand(SlashCommand):
             .add_field(
                 name=context.locale.get("commands.about.fields.version"),
                 value=f"{__version__!s} ([`{self.get_git_sha()}`](https://github.com/ShinshiDevs/Shinshi/commit/{self.get_git_sha()}))",
+                inline=True,
+            )
+            .add_field(
+                name=context.locale.get("commands.about.fields.heap_usage"),
+                value=self.get_heap_usage(),
                 inline=True,
             )
         )

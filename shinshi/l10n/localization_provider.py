@@ -1,4 +1,5 @@
 import os
+from collections.abc import Sequence
 from logging import Logger, getLogger
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,8 @@ from shinshi.l10n.locale import Locale
 
 
 class LocalizationProvider(LocalizationProviderInterface):
+    __slots__: Sequence[str] = ("__logger", "directory", "languages")
+
     def __init__(self, directory: os.PathLike[str]) -> None:
         self.__logger: Logger = getLogger("shinshi.l10n")
 

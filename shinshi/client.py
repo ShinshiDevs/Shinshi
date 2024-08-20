@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from importlib import import_module
 from os import environ
 from pkgutil import iter_modules
@@ -12,6 +13,8 @@ from shinshi.bot import Bot
 
 
 class Client(AurumClient):
+    __slots__: Sequence[str] = ()
+
     def __init__(
         self,
         l10n: LocalizationProviderInterface,

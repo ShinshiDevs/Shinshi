@@ -8,6 +8,7 @@ commands:
       members: Members
       latency: Latency
       version: Version
+      heap_usage: Heap Usage
   user:
     options:
       user: Select from the list or provide ID.
