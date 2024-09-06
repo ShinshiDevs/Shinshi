@@ -1,6 +1,6 @@
 import subprocess
 from collections.abc import Sequence
-from functools import cache
+from resource import RUSAGE_SELF, getrusage
 
 from aurum.commands import SlashCommand
 from aurum.l10n import Localized
@@ -10,21 +10,17 @@ from hikari.guilds import GatewayGuild
 from shinshi import __version__
 from shinshi.colour import Colour
 from shinshi.context import Context
-from shinshi.memory_usage import MemoryUsage
-from shinshi.utils.datetime import format_datetime
-from shinshi.utils.icon import get_icon
 from shinshi.utils.size import humanize_bytes
 
 
 class AboutCommand(SlashCommand):
     def __init__(self) -> None:
-        self.memory_usage: MemoryUsage = MemoryUsage()
+        self.git_sha: str = self.get_git_sha()
         super().__init__(
             "about", description=Localized(value="commands.about.description")
         )
 
     @staticmethod
-    @cache
     def get_git_sha() -> str:
         return (
             subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
@@ -32,20 +28,10 @@ class AboutCommand(SlashCommand):
             .strip()
         )
 
-    def get_heap_usage(self) -> str:
-        self.memory_usage.record()
-        date, heap_usage = self.memory_usage.get_heap_usage()
-        return f"{humanize_bytes(heap_usage)} ({format_datetime(date, "R")})"
-
     async def callback(self, context: Context) -> None:
         guilds: Sequence[GatewayGuild] = context.bot.cache.get_guilds_view().values()
         embed: Embed = (
-            Embed(
-                colour=Colour.GREY,
-                description=context.locale.get("commands.about.bot.description"),
-            )
-            .set_author(name=context.bot.me.username, icon=get_icon("info"))
-            .set_thumbnail(context.bot.me.avatar_url)
+            Embed(colour=Colour.GREY)
             .add_field(
                 name=context.locale.get("commands.about.fields.guilds"),
                 value=len(guilds),
@@ -63,12 +49,12 @@ class AboutCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.about.fields.version"),
-                value=f"{__version__!s} ([`{self.get_git_sha()}`](https://github.com/ShinshiDevs/Shinshi/commit/{self.get_git_sha()}))",
+                value=f"{__version__!s} ([`{self.git_sha}`](https://github.com/ShinshiDevs/Shinshi/commit/{self.git_sha}))",
                 inline=True,
             )
             .add_field(
-                name=context.locale.get("commands.about.fields.heap_usage"),
-                value=self.get_heap_usage(),
+                name=context.locale.get("commands.about.fields.memory_usage"),
+                value=humanize_bytes(getrusage(RUSAGE_SELF).ru_maxrss),
                 inline=True,
             )
         )
