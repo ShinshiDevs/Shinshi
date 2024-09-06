@@ -31,7 +31,7 @@ class AboutCommand(SlashCommand):
     async def callback(self, context: Context) -> None:
         guilds: Sequence[GatewayGuild] = context.bot.cache.get_guilds_view().values()
         embed: Embed = (
-            Embed(colour=Colour.GREY)
+            Embed(colour=self.git_sha[:-1])
             .add_field(
                 name=context.locale.get("commands.about.fields.guilds"),
                 value=len(guilds),
