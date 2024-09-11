@@ -1,26 +1,18 @@
-[tool.poetry]
+[project]
 name = "shinshi"
 version = "20.0.2024.0"
 description = "A modern and user-friendly Discord bot designed to give you and your servers great functionality and stable performance."
-authors = ["stefanlight <64615032+stefanlight8@users.noreply.github.com>"]
-license = "GPL-3.0"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aurum-hikari",
+    "hikari>=2.0.0",
+    "python-dotenv>=1.0.1",
+    "pyyaml>=6.0.2",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.12,<3.13"
+[project.optional-dependencies]
+speedups = ["uvloop>=0.18.0", "hikari[speedups]>=2.0.0"]
 
-uvloop = { version = "^0.19.0", optional = true }
-attrs = ">=24.2,<25.0"
-pyyaml = "^6.0.1"
-aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "feature/17-message-components" } # TODO: switch on unstable when feature/17-message-components will closed, after on release switch to main
-hikari = { git = "https://github.com/hikari-py/hikari", rev = "master", extras = [
-    "speedups",
-] }
-
-
-[tool.poetry.group.dev.dependencies]
-memray = "^1.13.4"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv.sources]
+aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "feature/17-message-components" }

@@ -1,15 +1,14 @@
+.idea
+.vscode
+.DS_STORE
+
+.venv
+.env
 __pycache__/
 *.py[cod]
 *$py.class
 
-.idea
-.vscode
-
-.env
-
-poetry.lock
-
-.DS_STORE
+uv.lock
 
 memray-*
 *_cache

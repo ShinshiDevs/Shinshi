@@ -4,7 +4,7 @@ from colorlog import DEBUG, basicConfig
 
 LOG_COLORS: dict[str, str] = {
     "DEBUG": "purple",
-    "INFO": "thin",
+    "INFO": "black",
     "WARNING": "yellow",
     "ERROR": "red",
     "CRITICAL": "white,bg_red",

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+
 from hikari.impl import GatewayBot
 from hikari.users import OwnUser
 

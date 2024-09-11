@@ -8,14 +8,14 @@ from aurum.l10n import LocalizationProviderInterface, Localized
 from hikari.interactions import CommandInteraction, ComponentInteraction
 from yaml import CLoader, load
 
-from shinshi.l10n.locale import Locale
+from shinshi.i18n.locale import Locale
 
 
-class LocalizationProvider(LocalizationProviderInterface):
+class I18nProvider(LocalizationProviderInterface):
     __slots__: Sequence[str] = ("__logger", "directory", "languages")
 
     def __init__(self, directory: os.PathLike[str]) -> None:
-        self.__logger: Logger = getLogger("shinshi.l10n")
+        self.__logger: Logger = getLogger("shinshi.i18n")
 
         self.directory: os.PathLike[str] = directory
         self.languages: dict[str, Locale] = {}

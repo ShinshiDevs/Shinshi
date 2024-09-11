@@ -1,4 +1,3 @@
-import subprocess
 from collections.abc import Sequence
 from resource import RUSAGE_SELF, getrusage
 
@@ -7,25 +6,17 @@ from aurum.l10n import Localized
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 
-from shinshi import __version__
-from shinshi.colour import Colour
-from shinshi.context import Context
+from shinshi.sdk.context import Context
+from shinshi.utils.git import get_git_sha
 from shinshi.utils.size import humanize_bytes
+from shinshi.utils.version import get_version
 
 
 class AboutCommand(SlashCommand):
     def __init__(self) -> None:
-        self.git_sha: str = self.get_git_sha()
+        self.git_sha: str = get_git_sha()
         super().__init__(
             "about", description=Localized(value="commands.about.description")
-        )
-
-    @staticmethod
-    def get_git_sha() -> str:
-        return (
-            subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-            .decode("ascii")
-            .strip()
         )
 
     async def callback(self, context: Context) -> None:
@@ -49,7 +40,7 @@ class AboutCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.about.fields.version"),
-                value=f"{__version__!s} ([`{self.git_sha}`](https://github.com/ShinshiDevs/Shinshi/commit/{self.git_sha}))",
+                value=f"{get_version()} ([`{self.git_sha}`](https://github.com/ShinshiDevs/Shinshi/commit/{self.git_sha}))",
                 inline=True,
             )
             .add_field(
