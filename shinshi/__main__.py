@@ -12,18 +12,18 @@ from shinshi.utils.logging import setup_logging
 from shinshi.utils.loop import install_uvloop
 from shinshi.utils.version import get_version
 
-if __name__ == "__main__":
-    load_dotenv()
-    setup_logging(level=DEBUG)
-    install_uvloop()
 
-    client: Client = Client(
-        bot=Bot(getenv("SHINSHI_DISCORD_TOKEN"), banner=None),
-        l10n=I18nProvider("i18n"),
-    )
+def main() -> None:
+    install_uvloop()
+    setup_logging(level=DEBUG)
+    load_dotenv()
+
+    bot: Bot = Bot(getenv("SHINSHI_DISCORD_TOKEN"), banner=None)
+    client: Client = Client(bot=bot, l10n=I18nProvider("i18n"))
+
     client.load_extensions(extensions.__name__, extensions.__path__)
-    client.run(
-        activity=Activity(
-            name=f"v{get_version()}",
-        )
-    )
+    client.run(activity=Activity(name=f"v{get_version()}"))
+
+
+if __name__ == "__main__":
+    main()
