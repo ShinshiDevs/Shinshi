@@ -2,14 +2,12 @@
 [Support Server]: https://dsc.gg/shinshi
 
 # Shinshi
-<a href="https://github.com/ShinshiDevs/Shinshi">
-<img alt="Github Stars" src="https://img.shields.io/github/stars/ShinshiDevs/Shinshi">
-<img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-closed/ShinshiDevs/Shinshi">
-<img alt="GitHub License" src="https://img.shields.io/github/license/ShinshiDevs/Shinshi">
-</a>
-<img alt="Python Version" src="https://img.shields.io/badge/python-3.12-blue.svg">
-<a href="https://github.com/hikari-py/hikari">
-<img alt="Static Badge" src="https://img.shields.io/badge/Powered%20by-hikari-E440C1">
+<a>
+<img alt="Github Stars" href="https://github.com/ShinshiDevs/Shinshi/stargazers" src="https://img.shields.io/github/stars/ShinshiDevs/Shinshi">
+<img alt="GitHub Issues" href="https://github.com/ShinshiDevs/Shinshi/issues" src="https://img.shields.io/github/issues-closed/ShinshiDevs/Shinshi">
+<img alt="GitHub License" href="https://github.com/ShinshiDevs/Shinshi/tree/main/LICENSE" src="https://img.shields.io/github/license/ShinshiDevs/Shinshi">
+<img alt="Python Version" href="https://python.org/" src="https://img.shields.io/badge/python-3.12-blue.svg">
+<img alt="hikari" href="https://github.com/hikari-py/hikari" src="https://img.shields.io/badge/Powered%20by-hikari-E440C1">
 </a>
 
 ### Modern and user-friendly Discord bot
