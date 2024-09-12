@@ -1,4 +1,3 @@
-from logging import DEBUG
 from os import getenv
 
 from dotenv import load_dotenv
@@ -15,7 +14,7 @@ from shinshi.utils.version import get_version
 
 def main() -> None:
     install_uvloop()
-    setup_logging(level=DEBUG)
+    setup_logging()
     load_dotenv()
 
     bot: Bot = Bot(getenv("SHINSHI_DISCORD_TOKEN"), banner=None)
