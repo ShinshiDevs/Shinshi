@@ -8,14 +8,12 @@ from hikari.guilds import GatewayGuild
 
 from shinshi.ext.colour import Colour
 from shinshi.sdk.context import Context
-from shinshi.utils.git import get_git_sha
 from shinshi.utils.size import humanize_size
 from shinshi.utils.version import get_version
 
 
 class StatisticCommand(SlashCommand):
     def __init__(self) -> None:
-        self.git_sha: str = get_git_sha()
         super().__init__(
             "stats",
             description=Localized(value="commands.stats.description"),
@@ -43,7 +41,7 @@ class StatisticCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.stats.fields.version"),
-                value=f"{get_version()} ([`{self.git_sha}`](https://github.com/ShinshiDevs/Shinshi/commit/{self.git_sha}))",
+                value=f"[{get_version()}](https://github.com/ShinshiDevs/Shinshi/releases/tag/{get_version()})",
                 inline=True,
             )
             .add_field(
