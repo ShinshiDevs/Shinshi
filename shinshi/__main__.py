@@ -21,7 +21,7 @@ def main() -> None:
 
     bot: Bot = Bot(
         getenv("SHINSHI_DISCORD_TOKEN"),
-        intents=Intents.NONE | Intents.GUILDS,
+        intents=Intents.NONE | Intents.GUILDS | Intents.GUILD_EMOJIS,
         cache_settings=CacheSettings(
             components=CacheComponents.NONE
             | CacheComponents.ME
