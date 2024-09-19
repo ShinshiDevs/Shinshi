@@ -14,15 +14,15 @@ from shinshi.sdk.context import Context
 from shinshi.utils.datetime import format_datetime
 
 
-def get_channel_amount(
-    channels: Sequence[GuildChannel], channel_type: ChannelType
-) -> int:
-    return sum(channel.type == channel_type for channel in channels)
-
-
 class GuildCommand(SlashCommand):
     def __init__(self) -> None:
         super().__init__("guild")
+
+    @staticmethod
+    def get_channel_amount(
+        channels: Sequence[GuildChannel], channel_type: ChannelType
+    ) -> int:
+        return sum(channel.type == channel_type for channel in channels)
 
     @sub_command(
         "info",
@@ -61,17 +61,17 @@ class GuildCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.guild.info.fields.categories"),
-                value=get_channel_amount(channels, ChannelType.GUILD_CATEGORY),
+                value=self.get_channel_amount(channels, ChannelType.GUILD_CATEGORY),
                 inline=True,
             )
             .add_field(
                 name=context.locale.get("commands.guild.info.fields.text"),
-                value=get_channel_amount(channels, ChannelType.GUILD_TEXT),
+                value=self.get_channel_amount(channels, ChannelType.GUILD_TEXT),
                 inline=True,
             )
             .add_field(
                 name=context.locale.get("commands.guild.info.fields.voice"),
-                value=get_channel_amount(channels, ChannelType.GUILD_VOICE),
+                value=self.get_channel_amount(channels, ChannelType.GUILD_VOICE),
                 inline=True,
             )
             .add_field(

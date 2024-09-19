@@ -15,4 +15,4 @@ dependencies = [
 speedups = ["uvloop>=0.18.0", "hikari[speedups]>=2.0.0"]
 
 [tool.uv.sources]
-aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "feature/17-message-components" }
+aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "unstable" }
