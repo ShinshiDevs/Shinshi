@@ -12,9 +12,11 @@
 
 ### Modern and user-friendly Discord bot
 
-Shinshi is a powerful and intuitive Discord bot designed to enhance both server management and user interaction. It offers a wide range of tools that help administrators streamline their tasks while also providing entertainment and utility features for users. With easy setup and flexible customization, Shinshi adapts to any server’s needs, making management smoother and enhancing the overall user experience.
+Shinshi is a powerful and intuitive Discord bot designed to enhance server management and user interaction. It offers a wide range of tools to help administrators streamline their tasks while providing entertainment and utility features for users. With easy setup and flexible customization, Shinshi adapts to any server’s needs, making management smoother and improving the overall user experience.
 
-Originally conceived in 2022, Shinshi was created with the goal of developing a modern and reliable Discord bot. However, throughout much of 2023, the project faced a period of overthink. This made the bot more complex than necessary. Fortunately, a shift in focus led to a significant improvement, streamlining the bot's functionality and returning to a philosophy of code simplicity for simplicity of everything. Now, Shinshi is easier to use and more efficient.
+Originally conceived in 2022, Shinshi aimed to create a modern and reliable Discord bot. However, throughout much of 2023, the project faced a period of overthinking, which made the bot more complex than necessary. Fortunately, a shift in focus led to significant improvements, streamlining the bot's functionality and returning to a philosophy of simplicity. Now, Shinshi is easier to use and more efficient.
+
+The name "Shinshi" reflects the lead developer's love for chinchillas and draws from Japanese tradition. In Shinto shrines, Shinshi were revered guardians of sacred places, and the term literally means "divine servant" or "messenger of god." This name underscores the project's main goal.
 
 ## Resources
 
@@ -24,10 +26,10 @@ Originally conceived in 2022, Shinshi was created with the goal of developing a 
 
 ## Setup
 
-This project is not recommended for self-hosting. Shinshi is not designed to be self-hosted, and we do not support this use case for now.
+This project is not intended for self-hosting. Shinshi is not designed for self-hosting, and we do not support this use case at present.
 
-#### Recommended requirements
-- Unix type system.
+### Recommended Requirements
+- Unix-based operating system.
 - Python 3.12 or higher.
 
 ## Troubleshooting & Contributing
