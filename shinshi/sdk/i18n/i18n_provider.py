@@ -8,7 +8,7 @@ from aurum.l10n import LocalizationProviderInterface, Localized
 from hikari.interactions import CommandInteraction, ComponentInteraction
 from yaml import CLoader, load
 
-from shinshi.i18n.locale import Locale
+from .locale import Locale
 
 
 class I18nProvider(LocalizationProviderInterface):

@@ -1,5 +1,6 @@
-import attrs
 from typing import Any
+
+import attrs
 
 
 @attrs.define(hash=False, weakref_slot=False, kw_only=True)
@@ -20,6 +21,10 @@ class Locale:
                     value = value.format(**format)
                 return value
             elif isinstance(value, list):
-                return [item.format(**fmt) for item, fmt in zip(value, formatting)]
+                return (
+                    [item.format(**fmt) for item, fmt in zip(value, formatting)]
+                    if formatting
+                    else value
+                )
 
         return key

@@ -12,5 +12,6 @@ uv.lock
 
 memray-*
 *_cache
+logs/*.log*
 
 *.webp

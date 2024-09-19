@@ -1,5 +1,7 @@
 import tomllib
 
+version: str = "unknown"
+
 with open("pyproject.toml", "rb") as stream:
     version = tomllib.load(stream)["project"]["version"]
 

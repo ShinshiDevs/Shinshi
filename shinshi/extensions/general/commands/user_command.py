@@ -2,7 +2,6 @@ from typing import Iterable
 
 from aurum.commands import SlashCommand
 from aurum.commands.decorators import sub_command
-from aurum.context import InteractionContext
 from aurum.l10n import Localized
 from aurum.option import Option
 from hikari.commands import OptionType
@@ -11,6 +10,8 @@ from hikari.guilds import Role
 from hikari.interactions import InteractionMember
 from hikari.users import PartialUser
 
+from shinshi.ext.colour import Colour
+from shinshi.sdk.context import Context
 from shinshi.utils.datetime import format_datetime
 
 COMMAND_OPTIONS: tuple[Option] = (
@@ -25,7 +26,7 @@ COMMAND_OPTIONS: tuple[Option] = (
 
 class UserCommand(SlashCommand):
     def __init__(self) -> None:
-        super().__init__("user")
+        super().__init__("user", is_dm_enabled=True)
 
     @sub_command(
         "info",
@@ -34,7 +35,7 @@ class UserCommand(SlashCommand):
     )
     async def user_info(
         self,
-        context: InteractionContext,
+        context: Context,
         user: InteractionMember | PartialUser | None = None,
     ) -> None:
         if user is None:
@@ -44,7 +45,7 @@ class UserCommand(SlashCommand):
             Embed(
                 title=user.display_name,
                 description=f"-# ID: {user.id}",
-                colour=user.accent_colour,
+                colour=user.accent_colour or Colour.GREY,
             )
             .set_thumbnail(user.display_avatar_url)
             .add_field(
@@ -85,6 +86,7 @@ class UserCommand(SlashCommand):
                         )
                         if len(roles) > 5
                         else ", ".join(roles)
+                        or context.locale.get("commands.user.info.fields.roles.none")
                     ),
                 )
 

@@ -3,16 +3,7 @@ from cmath import log
 size_units: tuple[str, ...] = ("B", "KB", "MB", "GB")
 
 
-def humanize_bytes(input_size: int):
-    """Converts a size in bytes to a human-readable format (B, KB, MB, GB).
-
-    Args:
-        input_size (int): The size in bytes to be converted.
-
-    Returns:
-        str: A string representing the size in a readable format.
-
-    """
+def humanize_size(input_size: int):
     if input_size == 0:
         return "0 B"
 

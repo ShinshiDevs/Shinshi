@@ -3,7 +3,7 @@ from aurum.context import InteractionContext
 
 from shinshi.sdk.bot import Bot
 from shinshi.sdk.client import Client
-from shinshi.i18n.locale import Locale
+from shinshi.sdk.i18n import Locale
 
 
 @attrs.define(kw_only=True, hash=False, weakref_slot=False)

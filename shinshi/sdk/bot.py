@@ -9,4 +9,6 @@ class Bot(GatewayBot):
 
     @property
     def me(self) -> OwnUser:
-        return self.get_me()
+        user: OwnUser = self.get_me()
+        assert user
+        return user
