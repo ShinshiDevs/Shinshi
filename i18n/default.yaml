@@ -45,3 +45,8 @@ commands:
             - Medium
             - High
             - Very high
+  ping:
+    description: Get information about current latency.
+    message: |
+      **Bot latency:** {bot_latency}ms
+      **REST latency:** {rest_latency}ms
