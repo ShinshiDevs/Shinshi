@@ -94,7 +94,7 @@ class GuildCommand(SlashCommand):
                 value=context.locale.get(
                     "commands.guild.info.fields.boost.boosted",
                     {
-                        "level": guild.premium_tier,
+                        "level": guild.premium_tier.value,
                         "subscribers": guild.premium_subscription_count,
                     },
                 )

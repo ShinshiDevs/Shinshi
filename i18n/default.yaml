@@ -36,7 +36,7 @@ commands:
         boost:
           name: Boost
           none: No boost
-          boosted: "{level} boost ({subscribers} boosters)"
+          boosted: "{level} level ({subscribers} boosters)"
         verification_level:
           name: Verification level
           level:
