@@ -22,7 +22,7 @@ commands:
   guild:
     info:
       description: Get the information about current guild.
-      footer: "ID: {guild_id} · Shard ID: {guild_id}"
+      footer: "ID: {guild_id} · Shard ID: {shard_id}"
       fields:
         ownership: Owner
         created_at: Created at
