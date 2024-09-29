@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "aurum-hikari",
+    "cachetools>=5.5.0",
     "hikari>=2.0.0",
     "python-dotenv>=1.0.1",
     "pyyaml>=6.0.2",

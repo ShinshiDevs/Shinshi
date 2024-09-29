@@ -5,7 +5,7 @@ from hikari.impl import CacheComponents, CacheSettings
 from hikari.intents import Intents
 from hikari.presences import Activity
 
-from shinshi import extensions
+from shinshi import events, extensions
 from shinshi.sdk.bot import Bot
 from shinshi.sdk.client import Client
 from shinshi.sdk.i18n import I18nProvider
@@ -38,7 +38,9 @@ def main() -> None:
     )
     client: Client = Client(bot=bot, l10n=I18nProvider("i18n"))
 
+    client.load_events(events.__name__)
     client.load_extensions(extensions.__name__, extensions.__path__)
+
     client.run(activity=Activity(name=f"v{get_version()}"))
 
 

@@ -1,3 +1,11 @@
+events:
+  command_error_event:
+    embed:
+      description: An unexpected error has occurred.
+      footer: Please contact support for assistance.
+      fields:
+        details: Details
+
 commands:
   stats:
     description: Statistic of Shinshi in the moment.
