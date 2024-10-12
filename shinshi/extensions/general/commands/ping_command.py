@@ -3,7 +3,7 @@ import time
 from aurum.commands import SlashCommand
 from aurum.l10n import Localized
 
-from shinshi.sdk.context import Context
+from shinshi.types.context import Context
 
 
 class PingCommand(SlashCommand):

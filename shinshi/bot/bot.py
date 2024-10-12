@@ -3,20 +3,20 @@ from concurrent.futures import Executor
 from os import PathLike
 from typing import Any, Mapping
 
-from hikari import Intents
 from hikari.impl import GatewayBot
 from hikari.impl.config import CacheSettings, HTTPSettings, ProxySettings
+from hikari.intents import Intents
 from hikari.internal.data_binding import (
     default_json_dumps,
     default_json_loads,
 )
 from hikari.users import OwnUser
 
-from shinshi.sdk.cache import Cache
+from shinshi.cache.cache import Cache
 
 
 class Bot(GatewayBot):
-    __slots__: Sequence[str] = ("__cache",)
+    __slots__: Sequence[str] = ("__application", "__cache")
 
     def __init__(
         self,

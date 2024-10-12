@@ -1,41 +1,35 @@
-from traceback import format_exception
+import contextlib
+from logging import error
 
 from aurum import events
 from hikari.embeds import Embed
 
-from shinshi.ext.colour import Colour
-from shinshi.sdk.context import Context
-from shinshi.sdk.event import Event
-from shinshi.utils.codeblock import get_codeblock
+from shinshi.decorators.event import event
+from shinshi.enums.colour import Colour
 
 
-class CommandErrorEvent(Event, type=events.CommandErrorEvent):
-    @staticmethod
-    async def callback(event: events.CommandErrorEvent) -> None:
-        context: Context = event.context
-
+@event(events.CommandErrorEvent)
+async def on_command_error(event: events.CommandErrorEvent) -> None:
+    with contextlib.suppress(Exception):
         embed: Embed = Embed(
             colour=Colour.RED,
-            description=context.locale.get(
+            description=event.context.locale.get(
                 "events.command_error_event.embed.description"
             ),
-        ).set_footer(context.locale.get("events.command_error_event.embed.footer"))
+        ).set_footer(
+            event.context.locale.get("events.command_error_event.embed.footer")
+        )
 
-        if (await context.bot.cache.get_application()).team.members.get(
-            context.user.id
-        ):
-            exc_type, exc_value, exc_traceback = event.exc_info
-            embed.add_field(
-                name=context.locale.get(
-                    "events.command_error_event.embed.fields.details"
-                ),
-                value=get_codeblock(
-                    "py", "".join(format_exception(exc_type, exc_value, exc_traceback))
-                ),
-                inline=False,
-            )
-
-        await context.create_response(
+        await event.context.create_response(
             embed=embed,
             ephemeral=True,
         )
+
+    error(
+        "an unexpected error has occurred on %s in %s (guild: %s) with %s:",
+        event.context.interaction.command_name,
+        event.context.interaction.channel_id,
+        event.context.interaction.guild_id,
+        event.context.interaction.user.id,
+        exc_info=event.exc_info,
+    )

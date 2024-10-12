@@ -1,0 +1,58 @@
+events:
+  command_error_event:
+    embed:
+      description: Произошла неожиданная ошибка.
+      footer: Пожалуйста, свяжитесь с поддержкой для получения помощи.
+
+commands:
+  stats:
+    description: Текущая статистика Shinshi.
+    fields:
+      guilds: Серверы
+      members: Участники
+      latency: Задержка
+      version: Версия
+      memory_usage: Использование памяти
+  user:
+    options:
+      user: Выберите из списка или укажите ID.
+    info:
+      description: Получить информацию об пользователе.
+      fields:
+        created_at: Создан
+        joined_at: Присоединился к {guild}
+        roles:
+          name: Роли
+          sliced: "{roles}... и {sliced} ещё"
+          none: Нет ролей
+  guild:
+    info:
+      description: Получить информацию о текущем сервере.
+      footer: "ID: {guild_id} · ID шарда: {shard_id}"
+      fields:
+        ownership: Владелец
+        created_at: Создана
+        members: Участники
+        categories: Категории
+        text: Текстовые каналы
+        voice: Голосовые каналы
+        roles: Роли
+        emojis: Эмодзи
+        stickers: Стикеры
+        boost:
+          name: Уровень буста
+          none: Нет буста
+          boosted: "{level} уровень ({subscribers} бустеров)"
+        verification_level:
+          name: Уровень верификации
+          level:
+            - Нет
+            - Низкий
+            - Средний
+            - Высокий
+            - Очень высокий
+  ping:
+    description: Получить информацию о текущей задержке.
+    message: |
+      **Задержка бота:** {bot_latency}мс
+      **Задержка REST:** {rest_latency}мс

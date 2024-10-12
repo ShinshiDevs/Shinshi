@@ -9,8 +9,8 @@ from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 from hikari.impl import LinkButtonBuilder, MessageActionRowBuilder
 
-from shinshi.ext.colour import Colour
-from shinshi.sdk.context import Context
+from shinshi.enums.colour import Colour
+from shinshi.types.context import Context
 from shinshi.utils.datetime import format_datetime
 
 

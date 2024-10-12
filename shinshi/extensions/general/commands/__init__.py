@@ -1,4 +1,9 @@
-from __future__ import annotations
+from collections.abc import Sequence
+
+from .guild_command import GuildCommand
+from .ping_command import PingCommand
+from .stats_command import StatisticCommand
+from .user_command import UserCommand
 
 __all__: Sequence[str] = (
     "StatisticCommand",
@@ -6,10 +11,3 @@ __all__: Sequence[str] = (
     "GuildCommand",
     "PingCommand",
 )
-
-from collections.abc import Sequence
-
-from .guild_command import GuildCommand
-from .ping_command import PingCommand
-from .stats_command import StatisticCommand
-from .user_command import UserCommand

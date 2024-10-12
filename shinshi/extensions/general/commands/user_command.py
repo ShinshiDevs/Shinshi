@@ -10,8 +10,8 @@ from hikari.guilds import Role
 from hikari.interactions import InteractionMember
 from hikari.users import PartialUser
 
-from shinshi.ext.colour import Colour
-from shinshi.sdk.context import Context
+from shinshi.enums.colour import Colour
+from shinshi.types.context import Context
 from shinshi.utils.datetime import format_datetime
 
 COMMAND_OPTIONS: tuple[Option] = (

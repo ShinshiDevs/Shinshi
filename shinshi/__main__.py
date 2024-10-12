@@ -1,14 +1,15 @@
 from os import getenv
 
+from aurum import SyncCommandsFlag
 from dotenv import load_dotenv
 from hikari.impl import CacheComponents, CacheSettings
 from hikari.intents import Intents
 from hikari.presences import Activity
 
 from shinshi import events, extensions
-from shinshi.sdk.bot import Bot
-from shinshi.sdk.client import Client
-from shinshi.sdk.i18n import I18nProvider
+from shinshi.bot import Bot
+from shinshi.bot.client import Client
+from shinshi.i18n import I18nProvider
 from shinshi.utils.logging import setup_logging
 from shinshi.utils.loop import install_uvloop
 from shinshi.utils.version import get_version
@@ -36,10 +37,15 @@ def main() -> None:
         ),
         banner=None,
     )
-    client: Client = Client(bot=bot, l10n=I18nProvider("i18n"))
+    client: Client = Client(
+        bot=bot,
+        l10n=I18nProvider("i18n"),
+        sync_commands=SyncCommandsFlag.NONE,
+    )
 
     client.load_events(events.__name__)
-    client.load_extensions(extensions.__name__, extensions.__path__)
+    client.extensions.load_extensions(extensions.__name__, extensions.__path__)
+    client.add_starting_task(client.extensions.sync_commands())
 
     client.run(activity=Activity(name=f"v{get_version()}"))
 

@@ -3,12 +3,10 @@ events:
     embed:
       description: An unexpected error has occurred.
       footer: Please contact support for assistance.
-      fields:
-        details: Details
 
 commands:
   stats:
-    description: Statistic of Shinshi in the moment.
+    description: Current statistics of Shinshi.
     fields:
       guilds: Guilds
       members: Members
@@ -17,23 +15,23 @@ commands:
       memory_usage: Memory usage
   user:
     options:
-      user: Select from the list or provide ID.
+      user: Select from the list or provide an ID.
     info:
-      description: Get the information about user.
+      description: Retrieve information about a user.
       fields:
-        created_at: Created at
-        joined_at: Joined at {guild}
+        created_at: Created on
+        joined_at: Joined on {guild}
         roles:
           name: Roles
           sliced: "{roles}... and {sliced} more"
           none: No roles
   guild:
     info:
-      description: Get the information about current guild.
+      description: Retrieve information about the current guild.
       footer: "ID: {guild_id} · Shard ID: {shard_id}"
       fields:
         ownership: Owner
-        created_at: Created at
+        created_at: Created on
         members: Members
         categories: Categories
         text: Text channels
@@ -54,7 +52,7 @@ commands:
             - High
             - Very high
   ping:
-    description: Get information about current latency.
+    description: Retrieve information about current latency.
     message: |
       **Bot latency:** {bot_latency}ms
       **REST latency:** {rest_latency}ms

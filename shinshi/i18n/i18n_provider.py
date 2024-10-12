@@ -8,14 +8,16 @@ from aurum.l10n import LocalizationProviderInterface, Localized
 from hikari.interactions import CommandInteraction, ComponentInteraction
 from yaml import CLoader, load
 
-from .locale import Locale
+from .types import Locale
+
+_DEFAULT_LANGUAGE: str = "en_GB"
 
 
 class I18nProvider(LocalizationProviderInterface):
     __slots__: Sequence[str] = ("__logger", "directory", "languages")
 
     def __init__(self, directory: os.PathLike[str]) -> None:
-        self.__logger: Logger = getLogger("shinshi.i18n")
+        self.__logger: Logger = getLogger(__name__)
 
         self.directory: os.PathLike[str] = directory
         self.languages: dict[str, Locale] = {}
@@ -37,7 +39,7 @@ class I18nProvider(LocalizationProviderInterface):
     def build_localized(self, value: Localized) -> dict[Locale | str, str]:
         key: str = value.value
         locales: dict[str, Locale] = self.languages.copy()
-        value.fallback = locales.pop("default").get(key)
+        value.fallback = locales.pop(_DEFAULT_LANGUAGE).get(key)
         value.value = {}
         for name, language in locales.items():
             value.value[name] = language.get(key)
@@ -45,4 +47,4 @@ class I18nProvider(LocalizationProviderInterface):
     def get_locale(self, by: str | CommandInteraction | ComponentInteraction) -> Any:
         if not isinstance(by, str):
             by = str(by.locale or by.guild_locale).lower()
-        return self.languages.get(by, self.languages["default"])
+        return self.languages.get(by, self.languages[_DEFAULT_LANGUAGE])

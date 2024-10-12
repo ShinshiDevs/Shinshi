@@ -15,3 +15,5 @@ memray-*
 logs/*.log*
 
 *.webp
+
+.later/
