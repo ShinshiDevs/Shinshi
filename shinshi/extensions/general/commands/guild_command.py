@@ -26,9 +26,9 @@ class GuildCommand(SlashCommand):
 
     @sub_command(
         "info",
-        description=Localized(value="commands.user.info.description"),
+        description=Localized(value="commands.guild.info.description"),
     )
-    async def user_info(
+    async def guild_info(
         self,
         context: Context,
     ) -> None:

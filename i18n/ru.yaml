@@ -23,7 +23,7 @@ commands:
         joined_at: Присоединился к {guild}
         roles:
           name: Роли
-          sliced: "{roles}... и {sliced} ещё"
+          sliced: "{roles}... и ещё {sliced}"
           none: Нет ролей
   guild:
     info:
@@ -31,7 +31,7 @@ commands:
       footer: "ID: {guild_id} · ID шарда: {shard_id}"
       fields:
         ownership: Владелец
-        created_at: Создана
+        created_at: Создан
         members: Участники
         categories: Категории
         text: Текстовые каналы
