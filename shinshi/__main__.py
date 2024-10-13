@@ -6,13 +6,12 @@ from hikari.impl import CacheComponents, CacheSettings
 from hikari.intents import Intents
 from hikari.presences import Activity
 
-from shinshi import events, extensions
+from shinshi import __version__, events, extensions
 from shinshi.bot import Bot
 from shinshi.bot.client import Client
 from shinshi.i18n import I18nProvider
 from shinshi.utils.logging import setup_logging
 from shinshi.utils.loop import install_uvloop
-from shinshi.utils.version import get_version
 
 
 def main() -> None:
@@ -47,7 +46,7 @@ def main() -> None:
     client.extensions.load_extensions(extensions.__name__, extensions.__path__)
     client.add_starting_task(client.extensions.sync_commands())
 
-    client.run(activity=Activity(name=f"v{get_version()}"))
+    client.run(activity=Activity(name=f"v{__version__}"))
 
 
 if __name__ == "__main__":

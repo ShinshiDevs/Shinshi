@@ -9,7 +9,7 @@ from hikari.guilds import GatewayGuild
 from shinshi.enums.colour import Colour
 from shinshi.types.context import Context
 from shinshi.utils.size import humanize_size
-from shinshi.utils.version import get_version
+from shinshi import __version__
 
 
 class StatisticCommand(SlashCommand):
@@ -41,7 +41,7 @@ class StatisticCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.stats.fields.version"),
-                value=f"[{get_version()}](https://github.com/ShinshiDevs/Shinshi/releases/tag/{get_version()})",
+                value=f"[{__version__}](https://github.com/ShinshiDevs/Shinshi/releases/tag/{__version__})",
                 inline=True,
             )
             .add_field(

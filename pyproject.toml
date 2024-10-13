@@ -5,15 +5,19 @@ description = "A modern and user-friendly Discord bot designed to give you and y
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aurum-hikari",
-    "cachetools>=5.5.0",
-    "hikari>=2.0.0",
-    "python-dotenv>=1.0.1",
-    "pyyaml>=6.0.2",
+  "aurum-hikari",
+  "cachetools>=5.5.0",
+  "hikari>=2.0.0",
+  "python-dotenv>=1.0.1",
+  "pyyaml>=6.0.2",
 ]
 
 [project.optional-dependencies]
-speedups = ["uvloop>=0.18.0", "hikari[speedups]>=2.0.0"]
+speedups = [
+  "hikari[speedups]>=2.0.0",
+  "uvloop>=0.20.0; os_name != 'nt'",
+  "winloop>=0.1.6; os_name == 'nt'"
+]
 
 [tool.uv.sources]
 aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "unstable" }
