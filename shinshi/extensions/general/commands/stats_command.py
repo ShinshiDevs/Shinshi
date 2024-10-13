@@ -1,15 +1,15 @@
 from collections.abc import Sequence
-from resource import RUSAGE_SELF, getrusage
 
 from aurum.commands import SlashCommand
 from aurum.l10n import Localized
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 
+from shinshi import __version__
 from shinshi.enums.colour import Colour
 from shinshi.types.context import Context
+from shinshi.utils.memory_usage import get_memory_usage
 from shinshi.utils.size import humanize_size
-from shinshi import __version__
 
 
 class StatisticCommand(SlashCommand):
@@ -46,7 +46,7 @@ class StatisticCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.stats.fields.memory_usage"),
-                value=humanize_size(getrusage(RUSAGE_SELF).ru_maxrss),
+                value=humanize_size(get_memory_usage()),
                 inline=True,
             )
         )

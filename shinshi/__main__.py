@@ -11,11 +11,11 @@ from shinshi.bot import Bot
 from shinshi.bot.client import Client
 from shinshi.i18n import I18nProvider
 from shinshi.utils.logging import setup_logging
-from shinshi.utils.loop import install_uvloop
+from shinshi.utils.loop import setup_event_loop_policy
 
 
 def main() -> None:
-    install_uvloop()
+    setup_event_loop_policy()
     setup_logging()
     load_dotenv()
 

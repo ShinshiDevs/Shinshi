@@ -8,7 +8,7 @@ from aurum.commands.app_command import AppCommand
 from hikari.traits import GatewayBotAware
 
 from shinshi.types.events import EventCallback
-from shinshi.managers.extension_manager import ExtensionManager
+from shinshi.managers import ExtensionManager
 
 
 class Client(AurumClient):
