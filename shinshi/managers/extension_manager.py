@@ -30,9 +30,9 @@ class ExtensionManager:
                     commands=import_module(f"{module_name}.{extension_name}.commands"),
                 )
                 self.__logger.debug("saved extension: %s", extension_name)
-            except Exception as e:
+            except Exception as exception:
                 self.__logger.error(
-                    "Failed to load extension %s: %s", extension_name, e
+                    "Failed to load extension %s: %s", extension_name, exception
                 )
 
     async def sync_commands(self) -> None:

@@ -17,10 +17,10 @@ class Locale:
                 if value is None:
                     break
             if isinstance(value, str):
-                for format in formatting:
-                    value = value.format(**format)
+                for fmt in formatting:
+                    value = value.format(**fmt)
                 return value
-            elif isinstance(value, list):
+            if isinstance(value, list):
                 return (
                     [item.format(**fmt) for item, fmt in zip(value, formatting)]
                     if formatting

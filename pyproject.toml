@@ -17,3 +17,16 @@ speedups = ["uvloop>=0.18.0", "hikari[speedups]>=2.0.0"]
 
 [tool.uv.sources]
 aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari", rev = "unstable" }
+
+[tool.pylint]
+disable = [
+    "C0114", # Missing module docstring
+    "C0115", # Missing class docstring
+    "C0116", # Missing function or method docstring
+]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.logging]
+logging-format-style = "old"

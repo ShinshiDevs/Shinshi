@@ -7,7 +7,7 @@ from aurum.client import Client as AurumClient
 from aurum.commands.app_command import AppCommand
 from hikari.traits import GatewayBotAware
 
-from shinshi.decorators.event import EventCallback  # TODO!: structure issues
+from shinshi.types.events import EventCallback
 from shinshi.managers.extension_manager import ExtensionManager
 
 

@@ -8,7 +8,7 @@ from aurum.l10n import LocalizationProviderInterface, Localized
 from hikari.interactions import CommandInteraction, ComponentInteraction
 from yaml import CLoader, load
 
-from .types import Locale
+from shinshi.i18n.types import Locale
 
 _DEFAULT_LANGUAGE: str = "en_GB"
 
@@ -28,7 +28,7 @@ class I18nProvider(LocalizationProviderInterface):
             directory = Path(directory)
         for file in directory.glob("*.yaml"):
             name: str = file.name.split(".")[0]
-            with open(file, "r") as buffer:
+            with open(file, "r", encoding="UTF-8") as buffer:
                 data: dict[str, Any] = load(buffer, Loader=CLoader) or {}
                 self.languages[name] = Locale(name=name, value=data)
         self.__logger.info(

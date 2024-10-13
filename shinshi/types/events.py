@@ -3,5 +3,5 @@ from typing import Any, TypeVar
 
 from hikari import events
 
-EventType = TypeVar("EventType", bound=events.Event)
-EventCallback = Callable[[EventType], Any]
+EventT = TypeVar("EventT", bound=events.Event)
+EventCallback = Callable[[EventT], Any]

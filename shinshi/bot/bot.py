@@ -16,7 +16,7 @@ from shinshi.cache.cache import Cache
 
 
 class Bot(GatewayBot):
-    __slots__: Sequence[str] = ("__application", "__cache")
+    __slots__: Sequence[str] = ("__cache",)
 
     def __init__(
         self,
