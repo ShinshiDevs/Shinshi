@@ -1,0 +1,20 @@
+[project]
+name = "bot"
+version = "20.0.0.dev1"
+description = "Runtime of the Discord bot"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.pylint]
+disable = [
+    "C0114", # Missing module docstring
+    "C0115", # Missing class docstring
+    "C0116", # Missing function or method docstring
+]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.logging]
+logging-format-style = "old"
