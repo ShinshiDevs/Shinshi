@@ -11,6 +11,6 @@ except ImportError:
 
 
 def get_event_loop_policy() -> AbstractEventLoopPolicy:
-    if uvloop:
+    if uvloop is not None:
         return uvloop.EventLoopPolicy()
     return DefaultEventLoopPolicy()

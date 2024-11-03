@@ -19,10 +19,15 @@ async def main() -> None:
     i18n_provider: I18nProvider = I18nProvider("resources/i18n")
     database_service: DatabaseService = DatabaseService("shinshi.abc.database.models")
     bot_service: BotService = BotService()
-    extensions_service: ExtensionsService = ExtensionsService(bot_service, extensions.__name__, extensions.__path__)
+    extensions_service: ExtensionsService = ExtensionsService(
+        bot_service, extensions.__name__, extensions.__path__
+    )
 
     await Kernel(
-        i18n_provider, database_service, bot_service, extensions_service
+        i18n_provider,
+        database_service,
+        bot_service,
+        extensions_service,
     ).run()
 
 

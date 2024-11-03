@@ -37,14 +37,21 @@ class ExtensionsService(IExtensionsService):
                     name=extension_name,
                     package=f"{self.extensions_package}.{extension_name}",
                 )
-                commands_package: Sequence[str] = import_module(f"{extension.package}.commands")
-                for command_class in commands_package.__all__:  # command_class is a name of command class
+                commands_package: Sequence[str] = import_module(
+                    f"{extension.package}.commands"
+                )
+                for command_class in (
+                    commands_package.__all__
+                ):  # command_class is a name of command class
                     command: AppCommand = getattr(commands_package, command_class)()
                     extension.commands[command.name] = command
                 self.__logger.debug("loaded extension %s", extension_name)
             except Exception as error:
                 self.__logger.error(
-                    "failed to load extension %s: %s", extension_name, error, exc_info=error
+                    "failed to load extension %s: %s",
+                    extension_name,
+                    error,
+                    exc_info=error,
                 )
         if self.sync_commands:
             for extension in self.extensions.values():
