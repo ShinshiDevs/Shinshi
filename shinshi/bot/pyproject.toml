@@ -4,7 +4,27 @@ version = "20.0.0.dev1"
 description = "Runtime of the Discord bot"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "aiohttp[speedups]>=3.10.10",
+    "hikari[speedups]>=2.1.0",
+    "aurum-hikari",
+    "orjson>=3.10.10",
+    "pyyaml>=6.0.2",
+    "python-dotenv>=1.0.1",
+    "attrs>=24.2.0",
+    "tortoise-orm[asyncpg]>=0.21.7",
+    "yarl>=1.17.0",
+    "uvloop>=0.20.0 ; os_name != 'nt'",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pylint>=3.3.1",
+    "ruff>=0.7.1",
+]
+
+[tool.uv.sources]
+aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari.git", rev = "unstable" }
 
 [tool.pylint]
 disable = [
