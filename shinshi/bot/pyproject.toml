@@ -15,6 +15,7 @@ dependencies = [
     "tortoise-orm[asyncpg]>=0.21.7",
     "yarl>=1.17.0",
     "uvloop>=0.20.0 ; os_name != 'nt'",
+    "humanize>=4.11.0",
 ]
 
 [tool.uv]

@@ -13,7 +13,8 @@ class HTTPService(Singleton, IHTTPService):
     async def start(self) -> None:
         self.connector = TCPConnector(enable_cleanup_closed=True)
         self.client_session = ClientSession(
-            connector=self.connector, json_serialize=orjson.dumps  # pylint: disable=E1101
+            connector=self.connector,
+            json_serialize=orjson.dumps,  # pylint: disable=E1101
         )
 
     async def stop(self) -> None:

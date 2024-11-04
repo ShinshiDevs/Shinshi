@@ -1,1 +1,22 @@
 name: en_GB
+
+commands:
+  stats:
+    description: Current detailed statistics of the bot
+    embed:
+      title: Statistics
+      description: "You are currently on shard #{shard_id} ({shard_id}/{shard_count})"
+    fields:
+      version: Version
+      uptime: Uptime
+      system: System
+      latency: Latency
+      cpu_usage: CPU Usage
+      memory_usage: Memory Usage
+      guilds: Guilds
+      members: Members
+      channels: Channels
+      database_uptime: Database Uptime
+      database_queries: 
+        name: Database Queries
+        value: "Reads: {reads}/s\nWrites: {writes}/s"

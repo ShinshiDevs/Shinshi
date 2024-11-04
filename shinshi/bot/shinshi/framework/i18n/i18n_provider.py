@@ -9,7 +9,7 @@ from yaml import CLoader, load
 from shinshi.abc.i18n.ii18n_provider import II18nProvider
 from shinshi.framework.i18n.locale import Locale
 
-DEFAULT_LANGUAGE: str = "en_GB"
+_DEFAULT_LANGUAGE: str = "en_GB"
 
 
 class I18nProvider(II18nProvider):
@@ -42,12 +42,14 @@ class I18nProvider(II18nProvider):
     def build_localized(self, value: Localized) -> None:
         key: str = value.value
         value.value = {
-            name: language.get(key) for name, language in self.languages.items()
+            name: language.get(key)
+            for name, language in self.languages.items()
+            if name != _DEFAULT_LANGUAGE
         }
-        value.fallback = self.get_locale(DEFAULT_LANGUAGE).get(key)
+        value.fallback = self.languages[_DEFAULT_LANGUAGE].get(key)
 
     def get_locale(self, by: BaseCommandInteraction | str) -> Locale:
         return self.languages.get(
             by.locale if isinstance(by, BaseCommandInteraction) else by,
-            self.get_locale(DEFAULT_LANGUAGE),
+            self.languages[_DEFAULT_LANGUAGE],
         )

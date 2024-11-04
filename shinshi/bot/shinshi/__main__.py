@@ -1,6 +1,8 @@
 import asyncio
 
 from dotenv import load_dotenv
+from hikari.impl import CacheComponents
+from hikari.intents import Intents
 
 from shinshi import extensions
 from shinshi.framework.bot.bot_service import BotService
@@ -20,7 +22,19 @@ async def main() -> None:
     http_service: HTTPService = HTTPService()
     i18n_provider: I18nProvider = I18nProvider("resources/i18n")
     database_service: DatabaseService = DatabaseService("shinshi.abc.database.models")
-    bot_service: BotService = BotService(i18n_provider=i18n_provider)
+
+    bot_service: BotService = BotService(
+        i18n_provider=i18n_provider,
+        cache_components=CacheComponents.ME
+        | CacheComponents.GUILDS
+        | CacheComponents.GUILD_CHANNELS
+        | CacheComponents.GUILD_STICKERS
+        | CacheComponents.MEMBERS
+        | CacheComponents.ROLES
+        | CacheComponents.EMOJIS,
+        intents=Intents.GUILDS | Intents.GUILD_EMOJIS,
+    )
+
     extensions_service: ExtensionsService = ExtensionsService(
         bot_service, extensions.__name__, extensions.__path__
     )

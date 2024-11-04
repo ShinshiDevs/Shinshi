@@ -1,3 +1,5 @@
 from collections.abc import Sequence
 
-__all__: Sequence[str] = ()
+from shinshi.extensions.general.commands.stats_command import StatsCommand
+
+__all__: Sequence[str] = ("StatsCommand",)
