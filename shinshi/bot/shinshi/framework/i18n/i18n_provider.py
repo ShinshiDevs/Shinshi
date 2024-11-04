@@ -2,10 +2,14 @@ import os
 from logging import Logger, getLogger
 from pathlib import Path
 
+from aurum.l10n import Localized
+from hikari.interactions import BaseCommandInteraction
 from yaml import CLoader, load
 
 from shinshi.abc.i18n.ii18n_provider import II18nProvider
 from shinshi.framework.i18n.locale import Locale
+
+DEFAULT_LANGUAGE: str = "en_GB"
 
 
 class I18nProvider(II18nProvider):
@@ -33,4 +37,17 @@ class I18nProvider(II18nProvider):
         )
 
     async def stop(self) -> None:
-        self.languages = None
+        self.languages.clear()
+
+    def build_localized(self, value: Localized) -> None:
+        key: str = value.value
+        value.value = {
+            name: language.get(key) for name, language in self.languages.items()
+        }
+        value.fallback = self.get_locale(DEFAULT_LANGUAGE).get(key)
+
+    def get_locale(self, by: BaseCommandInteraction | str) -> Locale:
+        return self.languages.get(
+            by.locale if isinstance(by, BaseCommandInteraction) else by,
+            self.get_locale(DEFAULT_LANGUAGE),
+        )

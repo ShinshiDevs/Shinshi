@@ -1,11 +1,13 @@
 from aurum.client import Client
 from aurum.commands.enum import SyncCommandsFlag
 from hikari import GatewayBotAware
-from hikari.impl import CacheComponents, CacheSettings, GatewayBot, HTTPSettings
+from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 from hikari.intents import Intents
 from hikari.presences import Activity, Status
 
 from shinshi.abc.bot.ibot_service import IBotService
+from shinshi.abc.i18n.ii18n_provider import II18nProvider
+from shinshi.framework.bot.bot import Bot
 from shinshi.utils.env import getenv
 
 MAX_MESSAGES: int = 100
@@ -15,6 +17,7 @@ MAX_DM_CHANNELS_IDS: int = 0
 class BotService(IBotService):
     def __init__(
         self,
+        i18n_provider: II18nProvider,
         *,
         cache_settings: CacheSettings | None = None,
         cache_components: CacheComponents = CacheComponents.NONE,
@@ -35,7 +38,7 @@ class BotService(IBotService):
             enable_cleanup_closed=True,
         )
 
-        self._bot: GatewayBot = GatewayBot(
+        self._bot: Bot = Bot(
             getenv("SHINSHI_DISCORD_TOKEN"),
             cache_settings=cache_settings,
             http_settings=http_settings,
@@ -45,6 +48,7 @@ class BotService(IBotService):
         )
         self._client: Client = Client(
             self._bot,
+            l10n=i18n_provider,
             sync_commands=sync_commands,
         )
 
