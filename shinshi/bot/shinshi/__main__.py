@@ -8,7 +8,7 @@ from shinshi import extensions
 from shinshi.framework.bot.bot_service import BotService
 from shinshi.framework.database.database_service import DatabaseService
 from shinshi.framework.extensions.extensions_service import ExtensionsService
-from shinshi.framework.http.ihttp_service import HTTPService
+from shinshi.framework.http.http_service import HTTPService
 from shinshi.framework.i18n.i18n_provider import I18nProvider
 from shinshi.framework.kernel import Kernel
 from shinshi.utils.logging import setup_logging
