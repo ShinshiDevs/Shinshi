@@ -8,6 +8,7 @@ from hikari.guilds import GatewayGuild
 from humanize import naturalsize
 from psutil import Process
 
+from shinshi import __version__
 from shinshi.abc.models.context import Context
 from shinshi.enums.colour import Colour
 from shinshi.utils.icons import get_icon
@@ -34,10 +35,10 @@ class StatsCommand(SlashCommand):
             .add_field(
                 name=context.locale.get("commands.stats.fields.version"),
                 value=(
-                    f"[{context.bot.version.version}]"
-                    f"(https://github.com/ShinshiDevs/Shinshi/releases/tag/{context.bot.version.version}) "
-                    f"([`{context.bot.version.git_sha}`]"
-                    f"(https://github.com/ShinshiDevs/Shinshi/commit/{context.bot.version.git_sha}))"
+                    f"[{__version__.version}]"
+                    f"(https://github.com/ShinshiDevs/Shinshi/releases/tag/{__version__.version}) "
+                    f"([`{__version__.git_sha}`]"
+                    f"(https://github.com/ShinshiDevs/Shinshi/commit/{__version__.git_sha}))"
                 ),
                 inline=True,
             )
