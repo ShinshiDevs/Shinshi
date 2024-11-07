@@ -1,3 +1,5 @@
+from logging import Logger, getLogger
+
 import orjson
 from aiohttp import ClientSession, TCPConnector
 
@@ -7,6 +9,8 @@ from shinshi.framework.types.singleton import Singleton
 
 class HTTPService(Singleton, IHTTPService):
     def __init__(self) -> None:
+        self.__logger: Logger = getLogger("shinshi.http")
+
         self.client_session: ClientSession | None = None
         self.connector: TCPConnector | None = None
 
@@ -16,6 +20,7 @@ class HTTPService(Singleton, IHTTPService):
             connector=self.connector,
             json_serialize=orjson.dumps,
         )
+        self.__logger.debug("created client session with connector")
 
     async def stop(self) -> None:
         await self.connector.close()
@@ -23,3 +28,5 @@ class HTTPService(Singleton, IHTTPService):
 
         self.connector = None
         self.client_session = None
+
+        self.__logger.debug("closed and removed client session with connector")
