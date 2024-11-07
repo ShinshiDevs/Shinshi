@@ -21,6 +21,7 @@ class BotService(IBotService):
         self,
         i18n_provider: II18nProvider,
         *,
+        banner: str | None = None,
         cache_settings: CacheSettings | None = None,
         cache_components: CacheComponents = CacheComponents.NONE,
         http_settings: HTTPSettings | None = None,
@@ -44,6 +45,7 @@ class BotService(IBotService):
 
         self._bot: Bot = Bot(
             getenv("SHINSHI_DISCORD_TOKEN"),
+            banner=banner,
             cache_settings=cache_settings,
             http_settings=http_settings,
             intents=intents,
@@ -75,7 +77,7 @@ class BotService(IBotService):
             activity=self.activity,
             status=self.status,
             shard_ids=self.shard_ids,
-            shard_count=self.shard_count
+            shard_count=self.shard_count,
         )
 
     async def stop(self) -> None:
