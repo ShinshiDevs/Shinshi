@@ -25,7 +25,7 @@ class AboutCommand(SlashCommand):
         embed: Embed = (
             Embed(
                 colour=Colour.GREY,
-                description=context.locale.get("commands.about.bot.description")
+                description=context.locale.get("commands.about.bot.description"),
             )
             .set_author(name=context.bot.get_me().username)
             .set_thumbnail(context.bot.get_me().avatar_url)
@@ -34,7 +34,7 @@ class AboutCommand(SlashCommand):
                     context.locale.get_list("commands.about.bot.interesting_facts")
                 ).format(
                     servers=f"{round_to_significant_digit(len(guilds)):,}",
-                    members=f"{round_to_significant_digit(members_count):,}"
+                    members=f"{round_to_significant_digit(members_count):,}",
                 )
             )
         )
