@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from aurum.client import Client
 from aurum.commands.enum import SyncCommandsFlag
 from hikari import GatewayBotAware
@@ -28,6 +30,8 @@ class BotService(IBotService):
         sync_commands: SyncCommandsFlag = SyncCommandsFlag.NONE,
         activity: Activity | None = None,
         status: Status = Status.ONLINE,
+        shard_ids: Sequence[int] | None = None,
+        shard_count: int | None = None,
     ) -> None:
         self.cache_settings: CacheSettings = cache_settings or CacheSettings(
             components=cache_components,
@@ -54,6 +58,8 @@ class BotService(IBotService):
 
         self.activity: Activity | None = activity
         self.status: Status = status
+        self.shard_ids: Sequence[int] = shard_ids
+        self.shard_count: int | None = shard_count
 
     @property
     def bot(self) -> GatewayBotAware:
@@ -68,6 +74,8 @@ class BotService(IBotService):
             check_for_updates=False,
             activity=self.activity,
             status=self.status,
+            shard_ids=self.shard_ids,
+            shard_count=self.shard_count
         )
 
     async def stop(self) -> None:
