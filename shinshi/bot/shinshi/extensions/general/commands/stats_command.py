@@ -1,5 +1,4 @@
 import platform
-import time
 from datetime import UTC, datetime, timedelta
 from typing import Any, ValuesView
 
@@ -12,18 +11,18 @@ from tortoise.backends.base.client import BaseDBAsyncClient
 from tortoise.exceptions import ConfigurationError
 
 from shinshi.abc.models.context import Context
+from shinshi.enums.colour import Colour
 from shinshi.extensions.general.utils.get_cpu_usage import get_cpu_usage
 from shinshi.extensions.general.utils.get_memory_usage import get_memory_usage
-from shinshi.framework.enums.colour import Colour
 from shinshi.utils.icons import get_icon
 from shinshi.utils.timestamp import format_datetime, format_timestamp
 
 
 class StatsCommand(SlashCommand):
     def __init__(self) -> None:
-        self.uptime: float = time.time()  # * temporary solution
         super().__init__(
-            "stats", description=Localized(value="commands.stats.description")
+            "stats",
+            description=Localized(value="commands.stats.description"),
         )
 
     @staticmethod
@@ -63,7 +62,7 @@ class StatsCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.stats.fields.uptime"),
-                value=format_timestamp(self.uptime, "R"),
+                value=format_timestamp(context.bot.uptime, "R"),
                 inline=True,
             )
             .add_field(
