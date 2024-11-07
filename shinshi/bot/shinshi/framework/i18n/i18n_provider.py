@@ -23,21 +23,29 @@ class I18nProvider(II18nProvider):
         if not self.base_path.exists():
             raise SystemError("Base path is not existing")
         for file in self.base_path.glob("*.yaml"):
-            with open(file, "r", encoding="UTF-8") as stream:
-                data: dict[str, str] | None = load(stream, Loader=CLoader)
-                if not data:
-                    self.__logger.warning("%s has no data to load, skip", file)
-                    continue
-                locale = self.languages[data["name"]] = Locale(
-                    name=data["name"], data=data
-                )
-                self.__logger.debug("loaded %s locale", locale.name)
+            locale: Locale = self.load_locale(file)
+            self.languages[locale.name] = locale
+            self.__logger.debug("loaded %s locale", locale.name)
         self.__logger.info(
             "started with %s languages", ", ".join(self.languages.keys())
         )
 
     async def stop(self) -> None:
         self.languages.clear()
+
+    def load_locale(self, file: Path) -> Locale | None:
+        try:
+            with open(file, "r", encoding="UTF-8") as stream:
+                data: dict[str, str] | None = load(stream, Loader=CLoader)
+                if not data:
+                    self.__logger.warning("%s has no data to load, skip", file)
+                    return
+                return Locale(name=data["name"], data=data)
+        except TypeError as error:
+            self.__logger.warning("cannot load %s due syntax error: %s", file, error, exc_info=error)
+        except Exception as error:
+            self.__logger.warning("cannot load %s due unexpected error: %s", file, error, exc_info=error)
+        return
 
     def build_localized(self, value: Localized) -> None:
         key: str = value.value
