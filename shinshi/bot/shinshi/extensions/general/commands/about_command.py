@@ -1,0 +1,41 @@
+from collections.abc import ValuesView
+from random import choice
+
+from aurum.commands import SlashCommand
+from aurum.l10n import Localized
+from hikari.embeds import Embed
+from hikari.guilds import GatewayGuild
+
+from shinshi.abc.models.context import Context
+from shinshi.enums.colour import Colour
+from shinshi.extensions.general.utils.round_to_significant_digit import (
+    round_to_significant_digit,
+)
+
+
+class AboutCommand(SlashCommand):
+    def __init__(self) -> None:
+        super().__init__(
+            "about", description=Localized(value="commands.about.description")
+        )
+
+    async def callback(self, context: Context) -> None:
+        guilds: ValuesView[GatewayGuild] = context.bot.cache.get_guilds_view().values()
+        members_count: int = sum(guild.member_count for guild in guilds)
+        embed: Embed = (
+            Embed(
+                colour=Colour.GREY,
+                description=context.locale.get("commands.about.bot.description")
+            )
+            .set_author(name=context.bot.get_me().username)
+            .set_thumbnail(context.bot.get_me().avatar_url)
+            .set_footer(
+                text=choice(
+                    context.locale.get_list("commands.about.bot.interesting_facts")
+                ).format(
+                    servers=f"{round_to_significant_digit(len(guilds)):,}",
+                    members=f"{round_to_significant_digit(members_count):,}"
+                )
+            )
+        )
+        return await context.create_response(embed=embed)

@@ -1,6 +1,20 @@
 name: en_GB
 
 commands:
+  about:
+    description: Information about the Shinshi
+    bot:
+      description: |
+        A powerful and intuitive Discord bot designed to enhance server management and user interaction. It offers a wide range of tools to help administrators streamline their tasks while providing entertainment and utility features for users.
+        
+        With easy setup and flexible customization, Shinshi adapts to any server’s needs, making management smoother and improving the overall user experience.
+      interesting_facts:
+        - 'Random fact: The name “Shinshi” reflects the lead developer’s love for chinchillas and draws from Japanese tradition, where Shinshi means "divine servant" or "messenger of god", often seen as sacred guardians.'
+        - 'Random fact: The project was initially launched in 2022, then put on hold for two years, before being revived with renewed energy and focus.'
+        - 'Random fact: In 2023, Shinshi moved past its overcomplicated phase, adopting a new vision focused on simplicity and streamlined programming.'
+        - 'Random fact: As of November 7, 2024, Shinshi weighs 95 kilobytes.'
+        - 'Random fact: At now we serve already {servers} servers with {members} members'
+
   stats:
     description: Current detailed statistics of the bot
     embed:
