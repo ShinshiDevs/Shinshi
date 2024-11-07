@@ -1,9 +1,10 @@
 import asyncio
 
+from hikari import Activity
 from hikari.impl import CacheComponents
 from hikari.intents import Intents
 
-from shinshi import extensions
+from shinshi import __version__, extensions
 from shinshi.framework.bot.bot_service import BotService
 from shinshi.framework.config.configuration_service import ConfigurationService
 from shinshi.framework.database.database_service import DatabaseService
@@ -32,6 +33,7 @@ async def main() -> None:
         | CacheComponents.ROLES
         | CacheComponents.EMOJIS,
         intents=Intents.GUILDS | Intents.GUILD_EMOJIS,
+        activity=Activity(name=f"{__version__.version}")
     )
     extensions_service: ExtensionsService = ExtensionsService(
         bot_service, extensions.__name__, extensions.__path__
