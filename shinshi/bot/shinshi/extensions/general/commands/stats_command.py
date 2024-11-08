@@ -19,8 +19,9 @@ class StatsCommand(SlashCommand):
     def __init__(self) -> None:
         self.process: Process = Process()
         super().__init__(
-            "stats",
+            name="stats",
             description=Localized(value="commands.stats.description"),
+            is_dm_enabled=True,
         )
 
     async def callback(self, context: Context) -> None:
