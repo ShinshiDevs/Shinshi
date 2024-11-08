@@ -16,7 +16,9 @@ from shinshi.utils.loop import get_event_loop_policy
 
 
 async def main() -> None:
-    configuration_service: ConfigurationService = ConfigurationService()
+    configuration_service: ConfigurationService = ConfigurationService(
+        configs=["resources/emojis.yaml"]
+    )
     configuration_service.configure_logging()
     configuration_service.load_dotenv()
 
@@ -33,7 +35,7 @@ async def main() -> None:
         | CacheComponents.ROLES
         | CacheComponents.EMOJIS,
         intents=Intents.GUILDS | Intents.GUILD_EMOJIS,
-        activity=Activity(name=f"{__version__.version}")
+        activity=Activity(name=f"{__version__.version}"),
     )
     extensions_service: ExtensionsService = ExtensionsService(
         bot_service, extensions.__name__, extensions.__path__
