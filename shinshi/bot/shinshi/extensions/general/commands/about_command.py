@@ -16,7 +16,8 @@ from shinshi.extensions.general.utils.round_to_significant_digit import (
 class AboutCommand(SlashCommand):
     def __init__(self) -> None:
         super().__init__(
-            "about", description=Localized(value="commands.about.description")
+            "about",
+            description=Localized(value="commands.about.description"),
         )
 
     async def callback(self, context: Context) -> None:
