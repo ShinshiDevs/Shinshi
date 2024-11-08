@@ -7,11 +7,3 @@ class Extension:
     name: str = attrs.field(repr=False, eq=False)
     package: str = attrs.field(repr=True, eq=True)
     commands: dict[str, AppCommand] = attrs.field(factory=dict, repr=False, eq=False)
-
-    """
-    Represents an extension.
-
-    Attributes:
-        name (str): Name of the extension.
-        package (str): Package name of the extension.
-    """
