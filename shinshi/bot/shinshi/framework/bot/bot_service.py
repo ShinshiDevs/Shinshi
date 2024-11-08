@@ -17,6 +17,17 @@ MAX_DM_CHANNELS_IDS: int = 0
 
 
 class BotService(IBotService):
+    __slots__: Sequence[str] = (
+        "cache_settings",
+        "http_settings",
+        "_bot",
+        "_client",
+        "activity",
+        "intents",
+        "shard_ids",
+        "shard_count",
+    )
+
     def __init__(
         self,
         i18n_provider: II18nProvider,

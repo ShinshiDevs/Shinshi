@@ -1,12 +1,15 @@
 import asyncio
 import contextlib
 import time
+from collections.abc import Sequence
 from logging import Logger, getLogger
 
 from shinshi.abc.services.iservice import IService
 
 
 class Kernel:
+    __slots__: Sequence[str] = ("__logger", "loop", "services", "started_services")
+
     def __init__(
         self, *services: IService, loop: asyncio.AbstractEventLoop | None = None
     ) -> None:

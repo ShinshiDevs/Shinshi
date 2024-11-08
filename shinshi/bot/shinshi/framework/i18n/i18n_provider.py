@@ -1,4 +1,5 @@
 import os
+from collections.abc import Sequence
 from logging import Logger, getLogger
 from pathlib import Path
 
@@ -13,6 +14,8 @@ _DEFAULT_LANGUAGE: str = "en_GB"
 
 
 class I18nProvider(II18nProvider):
+    __slots__: Sequence[str] = ("__logger", "base_path", "languages")
+
     def __init__(self, base_path: os.PathLike[str]) -> None:
         self.__logger: Logger = getLogger("shinshi.i18n")
 
@@ -35,16 +38,20 @@ class I18nProvider(II18nProvider):
 
     def load_locale(self, file: Path) -> Locale | None:
         try:
-            with open(file, "r", encoding="UTF-8") as stream:
+            with open(file, "rb") as stream:
                 data: dict[str, str] | None = load(stream, Loader=CLoader)
                 if not data:
                     self.__logger.warning("%s has no data to load, skip", file)
                     return
                 return Locale(name=data["name"], data=data)
         except TypeError as error:
-            self.__logger.warning("cannot load %s due syntax error: %s", file, error, exc_info=error)
+            self.__logger.warning(
+                "cannot load %s due syntax error: %s", file, error, exc_info=error
+            )
         except Exception as error:
-            self.__logger.warning("cannot load %s due unexpected error: %s", file, error, exc_info=error)
+            self.__logger.warning(
+                "cannot load %s due unexpected error: %s", file, error, exc_info=error
+            )
         return
 
     def build_localized(self, value: Localized) -> None:

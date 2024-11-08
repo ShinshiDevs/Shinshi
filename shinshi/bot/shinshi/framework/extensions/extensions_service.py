@@ -7,11 +7,20 @@ from aurum.client import Client
 from aurum.commands.app_command import AppCommand
 
 from shinshi.abc.bot.ibot_service import IBotService
+from shinshi.abc.extensions.extension import Extension
 from shinshi.abc.extensions.iextensions_service import IExtensionsService
-from shinshi.framework.extensions.extension import Extension
 
 
 class ExtensionsService(IExtensionsService):
+    __slots__: Sequence[str] = (
+        "__logger",
+        "client",
+        "extensions_package",
+        "extensions_path",
+        "sync_commands",
+        "extensions",
+    )
+
     def __init__(
         self,
         bot_service: IBotService,
