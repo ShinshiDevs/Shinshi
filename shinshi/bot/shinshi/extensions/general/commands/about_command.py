@@ -6,7 +6,7 @@ from aurum.l10n import Localized
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 
-from shinshi.abc.models.context import Context
+from shinshi.framework.interaction.context import Context
 from shinshi.enums.colour import Colour
 from shinshi.extensions.general.utils.round_to_significant_digit import (
     round_to_significant_digit,

@@ -9,7 +9,7 @@ from humanize import naturalsize
 from psutil import Process
 
 from shinshi import __version__
-from shinshi.abc.models.context import Context
+from shinshi.framework.interaction.context import Context
 from shinshi.enums.colour import Colour
 from shinshi.utils.icons import get_icon
 from shinshi.utils.timestamp import format_timestamp
