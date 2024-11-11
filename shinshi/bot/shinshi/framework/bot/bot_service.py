@@ -1,8 +1,7 @@
 from collections.abc import Sequence
 
-from aurum.client import Client
 from aurum.commands.enum import SyncCommandsFlag
-from hikari import GatewayBotAware
+from hikari.traits import GatewayBotAware
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 from hikari.intents import Intents
 from hikari.presences import Activity, Status
@@ -11,6 +10,7 @@ from shinshi.abc.bot.ibot_service import IBotService
 from shinshi.abc.i18n.ii18n_provider import II18nProvider
 from shinshi.framework.bot.bot import Bot
 from shinshi.utils.env import getenv
+from shinshi.framework.bot.client import Client
 
 MAX_MESSAGES: int = 100
 MAX_DM_CHANNELS_IDS: int = 0
