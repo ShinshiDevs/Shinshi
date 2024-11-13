@@ -9,7 +9,7 @@ from aurum.commands.app_command import AppCommand
 from shinshi.abc.bot.ibot_service import IBotService
 from shinshi.abc.extensions.extension import Extension
 from shinshi.abc.extensions.iextensions_service import IExtensionsService
-from shinshi.abc.kernel.kernel_aware import KernelAware
+from shinshi.abc.kernel.types.kernel_aware import KernelAware
 from shinshi.abc.services.iservice import IService
 
 

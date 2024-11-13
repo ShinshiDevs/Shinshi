@@ -6,7 +6,7 @@ from logging import Logger, getLogger
 from typing import Any, TypeVar
 
 from shinshi.abc.kernel.ikernel import IKernel
-from shinshi.abc.kernel.kernel_aware import KernelAware
+from shinshi.abc.kernel.types.kernel_aware import KernelAware
 from shinshi.abc.services.iservice import IService
 
 Service = TypeVar("Service", bound=IService)
