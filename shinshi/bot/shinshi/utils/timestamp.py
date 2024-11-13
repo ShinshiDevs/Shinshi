@@ -1,14 +1,12 @@
 from datetime import datetime, timedelta
-from typing import Literal, TypeVar
+from typing import Literal, TypeAlias
 
-TimestampStyleT = TypeVar(
-    "TimestampStyleT", bound=Literal["t", "T", "d", "D", "f", "F", "R"]
-)
+TimestampStyle: TypeAlias = Literal["t", "T", "d", "D", "f", "F", "R"]
 
 
 def format_timestamp(
     time: float | int,
-    style: TimestampStyleT | None = None,
+    style: TimestampStyle | None = None,
 ) -> str:
     if style is not None:
         return f"<t:{int(time)}:{style}>"
@@ -17,7 +15,7 @@ def format_timestamp(
 
 def format_datetime(
     time: datetime | timedelta,
-    style: TimestampStyleT | None = None,
+    style: TimestampStyle | None = None,
 ) -> str:
     if isinstance(time, timedelta):
         time = datetime.now() + time
