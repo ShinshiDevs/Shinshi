@@ -1,6 +1,6 @@
 import asyncio
 
-from hikari import Activity
+from hikari.presences import Activity
 from hikari.impl import CacheComponents
 from hikari.intents import Intents
 

@@ -1,5 +1,5 @@
 from aurum.context import InteractionContext
-from hikari import Embed
+from hikari.embeds import Embed
 
 from shinshi.enums.colour import Colour
 from shinshi.framework.bot.bot import Bot

@@ -15,5 +15,5 @@ class Client(_Client):
             interaction=interaction,
             bot=self.bot,
             client=self,
-            locale=self.l10n.get_locale(interaction) if self.l10n else None
+            locale=self.l10n.get_locale(interaction) if self.l10n else None,
         )
