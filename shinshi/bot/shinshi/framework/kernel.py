@@ -35,7 +35,7 @@ class Kernel(IKernel):
             )
             try:
                 await service.start()
-            except Exception as error:
+            except Exception as error:  # pylint: disable=W0718
                 self.__logger.error(
                     "failed to start service %s due to an unexpected error: %s",
                     service.__class__.__qualname__,
