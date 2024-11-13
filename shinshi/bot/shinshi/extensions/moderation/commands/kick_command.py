@@ -76,7 +76,7 @@ class KickCommand(SlashCommand):
             getLogger("shinshi.exceptions").warning(
                 "failed to send notification to member in kick: %s", error
             )
-        except Exception:
+        except Exception:  # pylint: disable=W0718
             pass
 
     async def callback(
