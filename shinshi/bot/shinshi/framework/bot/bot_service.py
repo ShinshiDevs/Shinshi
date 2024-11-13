@@ -1,16 +1,16 @@
 from collections.abc import Sequence
 
 from aurum.commands.enum import SyncCommandsFlag
-from hikari.traits import GatewayBotAware
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 from hikari.intents import Intents
 from hikari.presences import Activity, Status
+from hikari.traits import GatewayBotAware
 
 from shinshi.abc.bot.ibot_service import IBotService
 from shinshi.abc.i18n.ii18n_provider import II18nProvider
 from shinshi.framework.bot.bot import Bot
-from shinshi.utils.env import getenv
 from shinshi.framework.bot.client import Client
+from shinshi.utils.env import getenv
 
 MAX_MESSAGES: int = 100
 MAX_DM_CHANNELS_IDS: int = 0
@@ -45,20 +45,19 @@ class BotService(IBotService):
         shard_ids: Sequence[int] | None = None,
         shard_count: int | None = None,
     ) -> None:
-        self.cache_settings: CacheSettings = cache_settings or CacheSettings(
-            components=cache_components,
-            max_messages=MAX_MESSAGES,
-            max_dm_channel_ids=MAX_DM_CHANNELS_IDS,
-        )
-        self.http_settings: HTTPSettings = http_settings or HTTPSettings(
-            enable_cleanup_closed=True,
-        )
-
         self._bot: Bot = Bot(
             getenv("SHINSHI_DISCORD_TOKEN"),
             banner=banner,
-            cache_settings=cache_settings,
-            http_settings=http_settings,
+            cache_settings=cache_settings
+            or CacheSettings(
+                components=cache_components,
+                max_messages=MAX_MESSAGES,
+                max_dm_channel_ids=MAX_DM_CHANNELS_IDS,
+            ),
+            http_settings=http_settings
+            or HTTPSettings(
+                enable_cleanup_closed=True,
+            ),
             intents=intents,
             auto_chunk_members=auto_chunk_members,
             rest_url=rest_url,

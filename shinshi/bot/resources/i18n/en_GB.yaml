@@ -14,7 +14,6 @@ commands:
         - 'Random fact: In 2023, Shinshi moved past its overcomplicated phase, adopting a new vision focused on simplicity and streamlined programming.'
         - 'Random fact: As of November 7, 2024, Shinshi weighs 95 kilobytes.'
         - 'Random fact: At now we serve already {servers} servers with {members} members'
-
   stats:
     description: Current detailed statistics of the bot
     embed:
@@ -30,7 +29,29 @@ commands:
       guilds: Guilds
       members: Members
       channels: Channels
-      database_uptime: Database Uptime
-      database_queries: 
-        name: Database Queries
-        value: "Reads: {reads}/s\nWrites: {writes}/s"
+  kick:
+    description: Kick member from the server
+    options:
+      member:
+        description: Select a member from the list
+      reason:
+        description: Reason of the kick
+    extra:
+      no_reason: No reason provided
+    errors:
+      target_is_moderator: You cannot kick yourself
+      target_is_bot: I cannot kick myself
+      target_too_high_for_moderator: You cannot kick a member with a higher role than yours
+      target_too_high_for_bot: I cannot kick a member with a higher role than mine
+      forbidden_error: Bot has no permissions to kick members
+      not_found_error: The specified member could not be found
+    user:
+      success: "**{member}** has been kicked {emoji}"
+    target:
+      embed:
+        title: "You have been kicked from {guild}"
+        fields:
+          moderator: Moderator
+          reason: Reason
+
+
