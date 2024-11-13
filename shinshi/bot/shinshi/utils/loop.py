@@ -6,7 +6,7 @@ try:
     import uvloop
 except ImportError:
     uvloop = None
-    if os.name == "nt":
+    if os.name != "nt":
         warnings.warn("uvloop can't be used, because it's not installed")
 
 
