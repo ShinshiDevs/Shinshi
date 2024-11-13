@@ -5,6 +5,12 @@ from hikari.impl import CacheComponents
 from hikari.intents import Intents
 
 from shinshi import __version__, extensions
+from shinshi.abc.bot.ibot_service import IBotService
+from shinshi.abc.config.iconfiguration_service import IConfigurationService
+from shinshi.abc.database.idatabase_service import IDatabaseService
+from shinshi.abc.extensions.iextensions_service import IExtensionsService
+from shinshi.abc.http.ihttp_service import IHTTPService
+from shinshi.abc.i18n.ii18n_provider import II18nProvider
 from shinshi.framework.bot.bot_service import BotService
 from shinshi.framework.config.configuration_service import ConfigurationService
 from shinshi.framework.database.database_service import DatabaseService
@@ -16,39 +22,41 @@ from shinshi.utils.loop import get_event_loop_policy
 
 
 async def main() -> None:
-    configuration_service: ConfigurationService = ConfigurationService(
+    kernel: Kernel = Kernel()
+    configuration_service: IConfigurationService = ConfigurationService(
         configs=["resources/emojis.yaml"]
     )
-    configuration_service.configure_logging()
+    configuration_service.setup_logging()
     configuration_service.load_dotenv()
 
-    http_service: HTTPService = HTTPService()
-    i18n_provider: I18nProvider = I18nProvider("resources/i18n")
-    database_service: DatabaseService = DatabaseService("shinshi.abc.database.models")
-    bot_service: BotService = BotService(
-        i18n_provider=i18n_provider,
-        cache_components=CacheComponents.ME
-        | CacheComponents.GUILDS
-        | CacheComponents.GUILD_CHANNELS
-        | CacheComponents.GUILD_STICKERS
-        | CacheComponents.MEMBERS
-        | CacheComponents.ROLES
-        | CacheComponents.EMOJIS,
-        intents=Intents.GUILDS | Intents.GUILD_EMOJIS,
-        activity=Activity(name=f"{__version__.version}"),
+    kernel.register_service(IConfigurationService, configuration_service)
+    kernel.register_service(IHTTPService, HTTPService())
+    kernel.register_service(II18nProvider, I18nProvider("resources/i18n"))
+    kernel.register_service(IDatabaseService, DatabaseService())
+    kernel.register_service(
+        IBotService,
+        BotService(
+            i18n_provider=kernel.get_service(II18nProvider),
+            cache_components=CacheComponents.ME
+            | CacheComponents.GUILDS
+            | CacheComponents.GUILD_CHANNELS
+            | CacheComponents.GUILD_STICKERS
+            | CacheComponents.MEMBERS
+            | CacheComponents.ROLES
+            | CacheComponents.EMOJIS,
+            intents=Intents.GUILDS | Intents.GUILD_EMOJIS,
+            activity=Activity(name=f"{__version__.version}"),
+        ),
     )
-    extensions_service: ExtensionsService = ExtensionsService(
-        bot_service, extensions.__name__, extensions.__path__
+    kernel.register_service(
+        IExtensionsService,
+        ExtensionsService(
+            bot_service=kernel.get_service(IBotService),
+            extensions_package=extensions.__name__,
+            extensions_path=extensions.__path__,
+        ),
     )
-
-    await Kernel(
-        configuration_service,
-        http_service,
-        i18n_provider,
-        database_service,
-        bot_service,
-        extensions_service,
-    ).run()
+    await kernel.run()
 
 
 if __name__ == "__main__":

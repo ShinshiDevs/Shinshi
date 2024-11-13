@@ -5,10 +5,9 @@ import orjson
 from aiohttp import ClientSession, TCPConnector
 
 from shinshi.abc.http.ihttp_service import IHTTPService
-from shinshi.framework.types.singleton import Singleton
 
 
-class HTTPService(Singleton, IHTTPService):
+class HTTPService(IHTTPService):
     __slots__: Sequence[str] = ("__logger", "client_session", "connector")
 
     def __init__(self) -> None:

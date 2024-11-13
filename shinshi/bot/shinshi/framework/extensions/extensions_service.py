@@ -1,7 +1,7 @@
 from importlib import import_module
 from logging import Logger, getLogger
 from pkgutil import iter_modules
-from typing import Sequence
+from typing import Any, Callable, Sequence
 
 from aurum.client import Client
 from aurum.commands.app_command import AppCommand
@@ -9,9 +9,11 @@ from aurum.commands.app_command import AppCommand
 from shinshi.abc.bot.ibot_service import IBotService
 from shinshi.abc.extensions.extension import Extension
 from shinshi.abc.extensions.iextensions_service import IExtensionsService
+from shinshi.abc.kernel.kernel_aware import KernelAware
+from shinshi.abc.services.iservice import IService
 
 
-class ExtensionsService(IExtensionsService):
+class ExtensionsService(IExtensionsService, KernelAware):
     __slots__: Sequence[str] = (
         "__logger",
         "client",
@@ -49,10 +51,13 @@ class ExtensionsService(IExtensionsService):
                 commands_package: Sequence[str] = import_module(
                     f"{extension.package}.commands"
                 )
-                for command_class in (
-                    commands_package.__all__
-                ):  # command_class is a name of command class
-                    command: AppCommand = getattr(commands_package, command_class)()
+                for command_class_name in commands_package.__all__:
+                    command_class: AppCommand = getattr(
+                        commands_package, command_class_name
+                    )  # just class
+                    command: AppCommand = command_class(
+                        **self.inject_dependencies(command_class.__init__)
+                    )  # inited command object
                     extension.commands[command.name] = command
                 self.__logger.debug("loaded extension %s", extension_name)
             except Exception as error:
@@ -69,3 +74,14 @@ class ExtensionsService(IExtensionsService):
 
     async def stop(self) -> None:
         self.extensions.clear()
+
+    def inject_dependencies(self, func: Callable[..., None]) -> dict[str, Any]:
+        dependencies: dict[str, Any] = func.__annotations__.copy()
+        dependencies.pop("return", None)  # removing return annotation `-> None`
+
+        for name, annotation in dependencies.items():
+            # annotation meant do be interface of service
+            assert issubclass(annotation, IService)
+            dependencies[name] = self.kernel.get_service(annotation, None)
+
+        return dependencies

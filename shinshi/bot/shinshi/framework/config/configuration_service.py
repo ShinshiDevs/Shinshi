@@ -3,15 +3,17 @@ from logging import Logger, getLogger, warning
 from logging.config import dictConfig
 from os import PathLike
 from posixpath import basename, splitext
+from typing import Any, TypeVar
 
 from dotenv import load_dotenv
 from yaml import CLoader, load
 
 from shinshi.abc.config.iconfiguration_service import IConfigurationService
-from shinshi.framework.types.singleton import Singleton
+
+T = TypeVar("T", bound=dict[str, Any])
 
 
-class ConfigurationService(Singleton, IConfigurationService):
+class ConfigurationService(IConfigurationService):
     __slots__: Sequence[str] = ("__logger", "dotenv_path", "logging_path", "configs")
 
     def __init__(
@@ -25,7 +27,7 @@ class ConfigurationService(Singleton, IConfigurationService):
         self.logging_path: PathLike[str] = logging_path
 
         self.configs: Sequence[PathLike[str]] = configs or []
-        self.stored_configs: dict[str, dict] = {}
+        self.stored_configs: dict[str, T] = {}
 
     async def start(self) -> None:
         for path in self.configs:
@@ -41,10 +43,7 @@ class ConfigurationService(Singleton, IConfigurationService):
     async def stop(self) -> None:
         self.stored_configs.clear()
 
-    def get_config(self, name: str) -> dict | None:
-        return self.stored_configs.get(name)
-
-    def configure_logging(self) -> None:
+    def setup_logging(self) -> None:
         try:
             with open(self.logging_path, "rb") as stream:
                 config: dict[str, str] = load(stream, Loader=CLoader)
@@ -73,7 +72,10 @@ class ConfigurationService(Singleton, IConfigurationService):
                 f"Cannot find environment file {self.dotenv_path}"
             ) from error
 
-    def load_config(self, config_path: PathLike[str]) -> dict | None:
+    def get_config(self, name: str) -> T | None:
+        return self.stored_configs.get(name)
+
+    def load_config(self, config_path: PathLike[str]) -> T | None:
         try:
             with open(config_path, "rb") as stream:
                 config: dict[str, str] = load(stream, Loader=CLoader)

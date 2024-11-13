@@ -3,28 +3,30 @@ import contextlib
 import time
 from collections.abc import Sequence
 from logging import Logger, getLogger
+from typing import Any, TypeVar
 
+from shinshi.abc.kernel.ikernel import IKernel
+from shinshi.abc.kernel.kernel_aware import KernelAware
 from shinshi.abc.services.iservice import IService
 
+Service = TypeVar("Service", bound=IService)
 
-class Kernel:
-    __slots__: Sequence[str] = ("__logger", "loop", "services", "started_services")
 
-    def __init__(
-        self, *services: IService, loop: asyncio.AbstractEventLoop | None = None
-    ) -> None:
+class Kernel(IKernel):
+    __slots__: Sequence[str] = ("__logger", "loop", "services")
+
+    def __init__(self, loop: asyncio.AbstractEventLoop | None = None) -> None:
         self.__logger: Logger = getLogger("shinshi.kernel")
-
         self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_running_loop()
-
-        self.services: tuple[IService] = services
-        self.started_services: list[IService] = []
+        self.services: dict[IService, Service] = {}
 
     async def start(self) -> None:
         start_time: float = time.monotonic()
+
+        started_services: int = 0
         services_count: int = len(self.services)
 
-        for index, service in enumerate(self.services, start=1):
+        for index, service in enumerate(self.services.values(), start=1):
             self.__logger.debug(
                 "starting service %s (%s/%s)",
                 service.__class__.__qualname__,
@@ -41,22 +43,22 @@ class Kernel:
                     exc_info=error,
                 )
                 continue
-            self.started_services.append(service)
+            started_services += 1
 
         self.__logger.info(
             "started services in %.2f seconds (%s/%s)",
             time.monotonic() - start_time,
-            len(self.started_services),
+            started_services,
             services_count,
         )
 
     async def stop(self) -> None:
-        for service in reversed(self.started_services):
+        for service in reversed(self.services.values()):
             self.__logger.debug("stopping service %s", service.__class__.__qualname__)
             with contextlib.suppress():
                 await service.stop()
 
-        self.started_services.clear()
+        self.services.clear()
         self.__logger.info("stopped services successfully")
 
     async def run(self) -> None:
@@ -71,3 +73,16 @@ class Kernel:
             self.__logger.info("shutting down due to keyboard interrupt...")
         finally:
             await self.stop()
+
+    def get_service(
+        self, service_interface: IService, default: Any | None = None
+    ) -> Service | None:
+        return self.services.get(service_interface, default)
+
+    def register_service(self, service_interface: IService, service: Service) -> None:
+        if isinstance(service, KernelAware):
+            service.set_kernel(self)
+        self.services[service_interface] = service
+
+    def remove_service(self, service_interface: IService) -> None:
+        self.services.pop(service_interface)
