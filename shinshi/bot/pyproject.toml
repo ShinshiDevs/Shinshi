@@ -4,7 +4,7 @@ version = "20.0.0.dev1"
 description = "Runtime of the Discord bot"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [ 
+dependencies = [
     "attrs>=24.2.0",
     "yarl>=1.17.0",
     "orjson>=3.10.10",
@@ -20,23 +20,22 @@ dependencies = [
 ]
 
 [tool.uv]
-dev-dependencies = [
-    "pylint>=3.3.1",
-    "ruff>=0.7.1",
-]
+dev-dependencies = ["pylint>=3.3.1", "ruff>=0.7.1"]
 
 [tool.uv.sources]
 aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari.git", rev = "unstable" }
 
-[tool.pylint]
-disable = [
-    "C0114", # Missing module docstring
-    "C0115", # Missing class docstring
-    "C0116", # Missing function or method docstring
-]
+[tool.ruff]
+line-length = 120
+target-version = "py310"
 
-[tool.pylint.format]
-max-line-length = 120
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 80
+quote-style = "double"
+line-ending = "lf"
+skip-magic-trailing-comma = true
 
-[tool.pylint.logging]
-logging-format-style = "old"
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "basic"
