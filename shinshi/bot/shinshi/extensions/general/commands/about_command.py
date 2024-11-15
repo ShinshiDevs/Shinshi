@@ -17,11 +17,11 @@ class AboutCommand(SlashCommand):
 
     async def callback(self, context: Context) -> None:
         guilds: ValuesView[GatewayGuild] = context.bot.cache.get_guilds_view().values()
-        members_count: int = sum(guild.member_count for guild in guilds)
+        members_count: int = sum(guild.member_count or 0 for guild in guilds)
         embed: Embed = (
             Embed(colour=Colour.GREY, description=context.locale.get("commands.about.bot.description"))
-            .set_author(name=context.bot.get_me().username)
-            .set_thumbnail(context.bot.get_me().avatar_url)
+            .set_author(name=context.bot.me.username)
+            .set_thumbnail(context.bot.me.avatar_url)
             .set_footer(
                 text=choice(context.locale.get_list("commands.about.bot.interesting_facts")).format(
                     servers=f"{round_to_significant_digit(len(guilds)):,}",

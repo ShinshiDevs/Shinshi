@@ -3,6 +3,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from hikari.impl import GatewayBot
+from hikari.users import OwnUser
 
 from shinshi.framework.bot.cache import Cache
 
@@ -26,6 +27,12 @@ class Bot(GatewayBot):
     @_cache.setter
     def _cache(self, ot: Any) -> None:
         pass
+
+    @property
+    def me(self) -> OwnUser:
+        user: OwnUser | None = self.get_me()
+        assert isinstance(user, OwnUser)
+        return user
 
     async def start(self, *args, **kwargs) -> None:
         self.uptime = time.time()

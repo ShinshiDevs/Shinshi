@@ -22,7 +22,7 @@ class StatsCommand(SlashCommand):
 
     async def callback(self, context: Context) -> None:
         guilds: ValuesView[GatewayGuild] = context.bot.cache.get_guilds_view().values()
-        members_count: int = sum(guild.member_count for guild in guilds)
+        members_count: int = sum(guild.member_count or 0 for guild in guilds)
         embed: Embed = (
             Embed(colour=Colour.GREY)
             .set_author(name=context.locale.get("commands.stats.embed.title"), icon=get_icon("server.webp"))
@@ -38,7 +38,7 @@ class StatsCommand(SlashCommand):
             )
             .add_field(
                 name=context.locale.get("commands.stats.fields.uptime"),
-                value=format_timestamp(context.bot.uptime, "R"),
+                value=format_timestamp(context.bot.uptime or 0, "R"),
                 inline=True,
             )
             .add_field(name=context.locale.get("commands.stats.fields.system"), value=platform.system(), inline=True)
