@@ -10,8 +10,6 @@ from yaml import CLoader, load
 
 from shinshi.abc.config.iconfiguration_service import IConfigurationService
 
-T = TypeVar("T", bound=dict[str, Any])
-
 
 class ConfigurationService(IConfigurationService):
     __slots__: Sequence[str] = ("__logger", "dotenv_path", "logging_path", "configs")
@@ -27,12 +25,12 @@ class ConfigurationService(IConfigurationService):
         self.logging_path: PathLike[str] = logging_path
 
         self.configs: Sequence[PathLike[str]] = configs or []
-        self.stored_configs: dict[str, T] = {}
+        self.stored_configs: dict[str, dict[str, Any]] = {}
 
     async def start(self) -> None:
         for path in self.configs:
             name: str = splitext(basename(path))[0]
-            config: dict = self.load_config(path)
+            config: dict[str, Any] | None = self.load_config(path)
             if config:
                 self.stored_configs[name] = config
                 self.__logger.debug("loaded %s config", path)
@@ -62,10 +60,10 @@ class ConfigurationService(IConfigurationService):
         except FileNotFoundError as error:
             raise RuntimeError(f"Cannot find environment file {self.dotenv_path}") from error
 
-    def get_config(self, name: str) -> T | None:
+    def get_config(self, name: str) -> dict[str, Any] | None:
         return self.stored_configs.get(name)
 
-    def load_config(self, config_path: PathLike[str]) -> T | None:
+    def load_config(self, config_path: PathLike[str]) -> dict[str, Any] | None:
         try:
             with open(config_path, "rb") as stream:
                 config: dict[str, str] = load(stream, Loader=CLoader)

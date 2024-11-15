@@ -12,5 +12,6 @@ class KernelAware(Protocol):
         cls._kernel = kernel
 
     @property
-    def kernel(self) -> IKernel | None:
+    def kernel(self) -> IKernel:
+        assert self._kernel is not None
         return self._kernel

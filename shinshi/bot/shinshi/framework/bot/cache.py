@@ -31,8 +31,8 @@ class Cache(CacheImpl):
 
     async def get_application_emoji(self, emoji: SnowflakeishOr[CustomEmoji]) -> KnownCustomEmoji:
         application: Application = await self._app.rest.fetch_application()
-        emoji_data: KnownCustomEmoji | None = self._application_emojis_entries.get(emoji)
+        emoji_data: KnownCustomEmoji | None = self._application_emojis_entries.get(Snowflake(emoji))
         if emoji_data is None:
             emoji_data = await self._app.rest.fetch_application_emoji(application, emoji)
-            self._application_emojis_entries[emoji_data.id] = emoji
+            self._application_emojis_entries[emoji_data.id] = emoji_data
         return emoji_data

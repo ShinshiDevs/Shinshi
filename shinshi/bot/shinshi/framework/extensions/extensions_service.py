@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from importlib import import_module
 from logging import Logger, getLogger
 from pkgutil import iter_modules
@@ -25,13 +26,13 @@ class ExtensionsService(IExtensionsService, KernelAware):
     )
 
     def __init__(
-        self, bot_service: IBotService, extensions_package: str, extensions_path: str, *, sync_commands: bool = True
+        self, bot_service: IBotService, extensions_package: str, extensions_path: Iterable[str], *, sync_commands: bool = True
     ) -> None:
         self.__logger: Logger = getLogger("shinshi.extensions")
 
         self.client: Client = bot_service.client
         self.extensions_package: str = extensions_package
-        self.extensions_path: str = extensions_path
+        self.extensions_path: Iterable[str] = extensions_path
 
         self.sync_commands: bool = sync_commands
 
@@ -67,7 +68,7 @@ class ExtensionsService(IExtensionsService, KernelAware):
 
         for name, annotation in dependencies.items():
             # annotation meant do be interface of service
-            assert issubclass(annotation, IService)
-            dependencies[name] = self.kernel.get_service(annotation, None)
+            if isinstance(annotation, type) and issubclass(annotation, IService):
+                dependencies[name] = self.kernel.get_service(annotation)
 
         return dependencies

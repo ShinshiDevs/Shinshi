@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 from hikari.presences import Activity
 from hikari.impl import CacheComponents
@@ -23,13 +24,13 @@ from shinshi.utils.loop import get_event_loop_policy
 
 async def main() -> None:
     kernel: Kernel = Kernel()
-    configuration_service: IConfigurationService = ConfigurationService(configs=["resources/emojis.yaml"])
+    configuration_service: IConfigurationService = ConfigurationService(configs=[Path("resources/emojis.yaml")])
     configuration_service.setup_logging()
     configuration_service.load_dotenv()
 
     kernel.register_service(IConfigurationService, configuration_service)
     kernel.register_service(IHTTPService, HTTPService())
-    kernel.register_service(II18nProvider, I18nProvider("resources/i18n"))
+    kernel.register_service(II18nProvider, I18nProvider(Path("resources/i18n")))
     kernel.register_service(IDatabaseService, DatabaseService())
     kernel.register_service(
         IBotService,

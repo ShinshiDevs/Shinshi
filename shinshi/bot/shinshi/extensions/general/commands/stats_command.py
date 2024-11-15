@@ -57,11 +57,11 @@ class StatsCommand(SlashCommand):
                 value=naturalsize(self.process.memory_info().rss),
                 inline=True,
             )
-            .add_field(name=context.locale.get("commands.stats.fields.guilds"), value=len(guilds), inline=True)
-            .add_field(name=context.locale.get("commands.stats.fields.members"), value=members_count, inline=True)
+            .add_field(name=context.locale.get("commands.stats.fields.guilds"), value=str(len(guilds)), inline=True)
+            .add_field(name=context.locale.get("commands.stats.fields.members"), value=str(members_count), inline=True)
             .add_field(
                 name=context.locale.get("commands.stats.fields.channels"),
-                value=len(context.bot.cache.get_guild_channels_view()),
+                value=str(len(context.bot.cache.get_guild_channels_view())),
                 inline=True,
             )
         )
@@ -69,7 +69,7 @@ class StatsCommand(SlashCommand):
         if context.guild is not None:
             embed.description = context.locale.get(
                 "commands.stats.embed.description",
-                {"shard_id": context.guild.shard_id + 1, "shard_count": context.bot.shard_count},
+                {"shard_id": context.guild.shard_id or 0 + 1, "shard_count": context.bot.shard_count},
             )
 
         return await context.create_response(embed=embed)
