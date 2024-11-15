@@ -36,9 +36,7 @@ class ConfigurationService(IConfigurationService):
             if config:
                 self.stored_configs[name] = config
                 self.__logger.debug("loaded %s config", path)
-        self.__logger.info(
-            "loaded %s/%s configs", len(self.stored_configs), len(self.configs)
-        )
+        self.__logger.info("loaded %s/%s configs", len(self.stored_configs), len(self.configs))
 
     async def stop(self) -> None:
         self.stored_configs.clear()
@@ -51,26 +49,18 @@ class ConfigurationService(IConfigurationService):
                     warning("logging wasn't configured correctly because no config")
                     config = {}
         except FileNotFoundError as error:
-            raise RuntimeError(
-                f"Cannot find logging configuration {self.logging_path}"
-            ) from error
+            raise RuntimeError(f"Cannot find logging configuration {self.logging_path}") from error
         dictConfig(config)
         self.__logger.debug("configured logging successfully")
 
     def load_dotenv(self) -> None:
         try:
             with open(self.dotenv_path, "r", encoding="UTF-8") as stream:
-                if not load_dotenv(
-                    stream=stream, override=True
-                ):  # `load_dotenv` returns bool – True if success
-                    raise RuntimeError(
-                        f"Cannot load dotenv file from `{self.dotenv_path}`"
-                    )
+                if not load_dotenv(stream=stream, override=True):  # `load_dotenv` returns bool – True if success
+                    raise RuntimeError(f"Cannot load dotenv file from `{self.dotenv_path}`")
                 self.__logger.debug("loaded dotenv file successfully")
         except FileNotFoundError as error:
-            raise RuntimeError(
-                f"Cannot find environment file {self.dotenv_path}"
-            ) from error
+            raise RuntimeError(f"Cannot find environment file {self.dotenv_path}") from error
 
     def get_config(self, name: str) -> T | None:
         return self.stored_configs.get(name)
@@ -86,7 +76,5 @@ class ConfigurationService(IConfigurationService):
         except FileNotFoundError:
             self.__logger.error("config %s is not found", config_path)
         except TypeError:
-            self.__logger.error(
-                "config %s cannot be loaded due syntax error", config_path
-            )
+            self.__logger.error("config %s cannot be loaded due syntax error", config_path)
         return

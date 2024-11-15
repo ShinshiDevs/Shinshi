@@ -14,7 +14,7 @@ class DatabaseService(IDatabaseService):
 
     def __init__(self, *models: str) -> None:
         self.__logger: Logger = getLogger("shinshi.database")
-        self.models: tuple[str] = models
+        self.models: tuple[str, ...] = models
 
     def _build_url(self) -> URL:
         return URL.build(
@@ -28,15 +28,10 @@ class DatabaseService(IDatabaseService):
 
     async def start(self) -> None:
         try:
-            await Tortoise.init(
-                db_url=str(self._build_url()),
-                modules={"models": self.models},
-            )
+            await Tortoise.init(db_url=str(self._build_url()), modules={"models": self.models})
             await Tortoise.generate_schemas()
         except DBConnectionError as error:
-            self.__logger.error(
-                "failed to connect to database due error", exc_info=error
-            )
+            self.__logger.error("failed to connect to database due error", exc_info=error)
 
     async def stop(self):
         await Tortoise.close_connections()

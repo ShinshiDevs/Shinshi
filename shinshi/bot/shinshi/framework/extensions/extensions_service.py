@@ -1,6 +1,7 @@
 from importlib import import_module
 from logging import Logger, getLogger
 from pkgutil import iter_modules
+from types import ModuleType
 from typing import Any, Callable, Sequence
 
 from aurum.client import Client
@@ -24,12 +25,7 @@ class ExtensionsService(IExtensionsService, KernelAware):
     )
 
     def __init__(
-        self,
-        bot_service: IBotService,
-        extensions_package: str,
-        extensions_path: str,
-        *,
-        sync_commands: bool = True,
+        self, bot_service: IBotService, extensions_package: str, extensions_path: str, *, sync_commands: bool = True
     ) -> None:
         self.__logger: Logger = getLogger("shinshi.extensions")
 
@@ -45,28 +41,18 @@ class ExtensionsService(IExtensionsService, KernelAware):
         for _, extension_name, _ in iter_modules(self.extensions_path):
             try:
                 extension = self.extensions[extension_name] = Extension(
-                    name=extension_name,
-                    package=f"{self.extensions_package}.{extension_name}",
+                    name=extension_name, package=f"{self.extensions_package}.{extension_name}"
                 )
-                commands_package: Sequence[str] = import_module(
-                    f"{extension.package}.commands"
-                )
+                commands_package: ModuleType = import_module(f"{extension.package}.commands")
                 for command_class_name in commands_package.__all__:
-                    command_class: AppCommand = getattr(
-                        commands_package, command_class_name
-                    )  # just class
+                    command_class: type[AppCommand] = getattr(commands_package, command_class_name)  # just class
                     command: AppCommand = command_class(
                         **self.inject_dependencies(command_class.__init__)
                     )  # inited command object
                     extension.commands[command.name] = command
                 self.__logger.debug("loaded extension %s", extension_name)
             except Exception as error:  # pylint: disable=W0718
-                self.__logger.error(
-                    "failed to load extension %s: %s",
-                    extension_name,
-                    error,
-                    exc_info=error,
-                )
+                self.__logger.error("failed to load extension %s: %s", extension_name, error, exc_info=error)
         if self.sync_commands:
             for extension in self.extensions.values():
                 self.client.commands.commands.update(extension.commands)

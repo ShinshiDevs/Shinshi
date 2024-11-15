@@ -26,12 +26,12 @@ class I18nProvider(II18nProvider):
         if not self.base_path.exists():
             raise SystemError("Base path is not existing")
         for file in self.base_path.glob("*.yaml"):
-            locale: Locale = self.load_locale(file)
+            locale: Locale | None = self.load_locale(file)
+            if locale is None:
+                continue
             self.languages[locale.name] = locale
             self.__logger.debug("loaded %s locale", locale.name)
-        self.__logger.info(
-            "started with %s languages", ", ".join(self.languages.keys())
-        )
+        self.__logger.info("started with %s languages", ", ".join(self.languages.keys()))
 
     async def stop(self) -> None:
         self.languages.clear()
@@ -45,26 +45,20 @@ class I18nProvider(II18nProvider):
                     return
                 return Locale(name=data["name"], data=data)
         except TypeError as error:
-            self.__logger.warning(
-                "cannot load %s due syntax error: %s", file, error, exc_info=error
-            )
+            self.__logger.warning("cannot load %s due syntax error: %s", file, error, exc_info=error)
         except Exception as error:
-            self.__logger.warning(
-                "cannot load %s due unexpected error: %s", file, error, exc_info=error
-            )
+            self.__logger.warning("cannot load %s due unexpected error: %s", file, error, exc_info=error)
         return
 
     def build_localized(self, value: Localized) -> None:
+        assert isinstance(value.value, str)
         key: str = value.value
         value.value = {
-            name: language.get(key)
-            for name, language in self.languages.items()
-            if name != _DEFAULT_LANGUAGE
+            name: language.get(key) for name, language in self.languages.items() if name != _DEFAULT_LANGUAGE
         }
         value.fallback = self.languages[_DEFAULT_LANGUAGE].get(key)
 
     def get_locale(self, by: BaseCommandInteraction | str) -> Locale:
         return self.languages.get(
-            by.locale if isinstance(by, BaseCommandInteraction) else by,
-            self.languages[_DEFAULT_LANGUAGE],
+            by.locale if isinstance(by, BaseCommandInteraction) else by, self.languages[_DEFAULT_LANGUAGE]
         )

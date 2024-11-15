@@ -25,10 +25,8 @@ class HTTPService(IHTTPService):
         self.__logger.debug("created client session with connector")
 
     async def stop(self) -> None:
-        await self.connector.close()
-        await self.client_session.close()
-
-        self.connector = None
-        self.client_session = None
-
-        self.__logger.debug("closed and removed client session with connector")
+        if self.client_session is not None:
+            await self.client_session.close()
+            self.connector = None
+            self.client_session = None
+            self.__logger.debug("closed and removed client session with connector")

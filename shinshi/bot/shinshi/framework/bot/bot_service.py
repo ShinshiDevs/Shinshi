@@ -50,27 +50,18 @@ class BotService(IBotService):
             banner=banner,
             cache_settings=cache_settings
             or CacheSettings(
-                components=cache_components,
-                max_messages=MAX_MESSAGES,
-                max_dm_channel_ids=MAX_DM_CHANNELS_IDS,
+                components=cache_components, max_messages=MAX_MESSAGES, max_dm_channel_ids=MAX_DM_CHANNELS_IDS
             ),
-            http_settings=http_settings
-            or HTTPSettings(
-                enable_cleanup_closed=True,
-            ),
+            http_settings=http_settings or HTTPSettings(enable_cleanup_closed=True),
             intents=intents,
             auto_chunk_members=auto_chunk_members,
             rest_url=rest_url,
         )
-        self._client: Client = Client(
-            self._bot,
-            l10n=i18n_provider,
-            sync_commands=sync_commands,
-        )
+        self._client: Client = Client(self._bot, l10n=i18n_provider, sync_commands=sync_commands)
 
         self.activity: Activity | None = activity
         self.status: Status = status
-        self.shard_ids: Sequence[int] = shard_ids
+        self.shard_ids: Sequence[int] | None = shard_ids
         self.shard_count: int | None = shard_count
 
     @property

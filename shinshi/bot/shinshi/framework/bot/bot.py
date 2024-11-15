@@ -12,7 +12,7 @@ class Bot(GatewayBot):
 
     def __init__(self, *args, **kwargs) -> None:
         self.__cache: Cache = Cache(self, settings=kwargs.pop("cache_settings"))
-        self.uptime: int | None = None
+        self.uptime: float | None = None
         super().__init__(*args, **kwargs)
 
     @property

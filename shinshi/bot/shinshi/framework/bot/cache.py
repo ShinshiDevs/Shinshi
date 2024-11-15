@@ -24,22 +24,15 @@ class Cache(CacheImpl):
     async def fetch_application_emojis(self) -> Mapping[Snowflake, KnownCustomEmoji]:
         application: Application = await self._app.rest.fetch_application()
         emojis: Mapping[Snowflake, KnownCustomEmoji] = {
-            emoji.id: emoji
-            for emoji in await self._app.rest.fetch_application_emojis(application)
+            emoji.id: emoji for emoji in await self._app.rest.fetch_application_emojis(application)
         }
         self._application_emojis_entries.update(emojis)
         return emojis
 
-    async def get_application_emoji(
-        self, emoji: SnowflakeishOr[CustomEmoji]
-    ) -> KnownCustomEmoji:
+    async def get_application_emoji(self, emoji: SnowflakeishOr[CustomEmoji]) -> KnownCustomEmoji:
         application: Application = await self._app.rest.fetch_application()
-        emoji_data: KnownCustomEmoji | None = self._application_emojis_entries.get(
-            emoji
-        )
+        emoji_data: KnownCustomEmoji | None = self._application_emojis_entries.get(emoji)
         if emoji_data is None:
-            emoji_data = await self._app.rest.fetch_application_emoji(
-                application, emoji
-            )
+            emoji_data = await self._app.rest.fetch_application_emoji(application, emoji)
             self._application_emojis_entries[emoji_data.id] = emoji
         return emoji_data

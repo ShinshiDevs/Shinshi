@@ -23,9 +23,7 @@ from shinshi.utils.loop import get_event_loop_policy
 
 async def main() -> None:
     kernel: Kernel = Kernel()
-    configuration_service: IConfigurationService = ConfigurationService(
-        configs=["resources/emojis.yaml"]
-    )
+    configuration_service: IConfigurationService = ConfigurationService(configs=["resources/emojis.yaml"])
     configuration_service.setup_logging()
     configuration_service.load_dotenv()
 

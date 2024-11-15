@@ -3,13 +3,11 @@ import contextlib
 import time
 from collections.abc import Sequence
 from logging import Logger, getLogger
-from typing import Any, TypeVar
+from typing import Any, Type
 
 from shinshi.abc.kernel.ikernel import IKernel
 from shinshi.abc.kernel.types.kernel_aware import KernelAware
 from shinshi.abc.services.iservice import IService
-
-Service = TypeVar("Service", bound=IService)
 
 
 class Kernel(IKernel):
@@ -18,7 +16,7 @@ class Kernel(IKernel):
     def __init__(self, loop: asyncio.AbstractEventLoop | None = None) -> None:
         self.__logger: Logger = getLogger("shinshi.kernel")
         self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_running_loop()
-        self.services: dict[IService, Service] = {}
+        self.services: dict[Type[IService], IService] = {}
 
     async def start(self) -> None:
         start_time: float = time.monotonic()
@@ -27,12 +25,7 @@ class Kernel(IKernel):
         services_count: int = len(self.services)
 
         for index, service in enumerate(self.services.values(), start=1):
-            self.__logger.debug(
-                "starting service %s (%s/%s)",
-                service.__class__.__qualname__,
-                index,
-                services_count,
-            )
+            self.__logger.debug("starting service %s (%s/%s)", service.__class__.__qualname__, index, services_count)
             try:
                 await service.start()
             except Exception as error:  # pylint: disable=W0718
@@ -46,10 +39,7 @@ class Kernel(IKernel):
             started_services += 1
 
         self.__logger.info(
-            "started services in %.2f seconds (%s/%s)",
-            time.monotonic() - start_time,
-            started_services,
-            services_count,
+            "started services in %.2f seconds (%s/%s)", time.monotonic() - start_time, started_services, services_count
         )
 
     async def stop(self) -> None:
@@ -74,15 +64,13 @@ class Kernel(IKernel):
         finally:
             await self.stop()
 
-    def get_service(
-        self, service_interface: IService, default: Any | None = None
-    ) -> Service | None:
+    def get_service(self, service_interface: Type[IService], default: Any | None = None) -> IService | None:
         return self.services.get(service_interface, default)
 
-    def register_service(self, service_interface: IService, service: Service) -> None:
+    def register_service(self, service_interface: Type[IService], service: IService) -> None:
         if isinstance(service, KernelAware):
             service.set_kernel(self)
         self.services[service_interface] = service
 
-    def remove_service(self, service_interface: IService) -> None:
+    def remove_service(self, service_interface: Type[IService]) -> None:
         self.services.pop(service_interface)

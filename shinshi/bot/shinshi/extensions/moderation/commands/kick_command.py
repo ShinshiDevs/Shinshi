@@ -30,16 +30,12 @@ class KickCommand(SlashCommand):
                 Option(
                     type=OptionType.USER,
                     name="member",
-                    description=Localized(
-                        value="commands.about.options.member.description"
-                    ),
+                    description=Localized(value="commands.about.options.member.description"),
                 ),
                 Option(
                     type=OptionType.STRING,
                     name="reason",
-                    description=Localized(
-                        value="commands.about.options.reason.description"
-                    ),
+                    description=Localized(value="commands.about.options.reason.description"),
                     max_length=465,
                     is_required=False,
                 ),
@@ -47,56 +43,36 @@ class KickCommand(SlashCommand):
             hooks=[kick_hook],
         )
 
-    async def send_member_notification(
-        self, context: Context, member: Member, reason: str
-    ) -> None:
+    async def send_member_notification(self, context: Context, member: Member, reason: str) -> None:
         embed = (
-            Embed(
-                colour=Colour.YELLOW,
-                timestamp=datetime.now(UTC),
-            )
+            Embed(colour=Colour.YELLOW, timestamp=datetime.now(UTC))
             .set_author(
-                name=context.locale.get(
-                    "commands.kick.target.embed.title", {"guild": context.guild.name}
-                ),
+                name=context.locale.get("commands.kick.target.embed.title", {"guild": context.guild.name}),
                 icon=context.guild.icon_url,
             )
             .add_field(
                 name=context.locale.get("commands.kick.target.embed.fields.moderator"),
                 value=f"@{context.member!s} (ID: {context.member.id})",
             )
-            .add_field(
-                name=context.locale.get("commands.kick.target.embed.fields.reason"),
-                value=reason,
-            )
+            .add_field(name=context.locale.get("commands.kick.target.embed.fields.reason"), value=reason)
         )
         try:
             await member.send(embed=embed)
         except BadRequestError as error:
-            getLogger("shinshi.exceptions").warning(
-                "failed to send notification to member in kick: %s", error
-            )
+            getLogger("shinshi.exceptions").warning("failed to send notification to member in kick: %s", error)
         except Exception:  # pylint: disable=W0718
             pass
 
-    async def callback(
-        self, context: Context, member: Member, *, reason: str | None = None
-    ) -> None:
+    async def callback(self, context: Context, member: Member, *, reason: str | None = None) -> None:
         if reason is None:
             reason = context.locale.get("commands.kick.extra.no_reason")
         try:
             assert isinstance(context.guild, GatewayGuild)
-            await context.guild.kick(
-                member, reason=get_audit_reason(context.member, reason)
-            )
+            await context.guild.kick(member, reason=get_audit_reason(context.member, reason))
         except ForbiddenError:
-            return await context.create_error_response(
-                context.locale.get("commands.kick.errors.forbidden_error")
-            )
+            return await context.create_error_response(context.locale.get("commands.kick.errors.forbidden_error"))
         except NotFoundError:
-            return await context.create_error_response(
-                context.locale.get("commands.kick.errors.not_found_error")
-            )
+            return await context.create_error_response(context.locale.get("commands.kick.errors.not_found_error"))
         else:
             await context.create_response(
                 context.locale.get(

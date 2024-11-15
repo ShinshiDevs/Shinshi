@@ -31,9 +31,5 @@ class Locale(ILocale):
                 break
             value = value.get(index)
         if isinstance(value, list):
-            return (
-                [str(item).format(**fmt) for item, fmt in zip(value, formatting)]
-                if formatting
-                else value
-            )
+            return [str(item).format(**fmt) for item, fmt in zip(value, formatting)] if formatting else value
         return []
