@@ -1,4 +1,6 @@
 import asyncio
+import sys
+from logging import Logger, getLogger
 from pathlib import Path
 
 from hikari.presences import Activity
@@ -59,5 +61,16 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.set_event_loop_policy(get_event_loop_policy())
-    asyncio.run(main())
+    logger: Logger = getLogger("shinshi.main")
+
+    event_loop_policy: asyncio.AbstractEventLoopPolicy = get_event_loop_policy()
+    asyncio.set_event_loop_policy(event_loop_policy)
+    logger.debug("using %s event loop policy", event_loop_policy)
+
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        sys.exit(0)
+    except Exception as error:
+        logger.critical("main function encountered an exception: %s", error, exc_info=error)
+        sys.exit(1)
