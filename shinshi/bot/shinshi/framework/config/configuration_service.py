@@ -2,8 +2,9 @@ from collections.abc import Sequence
 from logging import Logger, getLogger, warning
 from logging.config import dictConfig
 from os import PathLike
-from posixpath import basename, splitext
-from typing import Any, TypeVar
+from pathlib import Path
+from os.path import basename, splitext
+from typing import Any
 
 from dotenv import load_dotenv
 from yaml import CLoader, load
@@ -16,13 +17,13 @@ class ConfigurationService(IConfigurationService):
 
     def __init__(
         self,
-        dotenv_path: PathLike[str] = ".env",
-        logging_path: PathLike[str] = "logging.yaml",
+        dotenv_path: PathLike[str] | None = None,
+        logging_path: PathLike[str] | None = None,
         configs: Sequence[PathLike[str]] | None = None,
     ) -> None:
         self.__logger: Logger = getLogger("shinshi.config")
-        self.dotenv_path: PathLike[str] = dotenv_path
-        self.logging_path: PathLike[str] = logging_path
+        self.dotenv_path: PathLike[str] = dotenv_path or Path(".env")
+        self.logging_path: PathLike[str] = logging_path or Path("logging.yaml")
 
         self.configs: Sequence[PathLike[str]] = configs or []
         self.stored_configs: dict[str, dict[str, Any]] = {}

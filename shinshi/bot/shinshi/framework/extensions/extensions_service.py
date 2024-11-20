@@ -52,7 +52,7 @@ class ExtensionsService(IExtensionsService, KernelAware):
                     )  # inited command object
                     extension.commands[command.name] = command
                 self.__logger.debug("loaded extension %s", extension_name)
-            except Exception as error:  # pylint: disable=W0718
+            except Exception as error:
                 self.__logger.error("failed to load extension %s: %s", extension_name, error, exc_info=error)
         if self.sync_commands:
             for extension in self.extensions.values():
