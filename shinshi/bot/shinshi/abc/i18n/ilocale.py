@@ -1,13 +1,13 @@
 from abc import abstractmethod
-from typing import Any, Protocol
+from typing import Any, List, Protocol, Dict
 
 
 class ILocale(Protocol):
     name: str
-    data: dict[str, str]
+    data: Dict[str, str]
 
     @abstractmethod
-    def get(self, key: str, formatting: dict[str, Any]) -> str: ...
+    def get(self, key: str, formatting: Dict[str, Any] | None = None) -> str: ...
 
     @abstractmethod
-    def get_list(self, key: str, *formatting: dict[str, Any]) -> list[str]: ...
+    def get_list(self, key: str, *formatting: Dict[str, Any]) -> List[str]: ...
