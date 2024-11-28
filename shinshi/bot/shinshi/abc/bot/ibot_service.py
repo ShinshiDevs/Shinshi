@@ -1,12 +1,8 @@
-from aurum.client import Client
-from hikari.traits import GatewayBotAware
+from typing import Protocol
 
-from shinshi.abc.services.iservice import IService
+from shinshi.framework.bot.bot import Bot
 
 
-class IBotService(IService):
+class IBotService(Protocol):
     @property
-    def bot(self) -> GatewayBotAware: ...
-
-    @property
-    def client(self) -> Client: ...
+    def bot(self) -> Bot: ...

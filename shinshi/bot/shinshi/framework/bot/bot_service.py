@@ -1,28 +1,25 @@
 from collections.abc import Sequence
 
-from aurum.commands.enum import SyncCommandsFlag
 from hikari.impl import CacheComponents, CacheSettings, HTTPSettings
 from hikari.intents import Intents
 from hikari.presences import Activity, Status
-from hikari.traits import GatewayBotAware
 
-from shinshi.abc.bot.ibot_service import IBotService
 from shinshi.abc.i18n.ii18n_provider import II18nProvider
 from shinshi.framework.bot.bot import Bot
-from shinshi.framework.bot.client import Client
 from shinshi.utils.env import getenv
 
 MAX_MESSAGES: int = 100
 MAX_DM_CHANNELS_IDS: int = 0
 
 
-class BotService(IBotService):
+class BotService:
     __slots__: Sequence[str] = (
         "cache_settings",
         "http_settings",
         "_bot",
         "_client",
         "activity",
+        "status",
         "intents",
         "shard_ids",
         "shard_count",
@@ -39,7 +36,6 @@ class BotService(IBotService):
         intents: Intents = Intents.NONE,
         auto_chunk_members: bool = True,
         rest_url: str | None = None,
-        sync_commands: SyncCommandsFlag = SyncCommandsFlag.NONE,
         activity: Activity | None = None,
         status: Status = Status.ONLINE,
         shard_ids: Sequence[int] | None = None,
@@ -57,20 +53,14 @@ class BotService(IBotService):
             auto_chunk_members=auto_chunk_members,
             rest_url=rest_url,
         )
-        self._client: Client = Client(self._bot, l10n=i18n_provider, sync_commands=sync_commands)
-
         self.activity: Activity | None = activity
         self.status: Status = status
         self.shard_ids: Sequence[int] | None = shard_ids
         self.shard_count: int | None = shard_count
 
     @property
-    def bot(self) -> GatewayBotAware:
+    def bot(self) -> Bot:
         return self._bot
-
-    @property
-    def client(self) -> Client:
-        return self._client
 
     async def start(self) -> None:
         await self._bot.start(
