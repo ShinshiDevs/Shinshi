@@ -1,20 +1,17 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, Self
+from typing import Self
 from shinshi.abc.i18n.ilocale import ILocale
 
 
 class Localized(str):
     __slots__: Sequence[str] = ("key", "fallback")
-    _is_localizable: bool = True
 
     def __new__(cls, key: str, fallback: str | None = None) -> Self:
         instance = super().__new__(cls, key)
         instance.key = key
         instance.fallback = fallback
-        print(cls.__dir__)
-        print(cls.resolve)
         return instance
 
     def __repr__(self) -> str:
@@ -30,7 +27,3 @@ class Localized(str):
         if isinstance(other, Localized):
             return self.key == other.key
         return super().__eq__(other)
-
-
-def is_localized(value: Any) -> bool:
-    return getattr(value, "_is_localizable", False)
