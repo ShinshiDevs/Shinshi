@@ -4,16 +4,14 @@ from logging.config import dictConfig
 from os import PathLike
 from pathlib import Path
 from os.path import basename, splitext
-from typing import Any
+from typing import Any, Dict
 
 from dotenv import load_dotenv
 from yaml import CLoader, load
 
-from shinshi.abc.config.iconfiguration_service import IConfigurationService
 
-
-class ConfigurationService(IConfigurationService):
-    __slots__: Sequence[str] = ("__logger", "dotenv_path", "logging_path", "configs")
+class ConfigurationService:
+    __slots__: Sequence[str] = ("__logger", "dotenv_path", "logging_path", "configs", "stored_configs")
 
     def __init__(
         self,
@@ -26,7 +24,7 @@ class ConfigurationService(IConfigurationService):
         self.logging_path: PathLike[str] = logging_path or Path("logging.yaml")
 
         self.configs: Sequence[PathLike[str]] = configs or []
-        self.stored_configs: dict[str, dict[str, Any]] = {}
+        self.stored_configs: Dict[str, Dict[str, Any]] = {}
 
     async def start(self) -> None:
         for path in self.configs:
@@ -61,10 +59,10 @@ class ConfigurationService(IConfigurationService):
         except FileNotFoundError as error:
             raise RuntimeError(f"Cannot find environment file {self.dotenv_path}") from error
 
-    def get_config(self, name: str) -> dict[str, Any] | None:
+    def get_config(self, name: str) -> Dict[str, Any] | None:
         return self.stored_configs.get(name)
 
-    def load_config(self, config_path: PathLike[str]) -> dict[str, Any] | None:
+    def load_config(self, config_path: PathLike[str]) -> Dict[str, Any] | None:
         try:
             with open(config_path, "rb") as stream:
                 config: dict[str, str] = load(stream, Loader=CLoader)

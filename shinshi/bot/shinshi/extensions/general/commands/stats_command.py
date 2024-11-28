@@ -2,23 +2,23 @@ import platform
 from typing import ValuesView
 
 from aurum.commands import SlashCommand
-from aurum.l10n import Localized
-from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
+from hikari.embeds import Embed
 from humanize import naturalsize
 from psutil import Process
 
-from shinshi import __version__
-from shinshi.framework.interaction.context import Context
+from shinshi import __version_info__
+from shinshi.framework.context.context import Context
 from shinshi.enums.colour import Colour
 from shinshi.utils.icons import get_icon
 from shinshi.utils.timestamp import format_timestamp
+from shinshi.framework.i18n.localized import Localized
 
 
 class StatsCommand(SlashCommand):
     def __init__(self) -> None:
         self.process: Process = Process()
-        super().__init__(name="stats", description=Localized(value="commands.stats.description"), is_dm_enabled=True)
+        super().__init__(name="stats", description=Localized("commands.stats.description"), is_dm_enabled=True)
 
     async def callback(self, context: Context) -> None:
         guilds: ValuesView[GatewayGuild] = context.bot.cache.get_guilds_view().values()
@@ -29,10 +29,10 @@ class StatsCommand(SlashCommand):
             .add_field(
                 name=context.locale.get("commands.stats.fields.version"),
                 value=(
-                    f"[{__version__.version}]"
-                    f"(https://github.com/ShinshiDevs/Shinshi/releases/tag/{__version__.version}) "
-                    f"([`{__version__.git_sha}`]"
-                    f"(https://github.com/ShinshiDevs/Shinshi/commit/{__version__.git_sha}))"
+                    f"[{__version_info__.version}]"
+                    f"(https://github.com/ShinshiDevs/Shinshi/releases/tag/{__version_info__.version}) "
+                    f"([`{__version_info__.git_sha}`]"
+                    f"(https://github.com/ShinshiDevs/Shinshi/commit/{__version_info__.git_sha}))"
                 ),
                 inline=True,
             )

@@ -1,4 +1,4 @@
-from shinshi.abc.services.iservice import IService
+from typing import Protocol
 
 
-class IDatabaseService(IService): ...
+class IDatabaseService(Protocol): ...

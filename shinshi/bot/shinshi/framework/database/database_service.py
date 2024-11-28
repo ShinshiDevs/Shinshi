@@ -1,20 +1,20 @@
 from collections.abc import Sequence
 from logging import Logger, getLogger
+from typing import Tuple
 
 from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError
 from yarl import URL
 
-from shinshi.abc.database.idatabase_service import IDatabaseService
 from shinshi.utils.env import getenv
 
 
-class DatabaseService(IDatabaseService):
+class DatabaseService:
     __slots__: Sequence[str] = ("__logger", "models")
 
     def __init__(self, *models: str) -> None:
         self.__logger: Logger = getLogger("shinshi.database")
-        self.models: tuple[str, ...] = models
+        self.models: Tuple[str, ...] = models
 
     def _build_url(self) -> URL:
         return URL.build(

@@ -2,18 +2,18 @@ from collections.abc import ValuesView
 from random import choice
 
 from aurum.commands import SlashCommand
-from aurum.l10n import Localized
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 
-from shinshi.framework.interaction.context import Context
+from shinshi.framework.context.context import Context
 from shinshi.enums.colour import Colour
 from shinshi.extensions.general.utils.round_to_significant_digit import round_to_significant_digit
+from shinshi.framework.i18n.localized import Localized
 
 
 class AboutCommand(SlashCommand):
     def __init__(self) -> None:
-        super().__init__(name="about", description=Localized(value="commands.about.description"), is_dm_enabled=True)
+        super().__init__(name="about", description=Localized("commands.about.description"), is_dm_enabled=True)
 
     async def callback(self, context: Context) -> None:
         guilds: ValuesView[GatewayGuild] = context.bot.cache.get_guilds_view().values()

@@ -3,19 +3,19 @@ import contextlib
 import time
 from collections.abc import Sequence
 from logging import Logger, getLogger
+from typing import Type, Dict
 
-from shinshi.abc.kernel.ikernel import IKernel
 from shinshi.abc.kernel.types.kernel_aware import KernelAware
 from shinshi.abc.services.iservice import IService
 
 
-class Kernel(IKernel):
+class Kernel:
     __slots__: Sequence[str] = ("__logger", "loop", "services")
 
     def __init__(self, loop: asyncio.AbstractEventLoop | None = None) -> None:
         self.__logger: Logger = getLogger("shinshi.kernel")
         self.loop: asyncio.AbstractEventLoop = loop or asyncio.get_running_loop()
-        self.services: dict[type[IService], IService] = {}
+        self.services: Dict[type, IService] = {}
 
     async def start(self) -> None:
         start_time: float = time.monotonic()
@@ -63,16 +63,16 @@ class Kernel(IKernel):
         finally:
             await self.stop()
 
-    def get_service[T: IService](self, service_interface: type[T]) -> T:
+    def get_service[T](self, service_interface: Type[T]) -> T:
         service: IService | None = self.services.get(service_interface)
         if service is None:
             raise RuntimeError(f"{service_interface.__name__} is not registred in Kernel")
         return service  # type: ignore
 
-    def register_service(self, service_interface: type[IService], service: IService) -> None:
+    def register_service(self, service_interface: type, service: IService) -> None:
         if isinstance(service, KernelAware):
             service.set_kernel(self)
         self.services[service_interface] = service
 
-    def remove_service(self, service_interface: type[IService]) -> None:
+    def remove_service(self, service_interface: type) -> None:
         self.services.pop(service_interface)

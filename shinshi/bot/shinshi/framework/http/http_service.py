@@ -4,10 +4,8 @@ from typing import Sequence
 import orjson
 from aiohttp import ClientSession, TCPConnector
 
-from shinshi.abc.http.ihttp_service import IHTTPService
 
-
-class HTTPService(IHTTPService):
+class HTTPService:
     __slots__: Sequence[str] = ("__logger", "client_session", "connector")
 
     def __init__(self) -> None:
