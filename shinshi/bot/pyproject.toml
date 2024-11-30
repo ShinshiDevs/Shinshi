@@ -31,6 +31,35 @@ aurum-hikari = { git = "https://github.com/ShinshiDevs/aurum-hikari.git" }
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+fix = true
+
+[tool.ruff.lint]
+extend-select = [
+    "I",    # isort
+    "ANN",  # flake8-annotations
+    "LOG",  # flake8-logging-format
+]
+select = [
+    "B",    # Bugbear rules
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "SIM",  # flake8-simplify
+    "PL",   # pylint rules
+]
+ignore = [
+    "E203",    # Handled by Black
+    "E501",    # Line length handled by Black
+    "ANN002",  # Missing type annotation for `*args`
+    "ANN003",  # Missing type annotation for `**kwargs`
+    "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed in `ot`
+    "PLR0913", # Too many arguments in function definition
+    "B022",    # No arguments passed to `contextlib.suppress`. No exceptions will be suppressed and therefore this context manager is redundant
+]
+exclude = ["__pycache__/"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -41,4 +70,4 @@ skip-magic-trailing-comma = true
 
 [tool.pyright]
 pythonVersion = "3.12"
-typeCheckingMode = "basic"
+typeCheckingMode = "strict"
