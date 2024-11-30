@@ -52,7 +52,7 @@ commands:
         created_at: Created at
         created_by: Created by
         available: Available?
-        external: External?
+        guild: Guild
       errors:
         not_provided: No emojis found from the provided input
         not_found: No emojis found
