@@ -1,18 +1,19 @@
 import platform
-from typing import ValuesView
+from collections.abc import ValuesView
 
 from aurum.commands import SlashCommand
-from hikari.guilds import GatewayGuild
 from hikari.embeds import Embed
+from hikari.guilds import GatewayGuild
 from humanize import naturalsize
 from psutil import Process
 
 from shinshi import __version_info__
-from shinshi.framework.context.context import Context
 from shinshi.enums.colour import Colour
+from shinshi.extensions.general.consts import REPOSITORY_URL
+from shinshi.framework.context.context import Context
+from shinshi.framework.i18n.localized import Localized
 from shinshi.utils.icons import get_icon
 from shinshi.utils.timestamp import format_timestamp
-from shinshi.framework.i18n.localized import Localized
 
 
 class StatsCommand(SlashCommand):
@@ -30,9 +31,9 @@ class StatsCommand(SlashCommand):
                 name=context.locale.get("commands.stats.fields.version"),
                 value=(
                     f"[{__version_info__.version}]"
-                    f"(https://github.com/ShinshiDevs/Shinshi/releases/tag/{__version_info__.version}) "
+                    f"({REPOSITORY_URL}/releases/tag/{__version_info__.version}) "
                     f"([`{__version_info__.git_sha}`]"
-                    f"(https://github.com/ShinshiDevs/Shinshi/commit/{__version_info__.git_sha}))"
+                    f"({REPOSITORY_URL}/commit/{__version_info__.git_sha}))"
                 ),
                 inline=True,
             )

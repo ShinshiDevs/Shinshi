@@ -5,9 +5,9 @@ from aurum.commands import SlashCommand
 from hikari.embeds import Embed
 from hikari.guilds import GatewayGuild
 
-from shinshi.framework.context.context import Context
 from shinshi.enums.colour import Colour
 from shinshi.extensions.general.utils.round_to_significant_digit import round_to_significant_digit
+from shinshi.framework.context.context import Context
 from shinshi.framework.i18n.localized import Localized
 
 
