@@ -1,5 +1,9 @@
 name: en_GB
 
+special:
+  affirmative: "Yes"
+  negative: "No"
+
 commands:
   about:
     description: Information about the Shinshi
@@ -30,11 +34,40 @@ commands:
       members: Members
       channels: Channels
   source:
-    description: Source code of the Shinshi
+    description: The source code of Shinshi
     button:
       repository: Repository
-      organization: Organization
+      organization: Organisation
   support:
-    description: Have questions about Shinshi? Support there
+    description: Have questions about Shinshi? Get support here
     button:
-      discord: Discord server
+      discord: Discord Server
+  emoji:
+    view:
+      description: Get details about emoji(s)
+      options:
+        emojis:
+          description: Provide emoji(s)
+      fields:
+        created_at: Created at
+        created_by: Created by
+        available: Available?
+        external: External?
+      errors:
+        not_found: No emojis found from the provided input
+  emojis:
+    download:
+      message:
+        success: "Successfully archived {emojis} emojis in {duration} seconds"
+  user:
+    options:
+        user:
+          description: Select a user or provide their ID to view information about
+    info:
+      description: View detailed information about a user
+      fields:
+        created_at: Created at
+        joined_at: "Joined {guild} on"
+        roles:
+          name: Roles
+          default: No roles assigned
