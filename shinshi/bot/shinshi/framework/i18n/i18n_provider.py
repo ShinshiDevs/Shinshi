@@ -1,8 +1,7 @@
-from os import PathLike
 from collections.abc import Sequence
 from logging import Logger, getLogger
+from os import PathLike
 from pathlib import Path
-from typing import Dict
 
 from yaml import CLoader, load
 
@@ -19,7 +18,7 @@ class I18nProvider:
         self.__logger: Logger = getLogger("shinshi.i18n")
 
         self.base_path: Path = Path(base_path)
-        self.languages: Dict[str, ILocale] = {}
+        self.languages: dict[str, ILocale] = {}
 
     async def start(self) -> None:
         if not self.base_path.exists():
@@ -47,7 +46,7 @@ class I18nProvider:
     def load_locale(self, file: Path) -> ILocale | None:
         try:
             with open(file, "rb") as stream:
-                data: Dict[str, str] | None = load(stream, Loader=CLoader)
+                data: dict[str, str] | None = load(stream, Loader=CLoader)
                 if not data:
                     self.__logger.warning("%s has no data to load, skip", file)
                     return

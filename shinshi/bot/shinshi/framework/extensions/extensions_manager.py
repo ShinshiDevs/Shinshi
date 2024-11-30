@@ -1,9 +1,8 @@
-from pkgutil import iter_modules
-from importlib import import_module
-from types import ModuleType
-from typing import Type, Dict
 from collections.abc import Generator, Sequence
+from importlib import import_module
 from logging import Logger, getLogger
+from pkgutil import iter_modules
+from types import ModuleType
 
 from aurum.commands.base_command import BaseCommand
 
@@ -25,7 +24,7 @@ class ExtensionsManager(KernelAware):
         self.commands: CommandHandler = CommandHandler(bot_service.bot, i18n_provider, sync_commands=sync_commands)
         self.module: ModuleType = module
 
-        self.extensions: Dict[str, Extension] = {}
+        self.extensions: dict[str, Extension] = {}
 
     async def start(self) -> None:
         self.__logger.debug("starting, loading extensions from %s", self.module.__name__)
@@ -52,7 +51,7 @@ class ExtensionsManager(KernelAware):
             extension.commands.add(command())  # type: ignore  # TODO: services injection
         return extension
 
-    def get_commands(self, module: ModuleType) -> Generator[Type[BaseCommand] | None, None, None]:
+    def get_commands(self, module: ModuleType) -> Generator[type[BaseCommand] | None, None, None]:
         commands_module: ModuleType | None = import_module(f"{module.__name__}.commands")
         if not commands_module:
             self.__logger.warning("coundn't find a commands module in %s", module.__name__)

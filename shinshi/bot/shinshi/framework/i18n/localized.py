@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Self
+
 from shinshi.abc.i18n.ilocale import ILocale
 
 
@@ -20,10 +21,10 @@ class Localized(str):
     def __str__(self) -> str:
         return self.key
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Localized):
+            return bool(self.key == other.key)
+        return super().__eq__(other)
+
     def resolve(self, locale: ILocale) -> str:
         return locale.get(self.key) or self.fallback or self.key
-
-    def __eq__(self, other: Localized | str) -> bool:
-        if isinstance(other, Localized):
-            return self.key == other.key
-        return super().__eq__(other)

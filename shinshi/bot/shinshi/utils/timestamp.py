@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta
-from typing import Literal, TypeAlias
+from typing import Literal
 
-TimestampStyle: TypeAlias = Literal["t", "T", "d", "D", "f", "F", "R"]
+TimestampStyle = Literal["t", "T", "d", "D", "f", "F", "R"]
 
 
 def format_timestamp(time: float | int, style: TimestampStyle | None = None) -> str:

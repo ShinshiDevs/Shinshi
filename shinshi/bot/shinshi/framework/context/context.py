@@ -2,9 +2,9 @@ import attrs
 from aurum.context import InteractionContext
 from hikari.embeds import Embed
 
-from shinshi.framework.bot.bot import Bot
 from shinshi.abc.i18n.ilocale import ILocale
 from shinshi.enums.colour import Colour
+from shinshi.framework.bot.bot import Bot
 
 
 @attrs.define(eq=False, kw_only=True, hash=False, weakref_slot=False)

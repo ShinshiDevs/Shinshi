@@ -1,13 +1,13 @@
+import asyncio
 import os
 import warnings
-import asyncio
 
 try:
     import uvloop
 except ImportError:
     uvloop = None
     if os.name != "nt":
-        warnings.warn("uvloop can't be used, because it's not installed")
+        warnings.warn("uvloop can't be used, because it's not installed", stacklevel=0)
 
 
 def get_event_loop_policy() -> asyncio.AbstractEventLoopPolicy:

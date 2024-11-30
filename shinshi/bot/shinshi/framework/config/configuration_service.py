@@ -1,10 +1,10 @@
 from collections.abc import Sequence
-from logging import Logger, getLogger, warning
+from logging import Logger, getLogger
 from logging.config import dictConfig
 from os import PathLike
-from pathlib import Path
 from os.path import basename, splitext
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any
 
 from dotenv import load_dotenv
 from yaml import CLoader, load
@@ -24,7 +24,7 @@ class ConfigurationService:
         self.logging_path: PathLike[str] = logging_path or Path("logging.yaml")
 
         self.configs: Sequence[PathLike[str]] = configs or []
-        self.stored_configs: Dict[str, Dict[str, Any]] = {}
+        self.stored_configs: dict[str, dict[str, Any]] = {}
 
     async def start(self) -> None:
         for path in self.configs:
@@ -43,7 +43,7 @@ class ConfigurationService:
             with open(self.logging_path, "rb") as stream:
                 config: dict[str, str] = load(stream, Loader=CLoader)
                 if not config:
-                    warning("logging wasn't configured correctly because no config")
+                    self.__logger.warning("logging wasn't configured correctly because no config")
                     config = {}
         except FileNotFoundError as error:
             raise RuntimeError(f"Cannot find logging configuration {self.logging_path}") from error
@@ -52,17 +52,17 @@ class ConfigurationService:
 
     def load_dotenv(self) -> None:
         try:
-            with open(self.dotenv_path, "r", encoding="UTF-8") as stream:
+            with open(self.dotenv_path, encoding="UTF-8") as stream:
                 if not load_dotenv(stream=stream, override=True):  # `load_dotenv` returns bool – True if success
                     raise RuntimeError(f"Cannot load dotenv file from `{self.dotenv_path}`")
                 self.__logger.debug("loaded dotenv file successfully")
         except FileNotFoundError as error:
             raise RuntimeError(f"Cannot find environment file {self.dotenv_path}") from error
 
-    def get_config(self, name: str) -> Dict[str, Any] | None:
+    def get_config(self, name: str) -> dict[str, Any] | None:
         return self.stored_configs.get(name)
 
-    def load_config(self, config_path: PathLike[str]) -> Dict[str, Any] | None:
+    def load_config(self, config_path: PathLike[str]) -> dict[str, Any] | None:
         try:
             with open(config_path, "rb") as stream:
                 config: dict[str, str] = load(stream, Loader=CLoader)

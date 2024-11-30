@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import Dict
+
 from hikari.locales import Locale as _Locale
 
-LOCALE_MAP: Dict[str, _Locale] = {"en_GB": _Locale.EN_GB, "ru": _Locale.RU}
+LOCALE_MAP: dict[str, _Locale] = {"en_GB": _Locale.EN_GB, "ru": _Locale.RU}
 
 
 class Locale(Enum):

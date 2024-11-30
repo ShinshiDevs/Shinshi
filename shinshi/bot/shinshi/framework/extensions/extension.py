@@ -1,4 +1,5 @@
-from typing import MutableSet, NamedTuple
+from collections.abc import MutableSet
+from typing import NamedTuple
 
 from aurum.commands.base_command import BaseCommand
 

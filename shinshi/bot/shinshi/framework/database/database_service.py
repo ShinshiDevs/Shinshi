@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from logging import Logger, getLogger
-from typing import Tuple
 
 from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError
@@ -14,9 +13,10 @@ class DatabaseService:
 
     def __init__(self, *models: str) -> None:
         self.__logger: Logger = getLogger("shinshi.database")
-        self.models: Tuple[str, ...] = models
+        self.models: tuple[str, ...] = models
 
-    def _build_url(self) -> URL:
+    @staticmethod
+    def _build_url() -> URL:
         return URL.build(
             scheme="postgres",
             user=getenv("SHINSHI_DATABASE_USER"),
@@ -33,5 +33,5 @@ class DatabaseService:
         except DBConnectionError as error:
             self.__logger.error("failed to connect to database due error", exc_info=error)
 
-    async def stop(self):
+    async def stop(self) -> None:
         await Tortoise.close_connections()

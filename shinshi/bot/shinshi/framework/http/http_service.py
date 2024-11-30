@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from logging import Logger, getLogger
-from typing import Sequence
 
 import orjson
 from aiohttp import ClientSession, TCPConnector

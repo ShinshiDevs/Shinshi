@@ -3,9 +3,9 @@ import sys
 from logging import Logger, getLogger
 from pathlib import Path
 
-from hikari.presences import Activity
 from hikari.impl import CacheComponents
 from hikari.intents import Intents
+from hikari.presences import Activity
 
 from shinshi import __version_info__, extensions
 from shinshi.abc.bot.ibot_service import IBotService
