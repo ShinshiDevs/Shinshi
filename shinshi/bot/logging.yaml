@@ -10,7 +10,8 @@ formatters:
     format: "%(asctime)s - %(levelname)s - %(filename)s:%(funcName)s:%(lineno)d - %(name)s - %(message)s"
   external:
     (): colorlog.ColoredFormatter
-    format: "%(thin)s[%(asctime)s%(reset)s %(bold)s%(log_color)s%(levelname)s%(reset)s%(thin)s] [%(filename)s:%(funcName)s:%(lineno)d] [%(cyan)s%(name)s%(reset)s%(thin)s]:%(reset)s %(message)s"
+    format: "%(thin)s[%(asctime)s%(reset)s %(bold)s%(log_color)s%(levelname)-1.1s%(reset)s%(thin)s] [%(filename)s:%(funcName)s:%(lineno)d] [%(cyan)s%(name)s%(reset)s%(thin)s]:%(reset)s %(message)s"
+    datefmt: "%H:%M:%S %Y-%m-%d"
     log_colors:
       DEBUG: purple
       INFO: cyan
