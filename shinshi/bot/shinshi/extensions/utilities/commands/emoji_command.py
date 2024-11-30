@@ -12,6 +12,8 @@ from shinshi.framework.i18n.localized import Localized
 from shinshi.utils.emojis import find_emojis
 from shinshi.utils.timestamp import format_datetime
 
+MAX_EMOJIS: int = 5
+
 
 class EmojiCommand(SlashCommandGroup):
     def __init__(self) -> None:
@@ -29,7 +31,7 @@ class EmojiCommand(SlashCommandGroup):
     async def emoji_view(self, context: Context, emojis: str) -> None:
         embeds: List[Embed] = []
 
-        for match in find_emojis(emojis):
+        for match in set(find_emojis(emojis)):
             emoji = context.bot.cache.get_emoji(match)
             if not emoji:
                 continue
@@ -41,7 +43,7 @@ class EmojiCommand(SlashCommandGroup):
                     inline=True,
                 )
                 .set_footer(f"ID: {emoji.id}")
-                .set_thumbnail(await emoji.read())
+                .set_thumbnail(emoji.url)
             )
             embed.add_field(
                 name=context.locale.get("commands.emoji.view.fields.available"),
@@ -57,5 +59,8 @@ class EmojiCommand(SlashCommandGroup):
 
         if not embeds:
             return await context.create_warning_response(context.locale.get("commands.emoji.view.errors.not_found"))
+        elif len(embeds) > MAX_EMOJIS:
+            embeds = embeds[:MAX_EMOJIS]
+            embeds[-1].set_footer(f"{context.locale.get("commands.emoji.view.limit")} · {embeds[-1].footer.text}")
 
         return await context.create_response(embeds=embeds)

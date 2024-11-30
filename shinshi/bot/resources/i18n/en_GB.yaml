@@ -55,6 +55,7 @@ commands:
         external: External?
       errors:
         not_found: No emojis found from the provided input
+      limit: You can’t view more than 5 emojis yet...
   emojis:
     download:
       message:

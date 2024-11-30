@@ -14,7 +14,7 @@ from shinshi.framework.context.context import Context
 from shinshi.framework.i18n.localized import Localized
 from shinshi.utils.timestamp import format_datetime
 
-ROLES_SLICE: int = 5
+MAX_ROLES: int = 5
 
 
 class UserCommand(SlashCommandGroup):
@@ -65,7 +65,7 @@ class UserCommand(SlashCommandGroup):
                 embed.colour = next(filter(lambda role: role.colour, roles), embed).colour
                 embed.add_field(
                     name=context.locale.get("commands.user.info.fields.roles.name"),
-                    value=str(", ".join(map(lambda role: role.mention, roles[:5])) + ("..." if len(roles) > ROLES_SLICE else "")),
+                    value=str(", ".join(map(lambda role: role.mention, roles[:MAX_ROLES])) + ("..." if len(roles) > MAX_ROLES else "")),
                 )
             else:
                 embed.add_field(
