@@ -54,7 +54,8 @@ commands:
         available: Available?
         external: External?
       errors:
-        not_found: No emojis found from the provided input
+        not_provided: No emojis found from the provided input
+        not_found: No emojis found
       limit: You can’t view more than 5 emojis yet...
   emojis:
     download:

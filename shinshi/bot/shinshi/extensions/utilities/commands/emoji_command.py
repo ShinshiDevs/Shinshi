@@ -5,6 +5,7 @@ from aurum.commands.options import Option
 from aurum.commands.slash_command import SlashCommandGroup
 from hikari.commands import OptionType
 from hikari.embeds import Embed
+from hikari.snowflakes import Snowflake
 
 from shinshi.enums.colour import Colour
 from shinshi.framework.context.context import Context
@@ -30,8 +31,12 @@ class EmojiCommand(SlashCommandGroup):
     )
     async def emoji_view(self, context: Context, emojis: str) -> None:
         embeds: List[Embed] = []
+        matches: set[Snowflake] = set(find_emojis(emojis))
 
-        for match in set(find_emojis(emojis)):
+        if not matches:
+            return await context.create_warning_response(context.locale.get("commands.emoji.view.errors.not_provided"))
+
+        for match in matches:
             emoji = context.bot.cache.get_emoji(match)
             if not emoji:
                 continue
@@ -51,14 +56,14 @@ class EmojiCommand(SlashCommandGroup):
             )
             if emoji.guild_id and emoji.guild_id != context.interaction.guild_id:
                 embed.add_field(
-                    name=context.locale.get("commands.emoji.view.fields.external"),
-                    value=context.bot.cache.get_guild(emoji.guild_id).name or context.locale.get("special.affirmative"),
-                    inline=True
+                    name=context.locale.get("commands.emoji.view.fields.guild"),
+                    value=context.bot.cache.get_guild(emoji.guild_id).name
                 )
             embeds.append(embed)
 
         if not embeds:
             return await context.create_warning_response(context.locale.get("commands.emoji.view.errors.not_found"))
+
         elif len(embeds) > MAX_EMOJIS:
             embeds = embeds[:MAX_EMOJIS]
             embeds[-1].set_footer(f"{context.locale.get("commands.emoji.view.limit")} · {embeds[-1].footer.text}")
