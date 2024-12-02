@@ -5,9 +5,8 @@ from pathlib import Path
 
 from hikari.impl import CacheComponents
 from hikari.intents import Intents
-from hikari.presences import Activity
 
-from shinshi import __version_info__, extensions
+from shinshi import extensions
 from shinshi.abc.bot.ibot_service import IBotService
 from shinshi.abc.config.iconfiguration_service import IConfigurationService
 from shinshi.abc.database.idatabase_service import IDatabaseService
@@ -46,7 +45,6 @@ async def main() -> None:
             | CacheComponents.ROLES
             | CacheComponents.EMOJIS,
             intents=Intents.GUILDS | Intents.GUILD_EMOJIS,
-            activity=Activity(name=f"{__version_info__.version}"),
         ),
     )
     kernel.register_service(
