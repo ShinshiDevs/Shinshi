@@ -1,0 +1,13 @@
+[Unit]
+Description=Shinshi Bot Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=~/projects/Shinshi/shinshi/bot
+ExecStart=uv run -- python3 -OO -m shinshi
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
