@@ -11,6 +11,3 @@ uv.lock
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Files
-resources/icons/*.webp
