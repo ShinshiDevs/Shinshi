@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/root/projects/Shinshi/shinshi/bot/
-ExecStart=uv run -- python3 -OO -m shinshi
+ExecStart=/root/.local/bin/uv run -- python3 -OO -m shinshi
 Restart=always
 RestartSec=5
 
