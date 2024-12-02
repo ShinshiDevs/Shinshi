@@ -31,7 +31,7 @@ class StatsCommand(SlashCommand):
                 name=context.locale.get("commands.stats.fields.version"),
                 value=(
                     f"[{__version_info__.version}]"
-                    f"({REPOSITORY_URL}/releases/tag/{__version_info__.version}) "
+                    f"({REPOSITORY_URL}/releases/tag/v{__version_info__.version}) "
                     f"([`{__version_info__.git_sha}`]"
                     f"({REPOSITORY_URL}/commit/{__version_info__.git_sha}))"
                 ),
