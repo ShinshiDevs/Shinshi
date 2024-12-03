@@ -1,6 +1,6 @@
 [project]
 name = "bot"
-version = "20.0.0.dev1"
+version = "20.0.0.dev5"
 description = "Runtime of the Discord bot"
 readme = "README.md"
 requires-python = ">=3.12"
