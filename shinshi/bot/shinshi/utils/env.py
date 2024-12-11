@@ -1,12 +1,8 @@
 from collections.abc import Callable
 from os import environ
-from typing import TypeVar
-
-T = TypeVar("T")
-DefaultT = TypeVar("DefaultT")
 
 
-def getenv(key: str, *, default: DefaultT | None = None, return_type: Callable[..., T] = str) -> DefaultT | T:
+def getenv[T, DefaultT](key: str, *, default: DefaultT | None = None, return_type: Callable[..., T] = str) -> DefaultT | T:
     value: str | None = environ.get(key)
     if not value:
         if default:
